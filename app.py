@@ -14,6 +14,9 @@ app.config['SQLALCHEMY_ECHO'] = True
 # Initialize the database with the app
 db.init_app(app)
 
+# blueprint for auth routes in our app
+from controllers.auth import auth as auth_blueprint
+app.register_blueprint(auth_blueprint)
 
 @app.route("/")
 def hello():
