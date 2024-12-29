@@ -1,8 +1,8 @@
 from models import db
 from models.model import User
-from flask_login import login_required
 from datetime import datetime,date
 from config import admin_credentials
+from flask_login import login_required
 from flasgger import Swagger, swag_from
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 
@@ -26,11 +26,6 @@ user = Blueprint('user', __name__, url_prefix='/user')
                     'search': {
                         'type': 'object',
                         'description': 'Search filters for users',
-                        'example': {}
-                    },
-                    'relations': {
-                        'type': 'object',
-                        'description': 'Relations to include in the query',
                         'example': {}
                     },
                     'where': {
@@ -118,5 +113,24 @@ user = Blueprint('user', __name__, url_prefix='/user')
 })
 def getUsers():
     data = request.get_json()
-    print(data)
-    users = User.query.all()
+    order = data['order']
+    skip = data['skip']
+    take = data['take']
+    where = data['where']
+    try:
+        users = User.query.filter_by(**where).order_by(**order).limit(take).offset(skip).all()
+        users_list = []
+        for user in users:
+            users_list.append({
+                'id': user.id,
+                'username': user.username,
+                'full_name': user.full_name,
+                'qualification': user.qualification,
+                'dob': user.dob,
+                'user_type': user.user_type,
+                'created_at': user.created_at,
+                'updated_at': user.updated_at
+            })
+        return jsonify({'rows': users_list, 'total_rows': len(users_list)})    
+    except Exception as e:
+        return jsonify({'message': 'An error occurred'}), 500
