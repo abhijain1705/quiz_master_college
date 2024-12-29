@@ -10,6 +10,11 @@
   color: white !important;
 }
 
+a {
+  color: white !important;
+  text-decoration: underline !important;
+}
+
 body {
   background-color: #1f1147 !important;
   color: white !important;
