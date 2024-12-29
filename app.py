@@ -2,6 +2,7 @@
 import uuid
 from models import db  
 from datetime import date
+from flasgger import Swagger
 from models.model import User
 from flask_session import Session
 from flask_login import LoginManager
@@ -16,7 +17,12 @@ app.config['DEBUG'] = True
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.secret_key = "merisecretkeyhai"
+# Configure Swagger
+app.config['SWAGGER'] = {
+    'title': 'My API'
+    }
 Session(app)
+swagger = Swagger(app)
 
 #Path to database
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
