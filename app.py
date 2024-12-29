@@ -8,6 +8,7 @@ from flask_session import Session
 from flask_login import LoginManager
 from flask import Flask, flash, redirect, url_for
 from controllers.home import home as home_blueprint
+from controllers.user import user as user_blueprint
 from controllers.auth import auth as auth_blueprint
 from werkzeug.security import generate_password_hash
 from config import admin_credentials
@@ -19,8 +20,16 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.secret_key = "merisecretkeyhai"
 # Configure Swagger
 app.config['SWAGGER'] = {
-    'title': 'My API'
+    'title': 'My API',
+    'description': 'This is the API documentation for my project.',
+    'version': '1.0.0',
+    'contact': {
+        'name': 'Abhi Jain',
+        'url': 'https://example.com/contact',
+        'email': '23f3003209@ds.study.iitm.ac.in'
     }
+}
+
 Session(app)
 swagger = Swagger(app)
 
@@ -34,6 +43,9 @@ db.init_app(app)
 
 # blueprint for auth routes in our app
 app.register_blueprint(auth_blueprint)
+
+# blueprint for user routes in our app
+app.register_blueprint(user_blueprint)
 
 # blueprint for home routes in our app
 app.register_blueprint(home_blueprint)
