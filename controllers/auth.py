@@ -4,8 +4,9 @@ from models.model import User
 from flask_login import login_user
 from datetime import datetime,date
 from config import admin_credentials
+from flasgger import Swagger, swag_from
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -14,6 +15,39 @@ def login():
     return render_template('login.html')
 
 @auth.route('/login', methods=['POST'])
+@swag_from({
+    'tags':['Auth'],
+    'parameters':[
+         {
+            'name': 'username',
+            'in': 'formData',
+            'type': 'string',
+            'required': True,
+            'description': 'The username of the user'
+        },
+        {
+            'name': 'password',
+            'in': 'formData',
+            'type': 'string',
+            'required': True,
+            'description': 'The password of the user'
+        }
+    ],
+    'responses':{
+        200:{
+            'description': 'User successfully login',
+            'examples': {
+                'application/json': {'message': 'User logged in successfully'}
+            }
+        },
+        400: {
+            'description': 'Invalid input',
+            'examples': {
+                'application/json': {'error': 'Username is required'}
+            }
+        }
+    }
+})
 def login_post():
     username = request.form.get("email")
     password = request.form.get("password")
@@ -21,7 +55,13 @@ def login_post():
     if username==admin_credentials['username']:
         session['user_type'] = 'admin'
     else:
-        session['user_type'] = 'user'    
+        session['user_type'] = 'user' 
+
+    # Validate required fields
+    if not username or not password:
+        flash("All fields are required!", "danger")       
+        return redirect(url_for('auth.login')) # if the user doesn't exist or password is wrong, reload the page
+
     
     user = User.query.filter_by(username=username).first() # if this returns a user, then the email exists in database
 
@@ -43,6 +83,60 @@ def signup():
 
 
 @auth.route('/signup', methods=['POST'])
+@swag_from({
+    'tags':['Auth'],
+    'parameters':[
+        {
+            'name': 'full_name',
+            'in': 'formData',
+            'type': 'string',
+            'required': True,
+            'description': 'The full name of the user'
+        },
+        {
+            'name': 'email',
+            'in': 'formData',
+            'type': 'string',
+            'required': True,
+            'description': 'The email of the user'
+        },
+        {
+            'name': 'password',
+            'in': 'formData',
+            'type': 'string',
+            'required': True,
+            'description': 'The password of the user'
+        },
+        {
+            'name': 'qualification',
+            'in': 'formData',
+            'type': 'string',
+            'required': True,
+            'description': 'The qualification of the user'
+        },
+        {
+            'name': 'dob',
+            'in': 'formData',
+            'type': 'string',
+            'required': True,
+            'description': 'The date of birth of the user'
+        }
+    ],
+    'responses':{
+        200:{
+            'description': 'User successfully registered',
+            'examples': {
+                'application/json': {'message': 'User registered successfully'}
+            }
+        },
+        400: {
+            'description': 'Invalid input',
+            'examples': {
+                'application/json': {'error': 'Full name is required'}
+            }
+        }
+    }
+})
 def signup_post():
     full_name=request.form.get("full_name")
     username = request.form.get("email")
