@@ -1,14 +1,16 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+import uuid
 from models import db
 from models.model import User
 from datetime import datetime,date
-import uuid
+from flask_login import login_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth.route('/login')
 def login():
+    flash('Please check your login details and try again.', "danger")
     return render_template('login.html')
 
 @auth.route('/login', methods=['POST'])
@@ -21,9 +23,11 @@ def login_post():
     # check if the user actually exists
     # take the user-supplied password, hash it, and compare it to the hashed password in the database
     if not user or not check_password_hash(user.password, password):
-        flash('Please check your login details and try again.')
+        flash('Please check your login details and try again.', "error")
         return redirect(url_for('auth.login')) # if the user doesn't exist or password is wrong, reload the page
 
+    # if the above check passes, then we know the user has the right credentials
+    login_user(user, remember=True)
     # if the above check passes, then we know the user has the right credentials
     return redirect(url_for('home.home_route'))
 
@@ -43,13 +47,13 @@ def signup_post():
 
     # Validate required fields
     if not full_name or not username or not password or not dob:
-        flash("All fields are required!", "error")
+        flash("All fields are required!", "danger")
         return redirect(url_for("auth.signup"))
 
     user = User.query.filter_by(username=username).first() # if this returns a user, then the email exists in database
 
     if user:
-        flash("Email already exists. Please use a different email.", "error")
+        flash("Email already exists. Please use a different email.", "danger")
         return redirect(url_for('auth.signup')) # if a user is found, we want to redirect back to signup page so user can try again
     
 
@@ -57,7 +61,7 @@ def signup_post():
     try:
         dob_date = datetime.strptime(dob, "%Y-%m-%d").date()
     except ValueError:
-        flash("Invalid date format. Please use YYYY-MM-DD.", "error")
+        flash("Invalid date format. Please use YYYY-MM-DD.", "danger")
         return redirect(url_for("auth.signup"))
 
     # Hash the password
