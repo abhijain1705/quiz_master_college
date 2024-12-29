@@ -1,10 +1,11 @@
 import uuid
 from models import db
 from models.model import User
-from datetime import datetime,date
 from flask_login import login_user
+from datetime import datetime,date
+from config import admin_credentials
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -16,6 +17,11 @@ def login():
 def login_post():
     username = request.form.get("email")
     password = request.form.get("password")
+    session['username'] = username
+    if username==admin_credentials['username']:
+        session['user_type'] = 'admin'
+    else:
+        session['user_type'] = 'user'    
     
     user = User.query.filter_by(username=username).first() # if this returns a user, then the email exists in database
 
