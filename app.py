@@ -1,11 +1,12 @@
 # app.py
+import uuid
+from models import db  
 from flask import Flask
-from models import db  # Import db from models/__init__.py
-from models.model import User
 from datetime import date
+from models.model import User
+from flask_login import LoginManager
 from controllers.home import home as home_blueprint
 from controllers.auth import auth as auth_blueprint
-import uuid
 from werkzeug.security import generate_password_hash
 
 app = Flask(__name__, instance_relative_config=True)
@@ -33,6 +34,15 @@ def init_db():
     admin = User(id=random_uuid, username='admin@mail.com', password=generate_password_hash('admin@123', method='scrypt'), full_name='Admin', qualification='Btech', dob=date(2003,4,5), user_type='admin', created_at=date.today(), updated_at=date.today())
     db.session.add(admin)
     db.session.commit()
+
+    login_manager = LoginManager()
+    login_manager.login_view = 'auth.login'
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        # since the user_id is just the primary key of our user table, use it in the query for the user
+        return User.query.get(user_id)
 
 if __name__ == "__main__":
     with app.app_context():
