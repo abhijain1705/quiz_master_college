@@ -32,33 +32,33 @@
       <!-- Flash messages -->
       {% with messages = get_flashed_messages(with_categories=True) %} {% if
       messages %}
-      <div class="container w-100 w-sm-50">
-        {% for category, message in messages %}
-        <div
-          class="alert alert-{{ category }} alert-dismissible fade show"
-          role="alert"
-        >
-          {{ message }}
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close"
-          ></button>
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-sm-6">
+            {% for category, message in messages %}
+            <div
+              class="alert alert-{{ category }} alert-dismissible fade show"
+              role="alert"
+            >
+              {{ message }}
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+              ></button>
+            </div>
+            {% endfor %}
+          </div>
         </div>
-        {% endfor %}
       </div>
       {% endif %} {% endwith %}
 
       <!-- signup form -->
-      <form
-        method="post"
-        class="w-100 w-md-75 w-lg-50 p-3"
-        action="/auth/signup"
-      >
+      <form method="post" class="container p-3" action="/auth/signup">
         <div class="container">
           <div class="row">
-            <div class="form-group col-sm">
+            <div class="form-group mx-auto col-12 col-sm-6">
               <label for="exampleInputName">Full Name</label>
               <input
                 type="text"
@@ -69,7 +69,7 @@
                 placeholder="Enter Full Name"
               />
             </div>
-            <div class="form-group col-sm">
+            <div class="form-group mx-auto col-12 col-sm-6">
               <label for="exampleInputEmail1">Email address</label>
               <input
                 type="email"
@@ -85,7 +85,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="form-group col-sm">
+            <div class="form-group mx-auto col-12 col-sm-6">
               <label for="exampleInputPassword1">Password</label>
               <input
                 type="password"
@@ -95,7 +95,7 @@
                 placeholder="Password"
               />
             </div>
-            <div class="form-group col-sm">
+            <div class="form-group mx-auto col-12 col-sm-6">
               <label for="exampleInputQualification">Qualification</label>
               <input
                 type="text"
@@ -108,7 +108,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="form-group col-sm">
+            <div class="form-group mx-auto col-12 col-sm-6">
               <label for="exampleInputDOB">Date of birth</label>
               <input
                 type="date"
@@ -119,7 +119,7 @@
                 placeholder="Enter Date of birth"
               />
             </div>
-            <div class="col-sm form-group">
+            <div class="form-group mx-auto col-12 col-sm-6">
               <label for="exampleInputDOB">Submit</label>
               <button type="submit" class="w-100 btn btn-primary">
                 Submit
