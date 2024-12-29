@@ -6,6 +6,10 @@
   padding: 6px;
 }
 
+#emailHelp {
+  color: white !important;
+}
+
 body {
   background-color: #1f1147 !important;
   color: white !important;
