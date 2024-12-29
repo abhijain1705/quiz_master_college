@@ -47,6 +47,7 @@ class Quiz(db.Model):
     created_at=db.Column(db.TIMESTAMP, nullable=False)
     updated_at=db.Column(db.TIMESTAMP, nullable=False)
     number_of_questions=db.Column(db.Integer, nullable=False)
+    user_id=db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=False)
     total_marks=db.Column(db.Integer, nullable=False)
 
 # question model
