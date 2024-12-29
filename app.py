@@ -1,10 +1,10 @@
 # app.py
 import uuid
 from models import db  
-from flask import Flask
 from datetime import date
 from models.model import User
 from flask_login import LoginManager
+from flask import Flask, flash, redirect, url_for
 from controllers.home import home as home_blueprint
 from controllers.auth import auth as auth_blueprint
 from werkzeug.security import generate_password_hash
@@ -38,6 +38,12 @@ def init_db():
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
+
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        # This function will handle the unauthorized access
+        flash('You must be logged in to access this page!', 'warning')
+        return redirect(url_for('auth.login'))  # Or any other custom page you want to redirect to
 
     @login_manager.user_loader
     def load_user(user_id):
