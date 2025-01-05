@@ -7,9 +7,10 @@ from models.model import User
 from flask_session import Session
 from flask_login import LoginManager
 from flask import Flask, flash, redirect, url_for
-from controllers.home import home as home_blueprint
 from controllers.user import user as user_blueprint
+from controllers.home import home as home_blueprint
 from controllers.auth import auth as auth_blueprint
+from controllers.admin import admin as admin_blueprint
 from werkzeug.security import generate_password_hash
 from config import admin_credentials
 
@@ -49,6 +50,9 @@ app.register_blueprint(user_blueprint)
 
 # blueprint for home routes in our app
 app.register_blueprint(home_blueprint)
+
+# blueprint for home routes in our app
+app.register_blueprint(admin_blueprint)
 
 def init_db():    
     # generate a random UUID
