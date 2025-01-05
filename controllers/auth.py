@@ -1,10 +1,10 @@
 import uuid
 from models import db
 from models.model import User
-from flask_login import login_user, current_user
 from datetime import datetime,date
 from config import admin_credentials
 from flasgger import Swagger, swag_from
+from flask_login import login_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 
@@ -73,8 +73,9 @@ def login_post():
 
     # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=True)
+    print("user ye hai", user)
     # if the above check passes, then we know the user has the right credentials
-    return redirect(url_for('home.home_route'))
+    return redirect(url_for("admin.admin_home" if user.user_type =='admin' else 'user.user_home'))
 
     
 @auth.route('/signup')
