@@ -1,7 +1,7 @@
 import uuid
 from models import db
 from models.model import User
-from flask_login import login_user
+from flask_login import login_user, current_user
 from datetime import datetime,date
 from config import admin_credentials
 from flasgger import Swagger, swag_from
