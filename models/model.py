@@ -77,4 +77,5 @@ class Chapter(db.Model):
     created_at = db.Column(db.TIMESTAMP, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, nullable=False)
     chapter_number=db.Column(db.Integer, nullable=False)
+    code=db.Column(db.VARCHAR(100), nullable=False)
     pages=db.Column(db.Integer, nullable=False)
