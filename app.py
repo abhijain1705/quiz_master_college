@@ -1,11 +1,11 @@
 # app.py
 import uuid
 from models import db  
-from datetime import date
 from flasgger import Swagger
 from models.model import User
 from sqlalchemy import inspect
 from flask_session import Session
+from datetime import datetime, date
 from config import admin_credentials
 from flask_login import LoginManager
 from flask import Flask, flash, redirect, url_for
@@ -59,7 +59,6 @@ app.register_blueprint(quiz_blueprint)
 
 @app.cli.command("create-dummy-subjects")
 def create_dummy_subjects_command():
-    """Creates dummy subjects."""
     count = int(input("How many dummy subjects do you want to create? "))
     with app.app_context():
         create_dummy_subjects(count)
@@ -68,7 +67,7 @@ login_manager = LoginManager()
 
 def init_db():    
     random_uuid = str(uuid.uuid4())
-    admin = User(id=random_uuid, email=admin_credentials['email'], password=generate_password_hash(admin_credentials['password'], method='scrypt'), full_name='Admin', qualification='Btech', dob=date(2003,4,5), user_type='admin', created_at=date.today(), updated_at=date.today())
+    admin = User(id=random_uuid, email=admin_credentials['email'], password=generate_password_hash(admin_credentials['password'], method='scrypt'), full_name='Admin', qualification='Btech', dob=date(2003,4,5), user_type='admin', created_at=datetime.now(), updated_at=datetime.now())
     db.session.add(admin)
     db.session.commit()
 
