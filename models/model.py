@@ -5,7 +5,7 @@ from flask_login import UserMixin
 class User(UserMixin, db.Model):
     __tablename__='users'
     id= db.Column(db.VARCHAR(100), primary_key=True)
-    username=db.Column(db.VARCHAR(100), unique=True,nullable=False)
+    email=db.Column(db.VARCHAR(100), unique=True,nullable=False)
     password=db.Column(db.VARCHAR(100), nullable=False)
     full_name=db.Column(db.VARCHAR(100), nullable=False)
     qualification=db.Column(db.VARCHAR(100), nullable=False)
@@ -17,13 +17,13 @@ class User(UserMixin, db.Model):
 # subject model
 class Subject(db.Model):
     __tablename__='subjects'
-    id =db.Column(db.VARCHAR(100), primary_key=True)
+    id=db.Column(db.VARCHAR(100), primary_key=True)
     name=db.Column(db.VARCHAR(100), nullable=False)
     description=db.Column(db.VARCHAR(100), nullable=False)
     created_at  =db.Column(db.TIMESTAMP, nullable=False)
     updated_at=db.Column(db.TIMESTAMP, nullable=False)
     code = db.Column(db.VARCHAR(100), nullable=False)
-    credits = db.Column(db.Integer, nullable=False)
+    credit = db.Column(db.Integer, nullable=False)
 
 # score model
 class Score(db.Model):
@@ -35,6 +35,9 @@ class Score(db.Model):
     total_scored = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.TIMESTAMP, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, nullable=False)
+    __table_args__ = (
+        db.UniqueConstraint('quiz_id', 'user_id', name='unique_user_quiz_score'),  # Prevents duplicate user-quiz pairs
+    )
 
 # quiz model
 class Quiz(db.Model):
@@ -47,7 +50,7 @@ class Quiz(db.Model):
     created_at=db.Column(db.TIMESTAMP, nullable=False)
     updated_at=db.Column(db.TIMESTAMP, nullable=False)
     number_of_questions=db.Column(db.Integer, nullable=False)
-    user_id=db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=False)
+    user_id=db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=True)
     total_marks=db.Column(db.Integer, nullable=False)
 
 # question model
@@ -69,11 +72,10 @@ class Questions(db.Model):
 class Chapter(db.Model):
     __tablename__='chapters'
     id=db.Column(db.VARCHAR(100), primary_key=True)
-    name=   db.Column(db.VARCHAR(100), nullable=False)
+    name=db.Column(db.VARCHAR(100), nullable=False)
     description=db.Column(db.VARCHAR(100), nullable=False)
     subject_id=db.Column(db.VARCHAR(100), db.ForeignKey('subjects.id'), nullable=False)
     created_at = db.Column(db.TIMESTAMP, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, nullable=False)
     chapter_number=db.Column(db.Integer, nullable=False)
     pages=db.Column(db.Integer, nullable=False)
-    quiz_id=db.Column(db.VARCHAR(100), db.ForeignKey('quiz.id'), nullable=False)    
