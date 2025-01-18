@@ -2,6 +2,15 @@
 block content %} {% include "admin/admin_wrapper.html" %}
 
 <section class="min-vh-100 p-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item">
+        <a>Subjects List</a>
+      </li>
+    </ol>
+  </nav>
+
   <div class="d-flex flex-wrap justify-content-between">
     <h3>Subject Management</h3>
     <div class="form-inline my-2 my-lg-0">
@@ -68,7 +77,11 @@ block content %} {% include "admin/admin_wrapper.html" %}
           {% for sub in rows %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
-            <td class="link">{{ sub.code }}</td>
+            <td class="link">
+              <a href="/admin/subject/view?sub_id={{ sub.id }}&take=25&skip=0"
+                >{{ sub.code }}</a
+              >
+            </td>
             <td>{{ sub.name }}</td>
             <td>{{ sub.description }}</td>
             <td>{{ sub.created_at }}</td>
@@ -76,12 +89,12 @@ block content %} {% include "admin/admin_wrapper.html" %}
             <td>
               <button
                 type="button"
-                class="btn btn-secondary mr-3"
+                class="btn btn-secondary mr-3 mb-3 mb-sm-0"
                 onclick="window.location.href='/admin/subject/update?sub_id={{ sub.id }}'"
               >
                 Update
               </button>
-              <button type="button" class="btn btn-danger mr-3">
+              <button type="button" class="btn btn-danger">
                 <a
                   class="text-white"
                   href="/admin/subject/delete?sub_id={{ sub.id }}"
