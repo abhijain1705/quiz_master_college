@@ -1,3 +1,5 @@
+import json
+from sqlalchemy import desc
 from models.model import Quiz
 from flasgger import swag_from
 from flask_login import login_required
@@ -29,14 +31,6 @@ quiz = Blueprint("quiz", __name__, url_prefix="/admin/quiz")
             'type': 'integer',
             'description': 'Number of records to retrieve (default is 25)',
             'example': 25
-        },
-        {
-            'name': 'order',
-            'in': 'query',
-            'required': False,
-            'type': 'string',
-            'description': 'Sorting options for the query (default is "created_at")',
-            'example': 'created_at'
         },
         {
             'name': 'where',
@@ -83,18 +77,6 @@ quiz = Blueprint("quiz", __name__, url_prefix="/admin/quiz")
                         'type':'integer',
                         "description": 'current page size'
                     },
-                    'current_page':{
-                        'type':'integer',
-                        "description":"current page number starts from 0"
-                    },
-                    'has_next':{
-                        'type':'boolean',
-                        'description':'if new page is available or not'
-                    },
-                    'nxt_skip': {
-                        'type': 'integer',
-                        "description": "next skipped rows"
-                    },
                 },
                 'example': {
                     'rows': [
@@ -112,9 +94,6 @@ quiz = Blueprint("quiz", __name__, url_prefix="/admin/quiz")
                     }
                     ],
                     'total_rows':1,
-                    'current_page':0,
-                    "has_next": False,
-                    "nxt_skip": None,
                     "take":25,
                     "skip":0
                 }
@@ -139,11 +118,11 @@ def admin_quiz():
     skip = int(request.args.get("skip", 0))
     take = int(request.args.get("take",25))
     where = request.args.get("where", "{}")
-    order = request.args.get("order", "created_at")
     try:
-        quizzes = Quiz.query.filter_by(**where).order_by(order).limit(take).offset(skip).all()
+        where = json.loads(where) if where else {}
+        quizzes = Quiz.query.filter_by(**where).order_by(desc(Quiz.created_at)).limit(take).offset(skip).all()
         total_quiz=Quiz.query.all()
-        return render_template("admin_quiz.html", rows=quizzes, total_rows=len(total_quiz))        
+        return render_template("admin/admin_quiz.html", rows=quizzes, total_rows=len(total_quiz))        
     except Exception as e:
-        flash("An error occurred while fetching subjects.", 'danger')
-        return render_template("admin_quiz.html", rows=[], total_rows=0)        
+        flash("An error occurred while fetching quiz.", 'danger')
+        return render_template("admin/admin_quiz.html", rows=[], total_rows=0)        
