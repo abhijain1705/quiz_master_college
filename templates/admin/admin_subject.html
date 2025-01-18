@@ -1,0 +1,156 @@
+{% extends "base.html" %} {% block title %}Subject Management{% endblock %} {%
+block content %} {% include "admin/admin_wrapper.html" %}
+
+<section class="min-vh-100 p-4">
+  <div class="d-flex flex-wrap justify-content-between">
+    <h3>Subject Management</h3>
+    <div class="form-inline my-2 my-lg-0">
+      <button type="button" class="btn btn-primary mr-3">
+        <a class="text-white" href="/admin/subject/new">
+          Add New Subject
+          <span aria-hidden="true">&plus;</span>
+        </a>
+      </button>
+      <input
+        class="form-control mt-2 mt-sm-0 mr-sm-2"
+        type="search"
+        id="subjectInput"
+        placeholder="Search by Subject Name"
+        aria-label="Search"
+      />
+      <button
+        onclick="searchBySubject('{{skip}}', '{{take}}')"
+        class="btn btn-dark my-2 my-sm-0"
+      >
+        <a>Search</a>
+      </button>
+    </div>
+  </div>
+  <!-- flash message -->
+  {% with messages = get_flashed_messages(with_categories=True) %} {% if
+  messages %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-6">
+        {% for category, message in messages %}
+        <div
+          class="alert alert-{{ category }} alert-dismissible fade show"
+          role="alert"
+        >
+          {{ message }}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+          ></button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}{% endwith %}
+  <section class="mt-3">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th scope="col">S.No.</th>
+            <th scope="col">Course Code</th>
+            <th scope="col">Name</th>
+            <th scope="col">Description</th>
+            <th scope="col">Created At</th>
+            <th scope="col">Updated At</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sub in rows %}
+          <tr class="pointer">
+            <th scope="row">{{ loop.index+skip }}</th>
+            <td class="link">{{ sub.code }}</td>
+            <td>{{ sub.name }}</td>
+            <td>{{ sub.description }}</td>
+            <td>{{ sub.created_at }}</td>
+            <td>{{ sub.updated_at }}</td>
+            <td>
+              <button
+                type="button"
+                class="btn btn-secondary mr-3"
+                onclick="window.location.href='/admin/subject/update?sub_id={{ sub.id }}'"
+              >
+                Update
+              </button>
+              <button type="button" class="btn btn-danger mr-3">
+                <a
+                  class="text-white"
+                  href="/admin/subject/delete?sub_id={{ sub.id }}"
+                  >Delete</a
+                >
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="/admin/subject?skip={{ (skip - take) if skip > 0 else 0 }}&take={{ take }}"
+              aria-label="Previous"
+            >
+              <span aria-hidden="true">&laquo;</span>
+              <span
+                >{% if skip > 0 %}Previous{% else %}Start Page{% endif %}</span
+              >
+            </a>
+          </li>
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="/admin/subject?skip={{ ( ((skip//take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              aria-label="Next"
+            >
+              <span
+                >{% if ((skip|int + take) < total_rows) %}Next{% else %}Go back
+                to Start Page{% endif %}</span
+              >
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="d-flex align-items-center">
+        <p class="mr-4">Total Rows: {{ total_rows }}</p>
+        <p>
+          Current Page: {% if skip and take %} {{ ((skip|int)//take)+1 }} {%
+          else %}1{% endif %}
+        </p>
+      </div>
+    </div>
+  </section>
+</section>
+<script>
+  const url = new URL(window.location.href);
+  let showWhere = url.searchParams.get("where");
+  if (showWhere) {
+    showWhere = JSON.parse(decodeURIComponent(showWhere));
+    if ("name" in obj) {
+      document.getElementById("subjectInput").value = obj["name"];
+    }
+  }
+  function searchBySubject(skip, take) {
+    var searchTerm = document.getElementById("subjectInput").value;
+    var queryParams = "?skip=" + skip + "&take=" + take;
+    if (searchTerm) {
+      queryParams +=
+        "&where=" + encodeURIComponent(JSON.stringify({ name: searchTerm }));
+      window.location.href = "/admin/subject" + queryParams;
+    } else {
+      window.location.href = "/admin/subject" + queryParams;
+    }
+  }
+</script>
+{% endblock %}
