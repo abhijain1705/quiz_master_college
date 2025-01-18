@@ -4,13 +4,37 @@ import json
 from models import db
 from sqlalchemy import desc
 from flasgger import  swag_from
-from models.model import Subject
 from datetime import datetime
 from flask_login import login_required
+from models.model import Subject, Chapter
 from controllers.decorator import role_required
 from flask import Blueprint, session, request, flash, render_template, redirect, url_for
 
 subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
+
+@subject.route("/view")
+@login_required
+@role_required("admin")
+@swag_from({})
+def view_subject():
+    try:
+        sub_id = request.args.get("sub_id", "")
+        skip = int(request.args.get('skip', 0))
+        take = int(request.args.get('take', 25))
+        if not sub_id:
+            raise ValueError("Subject is required")
+            return redirect(url_for("subject.admin_subject"))
+        sub = Subject.query.filter_by(id=sub_id).first()
+        if not sub:
+            flash("Subject not found" ,"danger")
+            return redirect(url_for("subject.admin_subject")) 
+        chapters = Chapter.query.filter_by(subject_id=sub_id).limit(take).offset(skip).all()
+        all_chapters = Chapter.query.filter_by(subject_id=sub_id).all()
+        total_rows = len(all_chapters)
+        return render_template("admin/admin_single_subject.html", total_rows=total_rows,skip=skip,take=take,sub=sub,chapters=chapters)
+    except Exception as e:    
+        return redirect(url_for("subject.admin_subject"))
+    
 
 @subject.route("/update", methods=['POST', 'GET'])
 @login_required
@@ -90,7 +114,7 @@ def update_subject():
             return render_template('admin/admin_subject_manage.html',sub=sub)
         if not code:
             flash("code is required", "danger")
-            return render_template('admin/admin_subject_manage.html',sub=sub)            
+            return render_template('admin/admin_subject_manage.html',sub=sub)           
         sub_srch_w_code = Subject.query.filter(Subject.code == code, Subject.id != sub_id).first()
 
         if sub_srch_w_code:
