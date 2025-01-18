@@ -16,6 +16,6 @@ def role_required(role):
                 if current_user.user_type == "admin":
                     return redirect(url_for("admin.admin_home"))
                 return redirect(url_for("user.user_home"))    
-            return func(*args, **kwargs)    
+            return func(*args, **kwargs)
         return wrapper
     return decorator        
