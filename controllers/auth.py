@@ -1,7 +1,7 @@
 import uuid
 from models import db
 from models.model import User
-from datetime import datetime,date
+from datetime import datetime
 from config import admin_credentials
 from flasgger import Swagger, swag_from
 from flask_login import login_user, current_user, logout_user
@@ -160,7 +160,7 @@ def signup_post():
 
     random_uuid = str(uuid.uuid4())
 
-    new_user=User(id=random_uuid,email=email, password=hashed_password, full_name=full_name,qualification=qualification, dob=dob_date, user_type='user', created_at=date.today(), updated_at=date.today())
+    new_user=User(id=random_uuid,email=email, password=hashed_password, full_name=full_name,qualification=qualification, dob=dob_date, user_type='user', created_at=datetime.now(), updated_at=datetime.now())
 
     try:
         db.session.add(new_user)
