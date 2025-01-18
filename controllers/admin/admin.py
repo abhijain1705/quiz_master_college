@@ -1,4 +1,5 @@
 #controllers/admin.py
+from sqlalchemy import desc
 from flasgger import swag_from
 from models.model import User, Score
 from controllers.decorator import role_required
@@ -7,7 +8,7 @@ from flask import Blueprint, render_template, session, flash, request
 
 admin= Blueprint("admin", __name__, url_prefix="/admin")
 
-# /admin/subject?skip=0&take=25&order=created_at&where={}
+# /admin/subject?skip=0&take=25&where={}
 @admin.route("/", methods=['GET'])
 @login_required
 @role_required("admin")
@@ -31,14 +32,6 @@ admin= Blueprint("admin", __name__, url_prefix="/admin")
             'type': 'integer',
             'description': 'Number of records to retrieve (default is 25)',
             'example': 25
-        },
-        {
-            'name': 'order',
-            'in': 'query',
-            'required': False,
-            'type': 'string',
-            'description': 'Sorting options for the query (default is "created_at")',
-            'example': 'created_at'
         },
         {
             'name': 'where',
@@ -85,18 +78,6 @@ admin= Blueprint("admin", __name__, url_prefix="/admin")
                         'type':'integer',
                         "description": 'current page size'
                     },
-                    'current_page':{
-                        'type':'integer',
-                        "description":"current page number starts from 0"
-                    },
-                    'has_next':{
-                        'type':'boolean',
-                        'description':'if new page is available or not'
-                    },
-                    'nxt_skip': {
-                        'type': 'integer',
-                        "description": "next skipped rows"
-                    },
                 },
                 'example': {
                     'rows': [
@@ -114,9 +95,6 @@ admin= Blueprint("admin", __name__, url_prefix="/admin")
                         }
                     ],
                     'total_rows': 1,
-                    'current_page':0,
-                    "has_next": False,
-                    "nxt_skip": None,
                     "take":25,
                     "skip":0
                 }
@@ -139,11 +117,10 @@ admin= Blueprint("admin", __name__, url_prefix="/admin")
 def admin_home():
     skip = int(request.args.get('skip', 0))
     take = int(request.args.get('take', 25))
-    order = request.args.get('order', 'created_at')
     where = request.args.get('where', '{}')
     try:
         where = eval(where)
-        users = User.query.filter_by(**where).order_by(order).limit(take).offset(skip).all()
+        users = User.query.filter_by(**where).order_by(desc(User.created_at)).limit(take).offset(skip).all()
         total_users = User.query.all()
         users_list = []
         for user in users:
@@ -165,7 +142,7 @@ def admin_home():
                 'created_at': user.created_at,
                 'updated_at': user.updated_at
             })
-        return render_template("admin.html", rows=users_list, total_rows=len(total_users))
+        return render_template("admin/admin.html", rows=users_list, total_rows=len(total_users))
     except Exception as e:
         flash("An error occurred while fetching users.", 'danger')
-        return render_template("admin.html", rows=[], total_rows=0)    
+        return render_template("admin/admin.html", rows=[], total_rows=0)    
