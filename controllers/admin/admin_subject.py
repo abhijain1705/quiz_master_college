@@ -2,16 +2,17 @@
 import uuid
 import json
 from models import db
+from sqlalchemy import desc
 from flasgger import  swag_from
 from models.model import Subject
-from datetime import date
+from datetime import datetime
 from flask_login import login_required
 from controllers.decorator import role_required
 from flask import Blueprint, session, request, flash, render_template, redirect, url_for
 
 subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
 
-@subject.route("/update", methods=['POST'])
+@subject.route("/update", methods=['POST', 'GET'])
 @login_required
 @role_required("admin")
 @swag_from({
@@ -19,6 +20,14 @@ subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
     "summary": "Update existing subject",
     "description": "This endpoint will update existing subject",
     "parameters": [
+        {
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Subject id of subject',
+            'example': 'ENG001'
+        },
         {
             'name': 'name',
             'in': 'formData',
@@ -30,7 +39,7 @@ subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
         {
             'name': 'description',
             'in': 'formData',
-            'required': False,
+            'required': True,
             'type': 'string',
             'description': 'Description of subject',
             'example': 'Basic English course'
@@ -42,14 +51,6 @@ subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
             'type': 'string',
             'description': 'Code of subject',
             'example': 'ENG101'
-        },
-        {
-            'name': 'credit',
-            'in': 'formData',
-            'required': False,
-            'type': 'integer',
-            'description': 'Credit of subject',
-            'example': 3
         }
     ],
     'responses':{
@@ -65,44 +66,90 @@ subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
                 'application/json': {'error': 'name is required'}
             }
         }
-    }        
+    }
 })
 def update_subject():
-    name = request.form.get('name')
-    description = request.form.get('description')
-    code = request.form.get('code')
-    credit = request.form.get('credit')
-
-    if not name or not code or not credit:
-        flash("Fields are required", "danger")
+    sub_id = request.args.get("sub_id", "")
+    if not sub_id:
+        raise ValueError("Subject is required")
         return redirect(url_for("subject.admin_subject"))
-
-    if credit <1:    
-        flash("subject should have minimum 1 credit", "danger")
-        return redirect(url_for("subject.admin_subject"))
-
-    sub = Subject.query.filter_by(code=code).first()
-
+    sub = Subject.query.filter_by(id=sub_id).first()
     if not sub:
-        flash("Code doesn't exist, please use a different subject code", "danger")
-        return redirect(url_for("subject.admin_subject"))
+        flash("Subject not found" ,"danger")
+        return redirect(url_for("subject.admin_subject"))        
+    if request.method == 'POST':
+        name = request.form.get('name')
+        description = request.form.get('description')
+        code = request.form.get('code')
 
-    sub.name = name
-    sub.description = description
-    sub.credit = credit
-    sub.updated_at = date.today()
+        if not name:
+            flash("name is required", "danger")
+            return render_template('admin/admin_subject_manage.html',sub=sub)
+        if not description:
+            flash("description is required", "danger")
+            return render_template('admin/admin_subject_manage.html',sub=sub)
+        if not code:
+            flash("code is required", "danger")
+            return render_template('admin/admin_subject_manage.html',sub=sub)            
+        sub_srch_w_code = Subject.query.filter(Subject.code == code, Subject.id != sub_id).first()
 
-    try:
-        db.session.commit()
-        flash("Subject updated successfully", "success")
-        return redirect(url_for("subject.admin_subject"))
-    except Exception as e:
-        db.session.rollback()
-        flash("An error occurred during updating the subject. Please try again.", "danger")
-        return redirect(url_for("subject.admin_subject"))
+        if sub_srch_w_code:
+            flash("Code exists, please use a different subject code","danger")
+            return render_template('admin/admin_subject_manage.html',sub=sub)
+        sub.name = name
+        sub.description = description
+        sub.code = code
+        sub.updated_at = datetime.now()
+        try:
+            db.session.commit()
+            flash("Subject updated successfully", "success")
+            return redirect(url_for("subject.admin_subject"))
+        except Exception as e:
+            db.session.rollback()
+            flash("An error occurred during updating the subject. Please try again.", "danger")
+            return redirect(url_for("subject.admin_subject"))
+    else:
+        return render_template('admin/admin_subject_manage.html',sub=sub)
+          
 
+@subject.route("/delete", methods=['GET'])
+@login_required
+@role_required("admin")
+@swag_from({
+    "tags": ['Subject'],
+    "summary": "Delete existing subject",
+    "description": "This endpoint will delete existing subject",
+    "parameters": [
+        {
+            'name':'sub_id',
+            'in':'query',
+            'required':True,
+            "type":'string',
+            'description':'document id of any subject row',
+            'example': "4fdf23145325-43543543-233"
+        },
+    ]
+    })
+def delete():
+    sub_id = request.args.get("sub_id", "")
+    if sub_id:
+        sub = Subject.query.filter_by(id=sub_id).first()
+        if not sub:
+            flash("Code doesn't exist, please use a different subject code", "danger")
+            return redirect(url_for('subject.admin_subject'))
+        try:
+            db.session.delete(sub)
+            db.session.commit()
+            flash("Subject deleted successfully" ,"success")
+            return redirect(url_for('subject.admin_subject'))
+        except Exception as e:
+            db.session.rollback()
+            flash("An error occured while deleting subject" ,"danger")
+            return redirect(url_for('subject.admin_subject'))    
+    else:
+        raise ValueError("subject id is required")
 
-@subject.route("/new", methods=['POST'])
+@subject.route("/new", methods=['POST', 'GET'])
 @login_required
 @role_required("admin")
 @swag_from({ 
@@ -121,7 +168,7 @@ def update_subject():
         {
             'name': 'description',
             'in': 'formData',
-            'required': False,
+            'required': True,
             'type': 'string',
             'description': 'Description of subject',
             'example': 'Basic English course'
@@ -133,14 +180,6 @@ def update_subject():
             'type': 'string',
             'description': 'Code of subject',
             'example': 'ENG101'
-        },
-        {
-            'name': 'credit',
-            'in': 'formData',
-            'required': True,
-            'type': 'integer',
-            'description': 'Credit of subject',
-            'example': 3
         }
     ],
     'responses':{
@@ -159,39 +198,43 @@ def update_subject():
     }    
 })
 def new_subject():
-    name = request.form.get('name')
-    description = request.form.get('description')
-    code = request.form.get('code')
-    credit = int(request.form.get('credit'))
+    if request.method=='POST':
+        name = request.form.get('name')
+        description = request.form.get('description')
+        code = request.form.get('code')
 
-    if not name or not code or not credit:
-        flash("Fields are required", "danger")
-        return redirect(url_for("subject.admin_subject"))
+        if not name:
+            flash("name is required", "danger")
+            return render_template('admin/admin_subject_manage.html',sub=sub)
+        if not description:
+            flash("description is required", "danger")
+            return render_template('admin/admin_subject_manage.html',sub=sub)
+        if not code:
+            flash("code is required", "danger")
+            return render_template('admin/admin_subject_manage.html',sub=sub)    
 
-    if credit < 1:    
-        flash("subject should have minimum 1 credit", "danger")
-        return redirect(url_for("subject.admin_subject"))
+        sub = Subject.query.filter_by(code=code).first()
 
-    sub = Subject.query.filter_by(code=code).first()
+        if sub:
+            flash("Code exists, please use a different subject code","danger")
+            return redirect(url_for("subject.admin_subject"))
 
-    if sub:
-        flash("Code exists, please use a different subject code","danger")
-        return redirect(url_for("subject.admin_subject"))
-
-    random_uuid = str(uuid.uuid4())
-    new_sub = Subject(id=random_uuid,name=name,description=description,code=code,credit=credit, created_at=date.today(), updated_at=date.today())
-    try:
-        db.session.add(new_sub)
-        db.session.commit()
-        flash("subject created successfully", "success")
-        return redirect(url_for("subject.admin_subject"))
-    except Exception as e:
-        db.session.rollback()
-        flash("An error occurred during creation of subject. Please try again.", "danger")
-        return redirect(url_for("subject.admin_subject"))
+        random_uuid = str(uuid.uuid4())
+        new_sub = Subject(id=random_uuid,name=name,description=description,code=code, created_at=datetime.now(), updated_at=datetime.now())
+        try:
+            db.session.add(new_sub)
+            db.session.commit()
+            flash("subject created successfully", "success")
+            return redirect(url_for("subject.admin_subject"))
+        except Exception as e:
+            db.session.rollback()
+            flash("An error occurred during creation of subject. Please try again.", "danger")
+            return redirect(url_for("subject.admin_subject"))
+    else:        
+        return render_template('admin/admin_subject_manage.html')
 
 
-# /admin/subject?skip=0&take=25&order=created_at&where={}
+# /admin/subject?skip=0&take=25&where={}
 @subject.route("/",methods=['GET'])
 @login_required
 @role_required("admin")
@@ -217,14 +260,6 @@ def new_subject():
             'example': 25
         },
         {
-            'name': 'order',
-            'in': 'query',
-            'required': False,
-            'type': 'string',
-            'description': 'Sorting options for the query (default is "created_at")',
-            'example': 'created_at'
-        },
-        {
             'name': 'where',
             'in': 'query',
             'required': False,
@@ -248,7 +283,6 @@ def new_subject():
                                 'name': {'type':'string'},
                                 'description': {'type':'string'},
                                 'code': {'type':'string'},
-                                'credits':{'type':'integer'},
                                 'created_at': {'type': 'string'},
                                 'updated_at': {'type': 'string'}
                             }
@@ -266,18 +300,6 @@ def new_subject():
                         'type':'integer',
                         "description": 'current page size'
                     },
-                    'current_page':{
-                        'type':'integer',
-                        "description":"current page number starts from 0"
-                    },
-                    'has_next':{
-                        'type':'boolean',
-                        'description':'if new page is available or not'
-                    },
-                    'nxt_skip': {
-                        'type': 'integer',
-                        "description": "next skipped rows"
-                    },
                 },
                 'example': {
                     'rows': [
@@ -286,15 +308,12 @@ def new_subject():
                         'name': 'english',
                         'description': 'subject which teach people english',
                         'code':'ENG',
-                        'credits':4,
                         'created_at': '2021-01-01T00:00:00Z',
                         'updated_at': '2021-01-01T00:00:00Z'
                     }
                     ],
                     'total_rows':1,
                     'current_page':0,
-                    "has_next": False,
-                    "nxt_skip": None,
                     "take":25,
                     "skip":0
                 }
@@ -317,21 +336,16 @@ def new_subject():
 def admin_subject():
     skip = int(request.args.get('skip', 0))
     take = int(request.args.get('take', 25))
-    order = request.args.get('order', 'created_at')
     where = request.args.get('where', '{}')
     try:
         where = json.loads(where) if where else {}
-        if not isinstance(where, dict):
-            raise ValueError("The 'where' parameter must be a valid JSON object.")
-
-        subjects = Subject.query.filter_by(**where).order_by(order).limit(take).offset(skip).all()
+        subjects = Subject.query.filter_by(**where).order_by(desc(Subject.created_at)).limit(take).offset(skip).all()
         total_subjects = Subject.query.all()
-        current_page = skip//take
         total_rows = len(total_subjects)
-        has_next = (skip + take) < total_rows
-        nxt_skip = (current_page + 1) * take if has_next else None
-        return render_template("admin_subject.html", rows=subjects,skip=skip,nxt_skip=nxt_skip,take=take,has_next=has_next,current_page=current_page, total_rows=total_rows)
+        # current_page = skip//take
+        # has_next = (skip + take) < total_rows
+        # nxt_skip = (current_page + 1) * take if has_next else None
+        return render_template("admin/admin_subject.html", rows=subjects, skip=skip, take=take, total_rows=total_rows)
     except Exception as e:
-        print(e, "error kya h")
         flash("An error occurred while fetching subjects.", 'danger')
-        return render_template("admin_subject.html", rows=[],skip=skip,nxt_skip=nxt_skip,take=take,has_next=False,current_page=0, total_rows=0)
+        return render_template("admin/admin_subject.html", rows=[], skip=skip, take=take, total_rows=0)
