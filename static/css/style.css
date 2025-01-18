@@ -13,12 +13,20 @@
   padding: 6px;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 #emailHelp {
   color: white !important;
 }
 
-a {
+.anchor {
   color: white !important;
+  text-decoration: underline !important;
+}
+
+.link {
   text-decoration: underline !important;
 }
 
