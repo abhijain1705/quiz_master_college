@@ -17,7 +17,7 @@ from controllers.admin.admin import admin as admin_blueprint
 from controllers.admin.admin_quiz import quiz as quiz_blueprint
 from controllers.admin.admin_subject import subject as subject_blueprint
 
-from dummy_data import create_dummy_subjects  # Import your function
+from dummy_data import create_dummy_subjects, create_dummy_chapters
 
 
 app = Flask(__name__, instance_relative_config=True)
@@ -57,6 +57,12 @@ app.register_blueprint(subject_blueprint)
 
 app.register_blueprint(quiz_blueprint)
 
+@app.cli.command("create-dummy-chapters")
+def create_dummy_chapters_command():
+    count = int(input("How many dummy chapters do you want to create? "))
+    with app.app_context():
+        create_dummy_chapters(count)
+        
 @app.cli.command("create-dummy-subjects")
 def create_dummy_subjects_command():
     count = int(input("How many dummy subjects do you want to create? "))
