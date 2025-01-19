@@ -14,7 +14,6 @@ from controllers.auth import auth as auth_blueprint
 from werkzeug.security import generate_password_hash
 from controllers.users.user import user as user_blueprint
 from controllers.admin.admin import admin as admin_blueprint
-from controllers.admin.admin_quiz import quiz as quiz_blueprint
 from controllers.admin.admin_subject import subject as subject_blueprint
 
 from dummy_data import create_dummy_subjects, create_dummy_chapters
@@ -54,8 +53,6 @@ app.register_blueprint(home_blueprint)
 app.register_blueprint(admin_blueprint)
 
 app.register_blueprint(subject_blueprint)
-
-app.register_blueprint(quiz_blueprint)
 
 @app.cli.command("create-dummy-chapters")
 def create_dummy_chapters_command():
