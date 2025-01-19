@@ -42,6 +42,7 @@ class Score(db.Model):
 class Quiz(db.Model):
     __tablename__='quiz'
     id=db.Column(db.VARCHAR(100), primary_key=True)
+    quiz_title=db.Column(db.VARCHAR(100), nullable=False)
     chapter_id=db.Column(db.VARCHAR(100), db.ForeignKey('chapters.id'), nullable=False)
     chapter_code=db.Column(db.VARCHAR(100), db.ForeignKey('chapters.code'), nullable=False)
     date_of_quiz=db.Column(db.DATE, nullable=False)
@@ -59,6 +60,8 @@ class Questions(db.Model):
     id=db.Column(db.VARCHAR(100), primary_key=True)
     quiz_id=db.Column(db.VARCHAR(100), db.ForeignKey('quiz.id'), nullable=False)
     question_statement=db.Column(db.VARCHAR(100), nullable=False)
+    chapter_id=db.Column(db.VARCHAR(100), db.ForeignKey('chapters.id'), nullable=False)
+    chapter_code=db.Column(db.VARCHAR(100), db.ForeignKey('chapters.code'), nullable=False)
     option_1=db.Column(db.VARCHAR(100), nullable=False)
     option_2=db.Column(db.VARCHAR(100), nullable=False)
     option_3=db.Column(db.VARCHAR(100), nullable=False)
