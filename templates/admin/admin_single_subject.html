@@ -181,13 +181,13 @@ content %}{% include "admin/admin_wrapper.html" %}
               >
                 Update
               </button>
-              <button type="button" class="btn btn-danger mr-3">
-                <a
-                  href="/admin/subject/chapter/delete?sub_id={{ sub.id }}&chapter_id={{ chpt.id }}"
-                  class="text-white"
-                  >Delete</a
-                >
-              </button>
+              <form
+                method="post"
+                action="/admin/subject/chapter/delete?sub_id={{ sub.id }}&chapter_id={{ chpt.id }}"
+                onsubmit="return confirm('Are you sure you wish to delete the chapter with {{sub.code}}?, !! This will delete all quizzes and questions associated with it !!');"
+              >
+                <input type="submit" class="btn btn-danger" value="Delete" />
+              </form>
             </td>
           </tr>
           {% endfor %}
