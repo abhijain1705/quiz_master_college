@@ -178,5 +178,79 @@ content %}{% include "admin/admin_wrapper.html" %}
     </div>
   </div>
   {% endif %}{% endwith %}
+  <section class="mt-3">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th scope="col">S.No.</th>
+            <th scope="col">Chapter Code</th>
+            <th scope="col">Date of Quiz</th>
+            <th scope="col">Time Duration</th>
+            <th scope="col">Number of Questions</th>
+            <th scope="col">Remarks</th>
+            <th scope="col">Total Marks</th>
+            <th scope="col">Created At</th>
+            <th scope="col">Updated At</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for quiz in rows %}
+          <tr class="pointer">
+            <th scope="row">{{ loop.index+skip }}</th>
+            <td class="link">
+              <a>{{ quiz.chapter_code }}</a>
+            </td>
+            <td>{{ quiz.date_of_quiz }}</td>
+            <td>{{ quiz.time_duration }}</td>
+            <td>{{ quiz.number_of_questions }}</td>
+            <td>{{ quiz.remarks }}</td>
+            <td>{{ quiz.total_marks }}</td>
+            <td>{{ quiz.created_at }}</td>
+            <td>{{ quiz.updated_at }}</td>
+            <td>
+              <button type="button" class="btn btn-secondary mr-3 mb-3">
+                Update
+              </button>
+              <button type="button" class="btn btn-danger mr-3">
+                <a class="text-white">Delete</a>
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="/admin/subject/chapter/view?chap_id={{ chap.id }}&sub_id={{ sub.id }}&skip={{ (skip - take) if skip > 0 else 0 }}&take={{ take }}"
+              aria-label="Previous"
+            >
+              <span aria-hidden="true">&laquo;</span>
+              <span
+                >{% if skip > 0 %}Previous{% else %}Start Page{% endif %}</span
+              >
+            </a>
+          </li>
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="/admin/subject/chapter/view?chap_id={{ chap.id }}&sub_id={{ sub.id }}&skip={{ ( ((skip//take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              aria-label="Next"
+            >
+              <span
+                >{% if ((skip|int + take) < total_rows) %}Next{% else %}Go back
+                to Start Page{% endif %}</span
+              >
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </section>
 </section>
 {% endblock %}
