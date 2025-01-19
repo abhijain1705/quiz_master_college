@@ -16,12 +16,12 @@ subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
 @subject.route("/chapter/new", methods=['POST', 'GET'])
 @login_required
 @role_required("admin")
-@swag_from({ 
-    "tags": ['Subject'],
+@swag_from({
+    "tags": ['Admin'],
     "summary": "Create new chapter",
     "description": "This endpoint will create new chapter",
     "parameters": [
-     {
+        {
             'name': 'sub_id',
             'in': 'query',
             'required': True,
@@ -44,7 +44,7 @@ subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
             'type': 'string',
             'description': 'Description of chapter',
             'example': 'Basic English course'
-        },        
+        },
         {
             'name': 'code',
             'in': 'formData',
@@ -58,7 +58,7 @@ subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
             'in': 'formData',
             'required': True,
             'type': 'integer',
-            'description': 'chapter number of chapter',
+            'description': 'Chapter number of the chapter',
             'example': '3'
         },
         {
@@ -66,12 +66,12 @@ subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
             'in': 'formData',
             'required': True,
             'type': 'integer',
-            'description': 'count of pages',
+            'description': 'Count of pages',
             'example': '75'
         }
     ],
-    'responses':{
-        200:{
+    "responses": {
+        200: {
             'description': 'Chapter successfully created',
             'examples': {
                 'application/json': {'message': 'Chapter created successfully'}
@@ -83,11 +83,11 @@ subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
                 'application/json': {'error': 'name is required'}
             }
         }
-    }    
+    }
 })
 def new_chapter():
     sub_id = request.args.get("sub_id", "")
-    print(f"/admin/subject/view?sub_id={sub_id}","mfleqrmgklqtrhm")
+    print(url_for("subject.view_subject", sub_id=sub_id),"mfleqrmgklqtrhm")
     if request.method=='POST':
         name = request.form.get('name')
         description = request.form.get('description')
@@ -114,7 +114,7 @@ def new_chapter():
         chap = Chapter.query.filter_by(code=code).first()
         if chap:
             flash("Code exists, please use a different chapter code","danger")
-            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+            return redirect(url_for("subject.view_subject", sub_id=sub_id))
 
         random_uuid = str(uuid.uuid4())
         new_chap = Chapter(id=random_uuid,subject_id=sub_id, name=name,pages=int(pages), chapter_number=int(chapter_number), description=description,code=code,created_at=datetime.now(), updated_at=datetime.now())
@@ -122,11 +122,11 @@ def new_chapter():
             db.session.add(new_chap)
             db.session.commit()
             flash("chapter created successfully", "success")
-            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+            return redirect(url_for("subject.view_subject", sub_id=sub_id))
         except Exception as e:
             db.session.rollback()
             flash("An error occurred during creation of chapter. Please try again.", "danger")
-            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+            return redirect(url_for("subject.view_subject", sub_id=sub_id))
     else:        
         return render_template('admin/admin_chapter_manage.html', sub_id=sub_id)
 
@@ -135,16 +135,16 @@ def new_chapter():
 @login_required
 @role_required("admin")
 @swag_from({
-    "tags": ['Subject'],
+    "tags": ['Admin'],
     "summary": "Update existing chapter",
-    "description": "This endpoint will update existing chapter",
+    "description": "This endpoint updates an existing chapter",
     "parameters": [
         {
             'name': 'sub_id',
             'in': 'query',
             'required': True,
             'type': 'string',
-            'description': 'Document id of subject',
+            'description': 'Document ID of the subject',
             'example': 'ENG001'
         },
         {
@@ -152,31 +152,31 @@ def new_chapter():
             'in': 'query',
             'required': True,
             'type': 'string',
-            'description': 'Document id of chapter',
-            'example': 'ENG001'
+            'description': 'Document ID of the chapter',
+            'example': 'CHAP001'
         },
         {
             'name': 'name',
             'in': 'formData',
             'required': True,
             'type': 'string',
-            'description': 'Name of chapter',
-            'example': 'English'
+            'description': 'Name of the chapter',
+            'example': 'Introduction to English'
         },
         {
             'name': 'description',
             'in': 'formData',
             'required': True,
             'type': 'string',
-            'description': 'Description of chapter',
-            'example': 'Basic English course'
-        },        
+            'description': 'Description of the chapter',
+            'example': 'A basic introduction to English grammar and vocabulary'
+        },
         {
             'name': 'code',
             'in': 'formData',
             'required': True,
             'type': 'string',
-            'description': 'Code of chapter',
+            'description': 'Unique code of the chapter',
             'example': 'ENG101'
         },
         {
@@ -184,20 +184,20 @@ def new_chapter():
             'in': 'formData',
             'required': True,
             'type': 'integer',
-            'description': 'chapter number of chapter',
-            'example': '3'
+            'description': 'Chapter number',
+            'example': 3
         },
         {
             'name': 'pages',
             'in': 'formData',
             'required': True,
             'type': 'integer',
-            'description': 'count of pages',
-            'example': '75'
+            'description': 'Number of pages in the chapter',
+            'example': 75
         }
     ],
-    'responses':{
-        200:{
+    "responses": {
+        200: {
             'description': 'Chapter successfully updated',
             'examples': {
                 'application/json': {'message': 'Chapter updated successfully'}
@@ -220,7 +220,7 @@ def update_chapter():
     chap = Chapter.query.filter_by(id=chap_id).first()
     if not chap:
         flash("Chapter not found" ,"danger")
-        return redirect(f"/admin/subject/view?sub_id={sub_id}")     
+        return redirect(url_for("subject.view_subject", sub_id=sub_id))     
     if request.method == 'POST':
         name = request.form.get('name')
         description = request.form.get('description')
@@ -257,11 +257,11 @@ def update_chapter():
         try:
             db.session.commit()
             flash("Chapter updated successfully", "success")
-            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+            return redirect(url_for("subject.view_subject", sub_id=sub_id))
         except Exception as e:
             db.session.rollback()
             flash("An error occurred during updating the chapter. Please try again.", "danger")
-            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+            return redirect(url_for("subject.view_subject", sub_id=sub_id))
     else:
         return render_template('admin/admin_chapter_manage.html',chap=chap,sub_id=sub_id)
 
@@ -269,28 +269,28 @@ def update_chapter():
 @login_required
 @role_required("admin")
 @swag_from({
-    "tags": ['Subject'],
+    "tags": ['Admin'],
     "summary": "Delete existing chapter",
-    "description": "This endpoint will delete existing chapter",
+    "description": "This endpoint will delete an existing chapter",
     "parameters": [
         {
-            'name':'sub_id',
-            'in':'query',
-            'required':True,
-            "type":'string',
-            'description':'document id of any subject row',
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Document ID of any subject row',
             'example': "4fdf23145325-43543543-233"
         },
         {
-            'name':'chapter_id',
-            'in':'query',
-            'required':True,
-            "type":'string',
-            'description':'document id of any chapter row',
+            'name': 'chapter_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Document ID of any chapter row',
             'example': "4fdf23145325-43543543-233"
         },
     ]
-    })
+})
 def delete_chapter():
     sub_id = request.args.get("sub_id", "")
     chapter_id = request.args.get("chapter_id", "")
@@ -298,42 +298,120 @@ def delete_chapter():
         chap = Chapter.query.filter_by(id=chapter_id).first()
         if not chap:
             flash("Code doesn't exist, please use a different chapter code", "danger")
-            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+            return redirect(url_for("subject.view_subject", sub_id=sub_id))
         try:
             db.session.delete(chap)
             db.session.commit()
             flash("Subject deleted successfully" ,"success")
-            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+            return redirect(url_for("subject.view_subject", sub_id=sub_id))
         except Exception as e:
             db.session.rollback()
             flash("An error occured while deleting subject" ,"danger")
-            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+            return redirect(url_for("subject.view_subject", sub_id=sub_id))
 
     else:
         raise ValueError("chapter id is required")
+
+@subject.route("/chapter/view")
+@login_required
+@role_required("admin")
+@swag_from({
+    "tags": ['Admin'],
+    "summary": "View existing chapter",
+    "description":"This endpoint will view an existing chapter",
+    "parameters": [
+        {
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Subject ID of the subject',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'chap_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Chapter ID of the chapter',
+            'example': 'CHP001'
+        },                
+    ],
+    'responses': {
+        200: {
+            'description': 'Subject and chapter successfully retrieved',
+            'examples': {
+                'application/json': {
+                    'message': 'Success',
+                    'data': {}
+                }
+            }
+        },
+        400: {
+            'description': 'Invalid input',
+            'examples': {
+                'application/json': {'error': 'Chapter not found'}
+            }
+        }
+    }    
+})
+def view_chapter():
+    try:
+        sub_id = request.args.get("sub_id", "")
+        chap_id = request.args.get("chap_id")
+        if not sub_id:
+            raise ValueError("Subject is required")
+            return redirect(url_for("subject.admin_subject"))
+        if not chap_id:
+            raise ValueError("Chapter is required")
+            return redirect(url_for("subject.view_subject", sub_id=sub_id))
+        sub = Subject.query.filter_by(id=sub_id).first()
+        chap = Chapter.query.filter_by(id=chap_id).first()        
+        return render_template("admin/admin_single_chapter.html", sub=sub,chap=chap)
+    except Exception as e:    
+        return redirect(url_for("subject.view_subject", sub_id=sub_id))
 
 @subject.route("/view")
 @login_required
 @role_required("admin")
 @swag_from({
-    "tags": ['Subject'],
+    "tags": ['Admin'],
     "summary": "View existing subject",
-    "description": "This endpoint will view existing subject",
-        "parameters": [
-            {
-                'name': 'sub_id',
-                'in': 'query',
-                'required': True,
-                'type': 'string',
-                'description': 'Subject id of subject',
-                'example': 'ENG001'
-            },
-        ],
-        'responses':{
-        200:{
-            'description': '',
+    "description": "This endpoint will view an existing subject",
+    "parameters": [
+        {
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Subject ID of the subject',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'skip',
+            'in': 'query',
+            'required': False,
+            'type': 'integer',
+            'description': 'Number of records to skip',
+            'example': 0
+        },
+        {
+            'name': 'take',
+            'in': 'query',
+            'required': False,
+            'type': 'integer',
+            'description': 'Number of records to fetch',
+            'example': 25
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Subject and chapters successfully retrieved',
             'examples': {
-                'application/json': {'message': ''}
+                'application/json': {
+                    'message': 'Success',
+                    'data': {}
+                }
             }
         },
         400: {
@@ -343,7 +421,7 @@ def delete_chapter():
             }
         }
     }
-    })
+})
 def view_subject():
     try:
         sub_id = request.args.get("sub_id", "")
@@ -368,16 +446,16 @@ def view_subject():
 @login_required
 @role_required("admin")
 @swag_from({
-    "tags": ['Subject'],
+    "tags": ['Admin'],
     "summary": "Update existing subject",
-    "description": "This endpoint will update existing subject",
+    "description": "This endpoint will update an existing subject",
     "parameters": [
         {
             'name': 'sub_id',
             'in': 'query',
             'required': True,
             'type': 'string',
-            'description': 'Subject id of subject',
+            'description': 'Subject ID',
             'example': 'ENG001'
         },
         {
@@ -385,7 +463,7 @@ def view_subject():
             'in': 'formData',
             'required': True,
             'type': 'string',
-            'description': 'Name of subject',
+            'description': 'Name of the subject',
             'example': 'English'
         },
         {
@@ -393,20 +471,20 @@ def view_subject():
             'in': 'formData',
             'required': True,
             'type': 'string',
-            'description': 'Description of subject',
+            'description': 'Description of the subject',
             'example': 'Basic English course'
-        },        
+        },
         {
             'name': 'code',
-            'in': 'query',
+            'in': 'formData',
             'required': True,
             'type': 'string',
-            'description': 'Code of subject',
+            'description': 'Code of the subject',
             'example': 'ENG101'
         }
     ],
-    'responses':{
-        200:{
+    'responses': {
+        200: {
             'description': 'Subject successfully updated',
             'examples': {
                 'application/json': {'message': 'Subject updated successfully'}
@@ -468,20 +546,34 @@ def update_subject():
 @login_required
 @role_required("admin")
 @swag_from({
-    "tags": ['Subject'],
+    "tags": ['Admin'],
     "summary": "Delete existing subject",
-    "description": "This endpoint will delete existing subject",
+    "description": "This endpoint will delete an existing subject",
     "parameters": [
         {
-            'name':'sub_id',
-            'in':'query',
-            'required':True,
-            "type":'string',
-            'description':'document id of any subject row',
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Subject ID',
             'example': "4fdf23145325-43543543-233"
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Subject successfully deleted',
+            'examples': {
+                'application/json': {'message': 'Subject deleted successfully'}
+            }
         },
-    ]
-    })
+        400: {
+            'description': 'Invalid subject ID',
+            'examples': {
+                'application/json': {'error': 'Subject ID is required'}
+            }
+        }
+    }
+})
 def delete():
     sub_id = request.args.get("sub_id", "")
     if sub_id:
@@ -501,53 +593,76 @@ def delete():
     else:
         raise ValueError("subject id is required")
 
+
 @subject.route("/new", methods=['POST', 'GET'])
 @login_required
 @role_required("admin")
-@swag_from({ 
-    "tags": ['Subject'],
-    "summary": "Create new subject",
-    "description": "This endpoint will create new subject",
-    "parameters": [
-        {
-            'name': 'name',
-            'in': 'formData',
-            'required': True,
-            'type': 'string',
-            'description': 'Name of subject',
-            'example': 'English'
-        },
-        {
-            'name': 'description',
-            'in': 'formData',
-            'required': True,
-            'type': 'string',
-            'description': 'Description of subject',
-            'example': 'Basic English course'
-        },        
-        {
-            'name': 'code',
-            'in': 'formData',
-            'required': True,
-            'type': 'string',
-            'description': 'Code of subject',
-            'example': 'ENG101'
+@swag_from({
+    "tags": ['Admin'],
+    "summary": "Create a new subject",
+    "description": "This endpoint creates a new subject by accepting the required fields in the form data.",
+    "requestBody": {
+        "required": True,
+        "content": {
+            "application/x-www-form-urlencoded": {
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the subject.",
+                            "example": "English"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of the subject.",
+                            "example": "Basic English course"
+                        },
+                        "code": {
+                            "type": "string",
+                            "description": "Unique code for the subject.",
+                            "example": "ENG101"
+                        }
+                    },
+                    "required": ["name", "description", "code"]
+                }
+            }
         }
-    ],
-    'responses':{
-        200:{
-            'description': 'Subject successfully created',
-            'examples': {
-                'application/json': {'message': 'Subject created successfully'}
+    },
+    "responses": {
+        200: {
+            "description": "Subject created successfully.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "Subject created successfully"}
+                }
             }
         },
         400: {
-            'description': 'Invalid input',
-            'examples': {
-                'application/json': {'error': 'name is required'}
+            "description": "Invalid input provided.",
+            "content": {
+                "application/json": {
+                    "example": {"error": "name is required"}
+                }
+            }
+        },
+        409: {
+            "description": "Conflict: Subject code already exists.",
+            "content": {
+                "application/json": {
+                    "example": {"error": "Code exists, please use a different subject code"}
+                }
+            }
+        },
+        500: {
+            "description": "Internal server error.",
+            "content": {
+                "application/json": {
+                    "example": {"error": "An error occurred during the creation of the subject."}
+                }
             }
         }
-    }    
+    }
 })
 def new_subject():
     if request.method=='POST':
@@ -585,101 +700,104 @@ def new_subject():
     else:        
         return render_template('admin/admin_subject_manage.html')
 
-# /admin/subject?skip=0&take=25&where={}
 @subject.route("/",methods=['GET'])
 @login_required
 @role_required("admin")
 @swag_from({
-    "tags": ['Subject'],
-    "summary": "Retrieve all subjects with filtering, pagination and sorting",
-    "description": "This endpoint retrieves all subjects with filtering, pagination and sorting",
+    "tags": ['Admin'],
+    "summary": "Retrieve all subjects with filtering, pagination, and sorting",
+    "description": (
+        "This endpoint retrieves a list of subjects with optional filtering, pagination, "
+        "and sorting. Use the query parameters to customize the results."
+    ),
     "parameters": [
         {
-            'name':'skip',
-            'in':'query',
-            'required':False,
-            "type":'integer',
-            'description':'Number of records to skip (default is 0)',
-            'example': 0
+            "name": "skip",
+            "in": "query",
+            "required": False,
+            "schema": {"type": "integer", "default": 0},
+            "description": "Number of records to skip. Default is 0.",
+            "example": 0
         },
         {
-            'name': 'take',
-            'in': 'query',
-            'required': False,
-            'type': 'integer',
-            'description': 'Number of records to retrieve (default is 25)',
-            'example': 25
+            "name": "take",
+            "in": "query",
+            "required": False,
+            "schema": {"type": "integer", "default": 25},
+            "description": "Number of records to retrieve. Default is 25.",
+            "example": 25
         },
         {
-            'name': 'where',
-            'in': 'query',
-            'required': False,
-            'type': 'string',
-            'description': 'Filter conditions for the query as a JSON string (default is empty)',
-            'example': '{"code": "EOO1"}'
+            "name": "where",
+            "in": "query",
+            "required": False,
+            "schema": {"type": "string"},
+            "description": (
+                "Filter conditions for the query as a JSON string. "
+                "The keys should match the fields of the Subject model."
+            ),
+            "example": '{"code": "ENG"}'
         }
     ],
-    'responses': {
+    "responses": {
         200: {
-            'description': 'A list of subjects retrieved successfully',
-            'schema': {
-                'type': "object",
-                "properties":{
-                    'rows':{
-                        'type':"array",
-                        "items":{
-                            'type':"object",
-                            "properties":{
-                                'id': {'type': 'string'},
-                                'name': {'type':'string'},
-                                'description': {'type':'string'},
-                                'code': {'type':'string'},
-                                'created_at': {'type': 'string'},
-                                'updated_at': {'type': 'string'}
-                            }
+            "description": "A list of subjects retrieved successfully.",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "rows": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {"type": "string"},
+                                        "name": {"type": "string"},
+                                        "description": {"type": "string"},
+                                        "code": {"type": "string"},
+                                        "created_at": {"type": "string", "format": "date-time"},
+                                        "updated_at": {"type": "string", "format": "date-time"}
+                                    }
+                                }
+                            },
+                            "total_rows": {"type": "integer", "description": "Total number of rows."},
+                            "skip": {"type": "integer", "description": "Number of skipped rows."},
+                            "take": {"type": "integer", "description": "Number of records retrieved."}
+                        },
+                        "example": {
+                            "rows": [
+                                {
+                                    "id": "eEWR",
+                                    "name": "English",
+                                    "description": "Subject which teaches people English.",
+                                    "code": "ENG",
+                                    "created_at": "2021-01-01T00:00:00Z",
+                                    "updated_at": "2021-01-01T00:00:00Z"
+                                }
+                            ],
+                            "total_rows": 1,
+                            "skip": 0,
+                            "take": 25
                         }
-                    },
-                    'total_rows': {
-                        'type': 'integer',
-                        'description': 'Total number of rows'
-                    },
-                    'skip': {
-                        'type': 'integer',
-                        "description": "current skipped rows"
-                    },
-                    'take':{
-                        'type':'integer',
-                        "description": 'current page size'
-                    },
-                },
-                'example': {
-                    'rows': [
-                    {
-                        'id': 'eEWR',
-                        'name': 'english',
-                        'description': 'subject which teach people english',
-                        'code':'ENG',
-                        'created_at': '2021-01-01T00:00:00Z',
-                        'updated_at': '2021-01-01T00:00:00Z'
                     }
-                    ],
-                    'total_rows':1,
-                    'current_page':0,
-                    "take":25,
-                    "skip":0
                 }
             }
         },
         401: {
-            'description': 'Unauthorized access',
-            'examples': {
-                'application/json': {'message': 'Login required'}
+            "description": "Unauthorized access.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "Login required"}
+                }
             }
         },
         500: {
-            'description': 'Internal Server Error',
-            'examples': {
-                'application/json': {'message': 'An error occurred'}
+            "description": "Internal server error.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "An error occurred."}
+                }
             }
         }
     }
