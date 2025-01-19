@@ -8,43 +8,43 @@ from flask import Blueprint, render_template, session, flash, request
 
 admin= Blueprint("admin", __name__, url_prefix="/admin")
 
-# /admin/subject?skip=0&take=25&where={}
+
 @admin.route("/", methods=['GET'])
 @login_required
 @role_required("admin")
 @swag_from({
     'tags': ['Admin'],
-    'summary': 'Retrieve all users with filtering, pagination and sorting',
-    'description': 'This endpoint retrieves all users with filtering, pagination and sorting',
+    'summary': 'Fetch users with filters, pagination, and sorting',
+    'description': 'This endpoint fetches a list of users, with options for filtering, pagination, and sorting.',
     'parameters': [
         {
             'name': 'skip',
             'in': 'query',
-            'required': False,
             'type': 'integer',
-            'description': 'Number of records to skip (default is 0)',
+            'required': False,
+            'description': 'The number of records to skip (default: 0)',
             'example': 0
         },
         {
             'name': 'take',
             'in': 'query',
-            'required': False,
             'type': 'integer',
-            'description': 'Number of records to retrieve (default is 25)',
+            'required': False,
+            'description': 'The number of records to retrieve (default: 25)',
             'example': 25
         },
         {
             'name': 'where',
             'in': 'query',
-            'required': False,
             'type': 'string',
-            'description': 'Filter conditions for the query as a JSON string (default is empty)',
+            'required': False,
+            'description': 'Filter conditions as a JSON string (default: empty)',
             'example': '{"user_type": "admin"}'
         }
     ],
     'responses': {
         200: {
-            'description': 'A list of users retrieved successfully',
+            'description': 'User list retrieved successfully',
             'schema': {
                 'type': 'object',
                 'properties': {
@@ -68,16 +68,16 @@ admin= Blueprint("admin", __name__, url_prefix="/admin")
                     },
                     'total_rows': {
                         'type': 'integer',
-                        'description': 'Total number of rows'
+                        'description': 'Total number of users'
                     },
                     'skip': {
                         'type': 'integer',
-                        "description": "current skipped rows"
+                        'description': 'Number of skipped records'
                     },
-                    'take':{
-                        'type':'integer',
-                        "description": 'current page size'
-                    },
+                    'take': {
+                        'type': 'integer',
+                        'description': 'Number of records per page'
+                    }
                 },
                 'example': {
                     'rows': [
@@ -95,19 +95,19 @@ admin= Blueprint("admin", __name__, url_prefix="/admin")
                         }
                     ],
                     'total_rows': 1,
-                    "take":25,
-                    "skip":0
+                    'skip': 0,
+                    'take': 25
                 }
             }
         },
         401: {
-            'description': 'Unauthorized access',
+            'description': 'Unauthorized',
             'examples': {
                 'application/json': {'message': 'Login required'}
             }
         },
         500: {
-            'description': 'Internal Server Error',
+            'description': 'Server error',
             'examples': {
                 'application/json': {'message': 'An error occurred'}
             }
