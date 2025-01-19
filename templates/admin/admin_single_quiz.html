@@ -1,4 +1,145 @@
 {% extends "base.html" %} {% block title %}View Quiz{% endblock %} {% block
 content %}{% include "admin/admin_wrapper.html" %}
-<section class="p-3"></section>
+<section class="p-3">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item">
+        <a href="/admin/subject/?skip=0&take=25">Subjects List</a>
+      </li>
+      <li class="breadcrumb-item" aria-current="page">
+        <a href="/admin/subject/view?sub_id={{ sub.id }}&take=25&skip=0"
+          >{% if sub %}{{ sub.code }}{% else %} {% endif %}
+        </a>
+      </li>
+      <li class="breadcrumb-item">
+        <a
+          href="/admin/subject/chapter/view?sub_id={{ sub.id }}&skip=0&take=25&chap_id={{ chap.id }}"
+        >
+          {% if chap %}{{ chap.code }}{% else %} {% endif %}
+        </a>
+      </li>
+      <li class="breadcrumb-item">
+        {% if quiz %}{{ quiz.quiz_title }}{% else %} {% endif %}
+      </li>
+    </ol>
+  </nav>
+  <h6>Subject Details</h6>
+  <div class="border p-3">
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Subject Name:</strong> {% if sub %}{{ sub.name }}{% else %}N/a{%
+        endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Subject Description:</strong> {% if sub %}{{ sub.description
+        }}{% else %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Subject Code:</strong> {% if sub %}{{ sub.code }}{% else %}N/a{%
+        endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Last Updated At:</strong> {% if sub %}{{ sub.updated_at }}{%
+        else %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Created At:</strong> {% if sub %}{{ sub.created_at }}{% else
+        %}N/a{% endif %}
+      </p>
+    </div>
+  </div>
+  <h6 class="mt-2">Chapter Details</h6>
+  <div class="border mt-3 p-3">
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Chapter Name:</strong> {% if chap %}{{ chap.name }}{% else
+        %}N/a{% endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Chapter Description:</strong> {% if chap %}{{ chap.description
+        }}{% else %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Chapter Code:</strong> {% if chap %}{{ chap.code }}{% else
+        %}N/a{% endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Number of Pages:</strong> {% if chap %}{{ chap.pages }}{% else
+        %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Chapter Number:</strong> {% if chap %}{{ chap.chapter_number
+        }}{% else %}N/a{% endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Last Updated At:</strong> {% if chap %}{{ chap.updated_at }}{%
+        else %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Created At:</strong> {% if chap %}{{ chap.created_at }}{% else
+        %}N/a{% endif %}
+      </p>
+    </div>
+  </div>
+  <h6 class="mt-2">Quiz Details</h6>
+  <div class="border p-3">
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Quiz Title:</strong> {% if quiz %}{{ quiz.quiz_title }}{% else
+        %}N/a{% endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Chapter Code:</strong> {% if quiz %}{{ quiz.chapter_code }}{%
+        else %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Date of Quiz:</strong> {% if quiz %}{{ quiz.date_of_quiz }}{%
+        else %}N/a{% endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Quiz Duration:</strong> {% if quiz %}{{
+        (quiz.time_duration|int)/3600000 }} Hour{% else %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Remarks:</strong> {% if quiz %}{{ quiz.remarks }}{% else %}N/a{%
+        endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Number of Questions:</strong> {% if quiz %}{{
+        quiz.number_of_questions }}{% else %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Total Marks:</strong> {% if quiz %}{{ quiz.total_marks }}{% else
+        %}N/a{% endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Last Updated At:</strong> {% if quiz %}{{ quiz.updated_at }}{%
+        else %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Created At:</strong> {% if quiz %}{{ quiz.created_at }}{% else
+        %}N/a{% endif %}
+      </p>
+    </div>
+  </div>
+</section>
 {% endblock %}
