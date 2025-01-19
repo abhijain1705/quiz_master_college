@@ -43,6 +43,7 @@ class Quiz(db.Model):
     __tablename__='quiz'
     id=db.Column(db.VARCHAR(100), primary_key=True)
     chapter_id=db.Column(db.VARCHAR(100), db.ForeignKey('chapters.id'), nullable=False)
+    chapter_code=db.Column(db.VARCHAR(100), db.ForeignKey('chapters.code'), nullable=False)
     date_of_quiz=db.Column(db.DATE, nullable=False)
     time_duration=db.Column(db.Integer, nullable=False) # timestamps stored in milliseconds
     remarks=db.Column(db.VARCHAR(100), nullable=False)
