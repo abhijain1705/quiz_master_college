@@ -112,7 +112,10 @@ content %}{% include "admin/admin_wrapper.html" %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
             <td class="link">
-              <a>{{ chpt.code }}</a>
+              <a
+                href="/admin/subject/chapter/view?sub_id={{ sub.id }}&chap_id={{ chpt.id }}"
+                >{{ chpt.code }}</a
+              >
             </td>
             <td>{{ chpt.name }}</td>
             <td>{{ chpt.description }}</td>
