@@ -13,6 +13,88 @@ from flask import Blueprint, session, request, flash, render_template, redirect,
 subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
 
 
+@subject.route("/chapter/quiz/view")
+@login_required
+@role_required("admin")
+@swag_from({
+    "tags": ['Admin'],
+    "summary": "View existing quiz",
+    "description":"This endpoint will view an existing quiz",
+    "parameters": [
+        {
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Subject ID of the subject',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'quiz_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Quiz ID of the quiz',
+            'example': 'CHP001'
+        }, 
+        {
+            'name': 'chap_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Chapter ID of the chapter',
+            'example': 'CHP001'
+        },                 
+    ],
+    'responses': {
+        200: {
+            'description': 'Subject and chapter and quiz successfully retrieved',
+            'examples': {
+                'application/json': {
+                    'message': 'Success',
+                    'data': {}
+                }
+            }
+        },
+        401: {
+            "description": "Unauthorized access.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "Login required"}
+                }
+            }
+        },
+        500: {
+            "description": "Internal server error.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "An error occurred."}
+                }
+            }
+        }
+    }    
+})
+def view_quiz():
+    quiz_id = request.args.get("quiz_id", "")
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id","")    
+    try:
+        if not sub_id:
+            raise ValueError("Subject is required")
+            return redirect(url_for("subject.admin_subject"))
+        if not chap_id:
+            raise ValueError("Chapter is required")
+            return redirect(url_for("subject.view_subject", sub_id=sub_id))
+        if not quiz_id:
+            raise ValueError("Quiz is required")
+            return render_template(url_for("subject.view_chapter",sub_id=sub_id,chap_id=chap_id))
+        sub = Subject.query.filter_by(id=sub_id).first()
+        chap = Chapter.query.filter_by(id=chap_id).first()
+        quiz = Quiz.query.filter_by(id=quiz_id).first()
+        return render_template("admin/admin_single_quiz.html", sub=sub,chap=chap,quiz=quiz)
+    except Exception as e:    
+        return redirect(url_for("subject.view_subject", sub_id=sub_id))
+
 
 @subject.route("/chapter/view")
 @login_required
