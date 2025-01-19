@@ -500,7 +500,7 @@ def update_chapter():
     else:
         return render_template('admin/admin_chapter_manage.html',chap=chap,sub_id=sub_id)
 
-@subject.route("/chapter/delete")
+@subject.route("/chapter/delete", methods=['POST'])
 @login_required
 @role_required("admin")
 @swag_from({
@@ -721,7 +721,7 @@ def update_subject():
         return render_template('admin/admin_subject_manage.html',sub=sub)
           
 
-@subject.route("/delete", methods=['GET'])
+@subject.route("/delete", methods=['POST'])
 @login_required
 @role_required("admin")
 @swag_from({
