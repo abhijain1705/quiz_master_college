@@ -128,6 +128,7 @@ content %}{% include "admin/admin_wrapper.html" %}
     </div>
     <div class="form-inline my-2 my-lg-0">
       <div class="d-flex">
+        <button type="button" class="btn btn-primary mr-3">New Quiz</button>
         <button
           type="button"
           class="btn btn-primary mr-3"
@@ -184,6 +185,7 @@ content %}{% include "admin/admin_wrapper.html" %}
         <thead>
           <tr>
             <th scope="col">S.No.</th>
+            <th scope="col">Quiz Title</th>
             <th scope="col">Chapter Code</th>
             <th scope="col">Date of Quiz</th>
             <th scope="col">Time Duration</th>
@@ -199,6 +201,7 @@ content %}{% include "admin/admin_wrapper.html" %}
           {% for quiz in rows %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
+            <td>{{ quiz.quiz_title }}</td>
             <td class="link">
               <a
                 href="/admin/subject/chapter/quiz/view?quiz_id={{ quiz.id }}&sub_id={{ sub.id }}&chap_id={{ chap.id }}"
@@ -216,9 +219,12 @@ content %}{% include "admin/admin_wrapper.html" %}
               <button type="button" class="btn btn-secondary mr-3 mb-3">
                 Update
               </button>
-              <button type="button" class="btn btn-danger mr-3">
-                <a class="text-white">Delete</a>
-              </button>
+              <form
+                method="post"
+                onsubmit="return confirm('Are you sure you wish to delete the quiz with {{sub.code}}?, !! This will delete all questions associated with it !!');"
+              >
+                <input type="submit" class="btn btn-danger" value="Delete" />
+              </form>
             </td>
           </tr>
           {% endfor %}
