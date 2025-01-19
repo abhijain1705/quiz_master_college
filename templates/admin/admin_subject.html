@@ -103,13 +103,17 @@ block content %} {% include "admin/admin_wrapper.html" %}
               >
                 Update
               </button>
-              <button type="button" class="btn btn-danger">
-                <a
-                  class="text-white"
-                  href="/admin/subject/delete?sub_id={{ sub.id }}"
-                  >Delete</a
-                >
-              </button>
+              <form
+                method="post"
+                action="/admin/subject/delete?sub_id={{ sub.id }}"
+                onsubmit="return confirm('Are you sure you wish to delete the subject with {{sub.code}}?, !! This will delete all chapters, quizzes and questions associated with it !!');"
+              >
+                <input
+                  type="submit"
+                  class="btn mt-3 btn-danger"
+                  value="Delete"
+                />
+              </form>
             </td>
           </tr>
           {% endfor %}
