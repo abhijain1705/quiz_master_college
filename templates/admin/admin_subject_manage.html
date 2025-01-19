@@ -1,82 +1,95 @@
 {% extends "base.html" %} {% block title %} Manage Subject {% endblock %} {%
 block content %} {% include "admin/admin_wrapper.html" %}
-<section class="d-flex flex-column align-items-center justify-content-center">
-  <h3 class="mt-4">
-    {% if sub %}Update Subject{% else %}New Subject{% endif %}
-  </h3>
-  <!-- flash message -->
-  {% with messages = get_flashed_messages(with_categories=True) %}{% if messages
-  %}
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-12 col-sm-6">
-        {% for category, message in messages %}
-        <div
-          role="alert"
-          class="alert alert-{{ category }} alert-dismissible fade show"
-        >
-          {{ message }}
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close"
-          ></button>
+<section class="p-3">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item">
+        <a href="/admin/subject/?skip=0&take=25">Subjects List</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {% if chap %}Update Subject{% else %}New Subject{% endif %}
+      </li>
+    </ol>
+  </nav>
+  <section class="d-flex flex-column align-items-center justify-content-center">
+    <h3 class="mt-4">
+      {% if sub %}Update Subject{% else %}New Subject{% endif %}
+    </h3>
+    <!-- flash message -->
+    {% with messages = get_flashed_messages(with_categories=True) %}{% if
+    messages %}
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-sm-6">
+          {% for category, message in messages %}
+          <div
+            role="alert"
+            class="alert alert-{{ category }} alert-dismissible fade show"
+          >
+            {{ message }}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+          {% endfor %}
         </div>
-        {% endfor %}
       </div>
     </div>
-  </div>
-  {% endif %}{% endwith %}
-  <form
-    method="post"
-    class="container p-3"
-    action="{% if sub %}/admin/subject/update?sub_id={{ sub.id }}{% else %}/admin/subject/new{% endif %}"
-  >
-    <div class="modal-body">
-      <div class="form-group">
-        <label for="exampleInputName1">Subject Name</label>
-        <input
-          type="text"
-          class="form-control"
-          id="exampleInputName1"
-          name="name"
-          aria-describedby="nameHelp"
-          placeholder="Enter Subject Name"
-          value="{{ sub.name if sub else '' }}"
-        />
+    {% endif %}{% endwith %}
+    <form
+      method="post"
+      class="container p-3"
+      action="{% if sub %}/admin/subject/update?sub_id={{ sub.id }}{% else %}/admin/subject/new{% endif %}"
+    >
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="exampleInputName1">Subject Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="exampleInputName1"
+            name="name"
+            aria-describedby="nameHelp"
+            placeholder="Enter Subject Name"
+            value="{{ sub.name if sub else '' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputDescription1">Subject Description</label>
+          <input
+            type="text"
+            class="form-control"
+            name="description"
+            multiple
+            min="4"
+            value="{{ sub.description if sub else '' }}"
+            id="exampleInputDescription1"
+            placeholder="Enter Subject Description"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputCode1">Subject Code</label>
+          <input
+            type="text"
+            class="form-control"
+            id="exampleInputCode1"
+            name="code"
+            value="{{ sub.code if sub else '' }}"
+            placeholder="Enter Subject Code"
+          />
+        </div>
       </div>
-      <div class="form-group">
-        <label for="exampleInputDescription1">Subject Description</label>
-        <input
-          type="text"
-          class="form-control"
-          name="description"
-          multiple
-          min="4"
-          value="{{ sub.description if sub else '' }}"
-          id="exampleInputDescription1"
-          placeholder="Enter Subject Description"
-        />
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <a href="/admin/subject?skip=0&take=25" class="text-white">Close </a>
+        </button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
       </div>
-      <div class="form-group">
-        <label for="exampleInputCode1">Subject Code</label>
-        <input
-          type="text"
-          class="form-control"
-          id="exampleInputCode1"
-          name="code"
-          value="{{ sub.code if sub else '' }}"
-          placeholder="Enter Subject Code"
-        />
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">
-        <a href="/admin/subject?skip=0&take=25" class="text-white">Close </a>
-      </button>
-      <button type="submit" class="btn btn-primary">Save changes</button>
-    </div>
-  </form>
+    </form>
+  </section>
 </section>
 {% endblock %}
