@@ -6,12 +6,165 @@ from sqlalchemy import desc
 from flasgger import  swag_from
 from datetime import datetime
 from flask_login import login_required
-from models.model import Subject, Chapter
+from models.model import Subject, Chapter, Quiz
 from controllers.decorator import role_required
 from flask import Blueprint, session, request, flash, render_template, redirect, url_for
 
 subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
 
+
+
+@subject.route("/chapter/view")
+@login_required
+@role_required("admin")
+@swag_from({
+    "tags": ['Admin'],
+    "summary": "View existing chapter & Retrieve all quizzes with filtering, pagination, and sorting",
+    "description":(
+        "This endpoint will view an existing chapter & "
+        "This endpoint retrieves a list of quizzes with optional filtering, pagination, "
+        "and sorting. Use the query parameters to customize the results."
+    ),
+    "parameters": [
+        {
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Subject ID of the subject',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'chap_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Chapter ID of the chapter',
+            'example': 'CHP001'
+        }, 
+        {
+            "name": "skip",
+            "in": "query",
+            "required": False,
+            "schema": {"type": "integer", "default": 0},
+            "description": "Number of records to skip. Default is 0.",
+            "example": 0
+        },
+        {
+            "name": "take",
+            "in": "query",
+            "required": False,
+            "schema": {"type": "integer", "default": 25},
+            "description": "Number of records to retrieve. Default is 25.",
+            "example": 25
+        },
+        {
+            "name": "where",
+            "in": "query",
+            "required": False,
+            "schema": {"type": "string"},
+            "description": (
+                "Filter conditions for the query as a JSON string. "
+                "The keys should match the fields of the Quiz model."
+            ),
+            "example": '{"number_of_questions": "10"}'
+        }                       
+    ],
+    'responses': {
+        200: {
+            'description': 'Subject and chapter successfully retrieved & A list of quizzes retrieved successfully.',
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "rows": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {"type": "string"},
+                                        "chapter_id": {"type": "string"},
+                                        "chapter_code": {"type": "string"},
+                                        "date_of_quiz": {"type": "string", "format": "date"},
+                                        "time_duration": {"type": "integer"},
+                                        "remarks": {"type": "string"},
+                                        "created_at": {"type": "string", "format": "date-time"},
+                                        "updated_at": {"type": "string", "format": "date-time"},
+                                        "number_of_questions": {"type": "integer"},
+                                        "user_id": {"type": "string"},
+                                        "total_marks": {"type": "integer"}
+                                    }
+                                }
+                            },
+                            "total_rows": {"type": "integer", "description": "Total number of rows."},
+                            "skip": {"type": "integer", "description": "Number of skipped rows."},
+                            "take": {"type": "integer", "description": "Number of records retrieved."}
+                        },
+                        "example": {
+                            "rows": [
+                                {
+                                    "id": "eEWR",
+                                    "chapter_id": "CHAP001",
+                                    "chapter_code": "ENG101",
+                                    "date_of_quiz": "2021-01-01",
+                                    "time_duration": 3600,
+                                    "remarks": "Midterm exam",
+                                    "created_at": "2021-01-01T00:00:00Z",
+                                    "updated_at": "2021-01-01T00:00:00Z",
+                                    "number_of_questions": 50,
+                                    "user_id": "USR001",
+                                    "total_marks": 100
+                                }
+                            ],
+                            "total_rows": 1,
+                            "skip": 0,
+                            "take": 25
+                        }
+                    }
+                }
+            }
+        },
+        401: {
+            "description": "Unauthorized access.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "Login required"}
+                }
+            }
+        },
+        500: {
+            "description": "Internal server error.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "An error occurred."}
+                }
+            }
+        }
+    }    
+})
+def view_chapter():
+    skip = int(request.args.get('skip', 0))
+    take = int(request.args.get('take', 25))
+    where = request.args.get('where', '{}')
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id","")    
+    try:
+        if not sub_id:
+            raise ValueError("Subject is required")
+            return redirect(url_for("subject.admin_subject"))
+        if not chap_id:
+            raise ValueError("Chapter is required")
+            return redirect(url_for("subject.view_subject", sub_id=sub_id))
+        sub = Subject.query.filter_by(id=sub_id).first()
+        chap = Chapter.query.filter_by(id=chap_id).first()          
+        where = json.loads(where) if where else {}
+        quizzes = Quiz.query.filter_by(chapter_id=chap_id, **where).order_by(desc(Quiz.created_at)).limit(take).offset(skip).all()
+        total_quizzes = Quiz.query.filter_by(chapter_id=chap_id).all()
+        total_rows = len(total_quizzes)
+        return render_template("admin/admin_single_chapter.html", sub=sub,chap=chap,rows=quizzes, skip=skip, take=take, total_rows=total_rows)
+    except Exception as e:    
+        return redirect(url_for("subject.view_subject", sub_id=sub_id))
 
 @subject.route("/chapter/new", methods=['POST', 'GET'])
 @login_required
@@ -312,64 +465,6 @@ def delete_chapter():
     else:
         raise ValueError("chapter id is required")
 
-@subject.route("/chapter/view")
-@login_required
-@role_required("admin")
-@swag_from({
-    "tags": ['Admin'],
-    "summary": "View existing chapter",
-    "description":"This endpoint will view an existing chapter",
-    "parameters": [
-        {
-            'name': 'sub_id',
-            'in': 'query',
-            'required': True,
-            'type': 'string',
-            'description': 'Subject ID of the subject',
-            'example': 'ENG001'
-        },
-        {
-            'name': 'chap_id',
-            'in': 'query',
-            'required': True,
-            'type': 'string',
-            'description': 'Chapter ID of the chapter',
-            'example': 'CHP001'
-        },                
-    ],
-    'responses': {
-        200: {
-            'description': 'Subject and chapter successfully retrieved',
-            'examples': {
-                'application/json': {
-                    'message': 'Success',
-                    'data': {}
-                }
-            }
-        },
-        400: {
-            'description': 'Invalid input',
-            'examples': {
-                'application/json': {'error': 'Chapter not found'}
-            }
-        }
-    }    
-})
-def view_chapter():
-    try:
-        sub_id = request.args.get("sub_id", "")
-        chap_id = request.args.get("chap_id")
-        if not sub_id:
-            raise ValueError("Subject is required")
-            return redirect(url_for("subject.admin_subject"))
-        if not chap_id:
-            raise ValueError("Chapter is required")
-            return redirect(url_for("subject.view_subject", sub_id=sub_id))
-        sub = Subject.query.filter_by(id=sub_id).first()
-        chap = Chapter.query.filter_by(id=chap_id).first()        
-        return render_template("admin/admin_single_chapter.html", sub=sub,chap=chap)
-    except Exception as e:    
-        return redirect(url_for("subject.view_subject", sub_id=sub_id))
 
 @subject.route("/view")
 @login_required
@@ -427,6 +522,7 @@ def view_subject():
         sub_id = request.args.get("sub_id", "")
         skip = int(request.args.get('skip', 0))
         take = int(request.args.get('take', 25))
+        where = request.args.get('where', '{}')
         if not sub_id:
             raise ValueError("Subject is required")
             return redirect(url_for("subject.admin_subject"))
@@ -434,7 +530,8 @@ def view_subject():
         if not sub:
             flash("Subject not found" ,"danger")
             return redirect(url_for("subject.admin_subject")) 
-        chapters = Chapter.query.filter_by(subject_id=sub_id).limit(take).offset(skip).all()
+        where = json.loads(where) if where else {}     
+        chapters = Chapter.query.filter_by(subject_id=sub_id, **where).limit(take).offset(skip).all()
         all_chapters = Chapter.query.filter_by(subject_id=sub_id).all()
         total_rows = len(all_chapters)
         return render_template("admin/admin_single_subject.html", total_rows=total_rows,skip=skip,take=take,sub=sub,chapters=chapters)
