@@ -18,4 +18,4 @@ def role_required(role):
                 return redirect(url_for("user.user_home"))    
             return func(*args, **kwargs)
         return wrapper
-    return decorator        
+    return decorator
