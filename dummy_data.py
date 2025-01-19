@@ -9,8 +9,8 @@ def create_dummy_chapters(count):
         random_uuid = str(uuid.uuid4())
         chapter = Chapter(
         id=random_uuid,
-        name=f"Subject {x}",
-        description=f"This is a description for Subject {x}",
+        name=f"Chapter {x}",
+        description=f"This is a description for Chapter {x}",
         subject_id='ad867322-86c0-407e-a8f6-a4dcadeabcf4',
         created_at=datetime.now(),
         pages=100,
