@@ -44,7 +44,10 @@ content %}{% include "admin/admin_wrapper.html" %}
     <h3>Chapter Management</h3>
     <div class="form-inline my-2 my-lg-0">
       <button type="button" class="btn btn-primary mr-3">
-        <a class="text-white" href="/admin/subject/new">
+        <a
+          class="text-white"
+          href="/admin/subject/chapter/new?sub_id={{ sub.id }}"
+        >
           Add New Chapter
           <span aria-hidden="true">&plus;</span>
         </a>
@@ -118,11 +121,19 @@ content %}{% include "admin/admin_wrapper.html" %}
             <td>{{ chpt.created_at }}</td>
             <td>{{ chpt.updated_at }}</td>
             <td>
-              <button type="button" class="btn btn-secondary mr-3 mb-3">
+              <button
+                onclick="window.location.href='/admin/subject/chapter/update?chap_id={{ chpt.id }}&sub_id={{ sub.id }}'"
+                type="button"
+                class="btn btn-secondary mr-3 mb-3"
+              >
                 Update
               </button>
               <button type="button" class="btn btn-danger mr-3">
-                <a class="text-white">Delete</a>
+                <a
+                  href="/admin/subject/chapter/delete?sub_id={{ sub.id }}&chapter_id={{ chpt.id }}"
+                  class="text-white"
+                  >Delete</a
+                >
               </button>
             </td>
           </tr>
