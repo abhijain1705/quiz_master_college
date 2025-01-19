@@ -12,7 +12,16 @@ block content %} {% include "admin/admin_wrapper.html" %}
   </nav>
 
   <div class="d-flex flex-wrap justify-content-between">
-    <h3>Subject Management</h3>
+    <div>
+      <h3>Subject Management</h3>
+      <div class="d-flex align-items-center">
+        <p class="mr-4">Total Rows: {{ total_rows }}</p>
+        <p>
+          Current Page: {% if skip and take %} {{ ((skip|int)//take)+1 }} {%
+          else %}1{% endif %}
+        </p>
+      </div>
+    </div>
     <div class="form-inline my-2 my-lg-0">
       <button type="button" class="btn btn-primary mr-3">
         <a class="text-white" href="/admin/subject/new">
@@ -135,13 +144,6 @@ block content %} {% include "admin/admin_wrapper.html" %}
           </li>
         </ul>
       </nav>
-      <div class="d-flex align-items-center">
-        <p class="mr-4">Total Rows: {{ total_rows }}</p>
-        <p>
-          Current Page: {% if skip and take %} {{ ((skip|int)//take)+1 }} {%
-          else %}1{% endif %}
-        </p>
-      </div>
     </div>
   </section>
 </section>
