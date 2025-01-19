@@ -9,8 +9,9 @@ def create_dummy_quiz(count):
         random_uuid = str(uuid.uuid4())
         quiz = Quiz(
         id=random_uuid,
-        chapter_id='eedbc85d-67f1-4f1f-beb2-25abb142d736',
-        chapter_code='CHP181',
+        quiz_title=f'Quiz Title{x}',
+        chapter_id='ccf8f259-fef7-4567-a563-fdad4d25967d',
+        chapter_code='CHP783',
         date_of_quiz=datetime.now(),
         time_duration=3600000,
         total_marks=100,
@@ -30,7 +31,7 @@ def create_dummy_chapters(count):
         id=random_uuid,
         name=f"Chapter {x}",
         description=f"This is a description for Chapter {x}",
-        subject_id='9f3deac7-65ed-42b8-b07d-ad69aadafb4c',
+        subject_id='0151f7a6-7065-414e-88c7-3149ccbeca39',
         created_at=datetime.now(),
         pages=100,
         code=f"CHP{random.randint(100, 999)}",
