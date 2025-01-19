@@ -12,10 +12,338 @@ from flask import Blueprint, session, request, flash, render_template, redirect,
 
 subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
 
+
+@subject.route("/chapter/new", methods=['POST', 'GET'])
+@login_required
+@role_required("admin")
+@swag_from({ 
+    "tags": ['Subject'],
+    "summary": "Create new chapter",
+    "description": "This endpoint will create new chapter",
+    "parameters": [
+     {
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Document id of subject',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'name',
+            'in': 'formData',
+            'required': True,
+            'type': 'string',
+            'description': 'Name of chapter',
+            'example': 'English'
+        },
+        {
+            'name': 'description',
+            'in': 'formData',
+            'required': True,
+            'type': 'string',
+            'description': 'Description of chapter',
+            'example': 'Basic English course'
+        },        
+        {
+            'name': 'code',
+            'in': 'formData',
+            'required': True,
+            'type': 'string',
+            'description': 'Code of chapter',
+            'example': 'ENG101'
+        },
+        {
+            'name': 'chapter_number',
+            'in': 'formData',
+            'required': True,
+            'type': 'integer',
+            'description': 'chapter number of chapter',
+            'example': '3'
+        },
+        {
+            'name': 'pages',
+            'in': 'formData',
+            'required': True,
+            'type': 'integer',
+            'description': 'count of pages',
+            'example': '75'
+        }
+    ],
+    'responses':{
+        200:{
+            'description': 'Chapter successfully created',
+            'examples': {
+                'application/json': {'message': 'Chapter created successfully'}
+            }
+        },
+        400: {
+            'description': 'Invalid input',
+            'examples': {
+                'application/json': {'error': 'name is required'}
+            }
+        }
+    }    
+})
+def new_chapter():
+    sub_id = request.args.get("sub_id", "")
+    print(f"/admin/subject/view?sub_id={sub_id}","mfleqrmgklqtrhm")
+    if request.method=='POST':
+        name = request.form.get('name')
+        description = request.form.get('description')
+        code = request.form.get('code')
+        pages = request.form.get('pages')
+        chapter_number = request.form.get('chapter_number')
+
+        if not name:
+            flash("name is required", "danger")
+            return render_template('admin/admin_chapter_manage.html', sub_id=sub_id)
+        if not description:
+            flash("description is required", "danger")
+            return render_template('admin/admin_chapter_manage.html', sub_id=sub_id)
+        if not code:
+            flash("code is required", "danger")
+            return render_template('admin/admin_chapter_manage.html', sub_id=sub_id)
+        if not pages or int(pages)<= 0:
+            flash("pages is required", "danger")
+            return render_template('admin/admin_chapter_manage.html', sub_id=sub_id)   
+        if not chapter_number or int(chapter_number)<=0:
+            flash("chapter number is required", "danger")
+            return render_template('admin/admin_chapter_manage.html', sub_id=sub_id) 
+
+        chap = Chapter.query.filter_by(code=code).first()
+        if chap:
+            flash("Code exists, please use a different chapter code","danger")
+            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+
+        random_uuid = str(uuid.uuid4())
+        new_chap = Chapter(id=random_uuid,subject_id=sub_id, name=name,pages=int(pages), chapter_number=int(chapter_number), description=description,code=code,created_at=datetime.now(), updated_at=datetime.now())
+        try:
+            db.session.add(new_chap)
+            db.session.commit()
+            flash("chapter created successfully", "success")
+            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+        except Exception as e:
+            db.session.rollback()
+            flash("An error occurred during creation of chapter. Please try again.", "danger")
+            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+    else:        
+        return render_template('admin/admin_chapter_manage.html', sub_id=sub_id)
+
+
+@subject.route("/chapter/update", methods=['POST', 'GET'])
+@login_required
+@role_required("admin")
+@swag_from({
+    "tags": ['Subject'],
+    "summary": "Update existing chapter",
+    "description": "This endpoint will update existing chapter",
+    "parameters": [
+        {
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Document id of subject',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'chap_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Document id of chapter',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'name',
+            'in': 'formData',
+            'required': True,
+            'type': 'string',
+            'description': 'Name of chapter',
+            'example': 'English'
+        },
+        {
+            'name': 'description',
+            'in': 'formData',
+            'required': True,
+            'type': 'string',
+            'description': 'Description of chapter',
+            'example': 'Basic English course'
+        },        
+        {
+            'name': 'code',
+            'in': 'formData',
+            'required': True,
+            'type': 'string',
+            'description': 'Code of chapter',
+            'example': 'ENG101'
+        },
+        {
+            'name': 'chapter_number',
+            'in': 'formData',
+            'required': True,
+            'type': 'integer',
+            'description': 'chapter number of chapter',
+            'example': '3'
+        },
+        {
+            'name': 'pages',
+            'in': 'formData',
+            'required': True,
+            'type': 'integer',
+            'description': 'count of pages',
+            'example': '75'
+        }
+    ],
+    'responses':{
+        200:{
+            'description': 'Chapter successfully updated',
+            'examples': {
+                'application/json': {'message': 'Chapter updated successfully'}
+            }
+        },
+        400: {
+            'description': 'Invalid input',
+            'examples': {
+                'application/json': {'error': 'name is required'}
+            }
+        }
+    }
+})
+def update_chapter():
+    chap_id = request.args.get("chap_id", "")
+    sub_id = request.args.get("sub_id", "")
+    if not chap_id:
+        raise ValueError("Chapter is required")
+        return redirect(url_for("subject.admin_subject"))
+    chap = Chapter.query.filter_by(id=chap_id).first()
+    if not chap:
+        flash("Chapter not found" ,"danger")
+        return redirect(f"/admin/subject/view?sub_id={sub_id}")     
+    if request.method == 'POST':
+        name = request.form.get('name')
+        description = request.form.get('description')
+        code = request.form.get('code')
+        pages = request.form.get('pages')
+        chapter_number = request.form.get('chapter_number')
+
+        if not name:
+            flash("name is required", "danger")
+            return render_template('admin/admin_chapter_manage.html',chap=chap,sub_id=sub_id)
+        if not description:
+            flash("description is required", "danger")
+            return render_template('admin/admin_chapter_manage.html',chap=chap,sub_id=sub_id)
+        if not code:
+            flash("code is required", "danger")
+            return render_template('admin/admin_chapter_manage.html',chap=chap,sub_id=sub_id)
+        if not pages or int(pages)<= 0:
+            flash("pages is required", "danger")
+            return render_template('admin/admin_chapter_manage.html',chap=chap,sub_id=sub_id)   
+        if not chapter_number or int(chapter_number)<=0:
+            flash("chapter number is required", "danger")
+            return render_template('admin/admin_chapter_manage.html',chap=chap,sub_id=sub_id)              
+        chap_srch_w_code = Chapter.query.filter(Chapter.code == code, Chapter.id != chap_id).first()
+
+        if chap_srch_w_code:
+            flash("Code exists, please use a different chapter code","danger")
+            return render_template('admin/admin_chapter_manage.html',chap=chap,sub_id=sub_id)
+        chap.name = name
+        chap.description = description
+        chap.code = code
+        chap.pages=pages
+        chap.chapter_number=chapter_number
+        chap.updated_at = datetime.now()
+        try:
+            db.session.commit()
+            flash("Chapter updated successfully", "success")
+            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+        except Exception as e:
+            db.session.rollback()
+            flash("An error occurred during updating the chapter. Please try again.", "danger")
+            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+    else:
+        return render_template('admin/admin_chapter_manage.html',chap=chap,sub_id=sub_id)
+
+@subject.route("/chapter/delete")
+@login_required
+@role_required("admin")
+@swag_from({
+    "tags": ['Subject'],
+    "summary": "Delete existing chapter",
+    "description": "This endpoint will delete existing chapter",
+    "parameters": [
+        {
+            'name':'sub_id',
+            'in':'query',
+            'required':True,
+            "type":'string',
+            'description':'document id of any subject row',
+            'example': "4fdf23145325-43543543-233"
+        },
+        {
+            'name':'chapter_id',
+            'in':'query',
+            'required':True,
+            "type":'string',
+            'description':'document id of any chapter row',
+            'example': "4fdf23145325-43543543-233"
+        },
+    ]
+    })
+def delete_chapter():
+    sub_id = request.args.get("sub_id", "")
+    chapter_id = request.args.get("chapter_id", "")
+    if chapter_id:
+        chap = Chapter.query.filter_by(id=chapter_id).first()
+        if not chap:
+            flash("Code doesn't exist, please use a different chapter code", "danger")
+            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+        try:
+            db.session.delete(chap)
+            db.session.commit()
+            flash("Subject deleted successfully" ,"success")
+            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+        except Exception as e:
+            db.session.rollback()
+            flash("An error occured while deleting subject" ,"danger")
+            return redirect(f"/admin/subject/view?sub_id={sub_id}")
+
+    else:
+        raise ValueError("chapter id is required")
+
 @subject.route("/view")
 @login_required
 @role_required("admin")
-@swag_from({})
+@swag_from({
+    "tags": ['Subject'],
+    "summary": "View existing subject",
+    "description": "This endpoint will view existing subject",
+        "parameters": [
+            {
+                'name': 'sub_id',
+                'in': 'query',
+                'required': True,
+                'type': 'string',
+                'description': 'Subject id of subject',
+                'example': 'ENG001'
+            },
+        ],
+        'responses':{
+        200:{
+            'description': '',
+            'examples': {
+                'application/json': {'message': ''}
+            }
+        },
+        400: {
+            'description': 'Invalid input',
+            'examples': {
+                'application/json': {'error': 'Subject not found'}
+            }
+        }
+    }
+    })
 def view_subject():
     try:
         sub_id = request.args.get("sub_id", "")
@@ -32,7 +360,7 @@ def view_subject():
         all_chapters = Chapter.query.filter_by(subject_id=sub_id).all()
         total_rows = len(all_chapters)
         return render_template("admin/admin_single_subject.html", total_rows=total_rows,skip=skip,take=take,sub=sub,chapters=chapters)
-    except Exception as e:    
+    except Exception as e:
         return redirect(url_for("subject.admin_subject"))
     
 
@@ -256,7 +584,6 @@ def new_subject():
             return redirect(url_for("subject.admin_subject"))
     else:        
         return render_template('admin/admin_subject_manage.html')
-
 
 # /admin/subject?skip=0&take=25&where={}
 @subject.route("/",methods=['GET'])
