@@ -26,6 +26,10 @@
   text-decoration: underline !important;
 }
 
+.required {
+  color: red;
+}
+
 .link {
   text-decoration: underline !important;
 }
