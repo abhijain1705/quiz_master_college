@@ -1,0 +1,163 @@
+{% extends "base.html" %} {% block title %}Manage Quiz{% endblock %} {% block
+content %} {% include "admin/admin_wrapper.html" %}
+<section class="p-3">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item">
+        <a href="/admin/subject/?skip=0&take=25">Subjects List</a>
+      </li>
+      <li class="breadcrumb-item" aria-current="page">
+        <a href="/admin/subject/view?sub_id={{ sub.id }}&take=25&skip=0"
+          >{% if sub %}{{ sub.code }}{% else %} {% endif %}
+        </a>
+      </li>
+      <li class="breadcrumb-item">
+        <a
+          href="/admin/subject/chapter/view?sub_id={{ sub.id }}&skip=0&take=25&chap_id={{ chap.id }}"
+        >
+          {% if chap %}{{ chap.code }}{% else %} {% endif %}</a
+        >
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {% if quiz %}Update Quiz{% else %}New Quiz{% endif %}
+      </li>
+    </ol>
+  </nav>
+  <section class="d-flex flex-column align-items-center justify-content-center">
+    {% with messages = get_flashed_messages(with_categories=True) %}{% if
+    messages %}
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-sm-6">
+          {% for category, message in messages %}
+          <div
+            role="alert"
+            class="alert alert-{{ category }} alert-dismissible fade show"
+          >
+            {{ message }}
+            <button
+              type="button"
+              class="close"
+              data-dismiss="alert"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}{% endwith %}
+    <form
+      method="post"
+      class="container p-3"
+      action="{% if quiz %}/admin/subject/chapter/quiz/update?quiz_id={{ quiz.id }}&sub_id={{ sub.id }}&chap_id={{ chap.id }}{% else %}/admin/subject/chapter/quiz/new?sub_id={{ sub.id }}&chap_id={{ chap.id }}{% endif %}"
+    >
+      <div>
+        <div class="form-group">
+          <label for="exampleInputName1"
+            >Quiz Title <span class="required">*</span></label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="exampleInputName1"
+            name="quiz_title"
+            aria-describedby="nameHelp"
+            placeholder="Enter Quiz Title"
+            value="{{ quiz.quiz_title if quiz else '' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputDate1"
+            >Quiz Date <span class="required">*</span></label
+          >
+          <input
+            type="date"
+            class="form-control"
+            id="exampleInputDate1"
+            name="date_of_quiz"
+            aria-describedby="nameHelp"
+            placeholder="Enter Quiz Date"
+            value="{{ quiz.date_of_quiz if quiz else '' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputTime1"
+            >Quiz Duration (Write in Hrs, eg. 0.6 hrs)
+            <span class="required">*</span></label
+          >
+          <input
+            type="number"
+            class="form-control"
+            id="exampleInputTime1"
+            name="time_duration"
+            min="0"
+            aria-describedby="nameHelp"
+            placeholder="Enter Quiz Duration (Write in Hrs, eg. 0.6 hrs)"
+            value="{{ quiz.time_duration if quiz else '' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputCount1"
+            >Number of Questions <span class="required">*</span></label
+          >
+          <input
+            type="number"
+            class="form-control"
+            id="exampleInputCount1"
+            name="number_of_questions"
+            aria-describedby="nameHelp"
+            min="0"
+            placeholder="Enter Number of Questions"
+            value="{{ quiz.number_of_questions if quiz else '' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputCount2"
+            >Total Marks <span class="required">*</span></label
+          >
+          <input
+            type="number"
+            class="form-control"
+            id="exampleInputCount2"
+            name="total_marks"
+            aria-describedby="nameHelp"
+            min="0"
+            placeholder="Enter Total Marks"
+            value="{{ quiz.total_marks if quiz else '' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputText"
+            >Remarks <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="exampleInputText"
+            required
+            name="remarks"
+            aria-describedby="nameHelp"
+            min="0"
+            placeholder="Remarks"
+            value="{{ quiz.remarks if quiz else '' }}"
+          />
+        </div>
+      </div>
+      <div>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <a
+            href="/admin/subject/chapter/view?chap_id={{ chap.id }}&sub_id={{ sub.id }}&skip=0&take=25"
+            class="text-white"
+            >Close</a
+          >
+        </button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+    </form>
+  </section>
+</section>
+{% endblock %}
