@@ -6,8 +6,8 @@ from sqlalchemy import desc
 from flasgger import  swag_from
 from datetime import datetime, date
 from flask_login import login_required
-from models.model import Subject, Chapter, Quiz, Questions
 from controllers.decorator import role_required
+from models.model import Subject, Chapter, Quiz, Questions
 from flask import Blueprint, session, request, flash, render_template, redirect, url_for
 
 subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
@@ -51,6 +51,34 @@ def validate_quiz_fields(fields):
             return False
     return True
 
+
+@subject.route("/chapter/quiz/delete", methods=['POST'])
+@login_required
+@role_required("admin")
+@swag_from({})
+def delete_quiz():
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+    quiz_id = request.args.get("quiz_id", "")
+
+    if not quiz_id:
+        raise ValueError("quiz id is required")
+
+    quiz = Quiz.query.filter_by(id=quiz_id).first()
+    if not quiz:
+        return flash_and_redirect("Code doesn't exist, please use a different quiz code", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    try:
+        all_questions = Questions.query.filter_by(quiz_id=quiz.id).all()
+        for question in all_questions:
+            db.session.delete(question)  
+        db.session.delete(quiz)
+        db.session.commit()
+        return flash_and_redirect("Quiz deleted successfully", "success", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    except Exception as e:
+        db.session.rollback()
+        return flash_and_redirect(f"An error occurred {e}", 'danger', url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+
+
 @subject.route("/chapter/quiz/update", methods=['POST', 'GET'])
 @login_required
 @role_required("admin")
@@ -88,7 +116,7 @@ def update_quiz():
     try:
         quiz.quiz_title=fields['quiz_title']
         quiz.date_of_quiz = date_extractor(fields['date_of_quiz'])
-        quiz.time_duration=int(fields['time_duration'])
+        quiz.time_duration=int(fields['time_duration'])*3600000
         quiz.remarks=fields['remarks']
         quiz.updated_at=datetime.now()
         quiz.number_of_questions=int(fields['number_of_questions'])
@@ -120,7 +148,7 @@ def new_quiz():
     fields = {
         "quiz_title": request.form.get("quiz_title"),
         "date_of_quiz": request.form.get("date_of_quiz"),
-        "time_duration": request.form.get("time_duration"),
+        "time_duration": request.form.get("time_duration")*3600000,
         "number_of_questions": request.form.get("number_of_questions"),
         "total_marks": request.form.get("total_marks"),
         "remarks": request.form.get("remarks"),
@@ -652,8 +680,13 @@ def delete_chapter():
     chap = Chapter.query.filter_by(id=chapter_id).first()
     if not chap:
         return flash_and_redirect("Code doesn't exist, please use a different chapter code", "danger", url_for("subject.view_subject", sub_id=sub_id))
-
     try:
+        all_quizzes = Quiz.query.filter_by(chapter_id=chap.id).all()
+        for quiz in all_quizzes:
+            all_questions = Questions.query.filter_by(quiz_id=quiz.id).all()
+            for question in all_questions:
+                db.session.delete(question)
+            db.session.delete(quiz)    
         db.session.delete(chap)
         db.session.commit()
         return flash_and_redirect("Chapter deleted successfully", "success", url_for("subject.view_subject", sub_id=sub_id))
@@ -869,15 +902,26 @@ def delete():
     sub_id = request.args.get("sub_id", "")
     if not sub_id:
         raise ValueError("subject id is required")
-
     sub = Subject.query.filter_by(id=sub_id).first()
     if not sub:
-        return flash_and_redirect("Code doesn't exist, please use a different subject code", "danger", url_for('subject.admin_subject'))
-
+        return flash_and_redirect(
+            "Code doesn't exist, please use a different subject code", 
+            "danger", 
+            url_for('subject.admin_subject')
+        )        
     try:
+        all_chaps = Chapter.query.filter_by(subject_id=sub_id).all()
+        for chap in all_chaps:
+            all_quizzes = Quiz.query.filter_by(chapter_id=chap.id).all()
+            for quiz in all_quizzes:
+                all_questions = Questions.query.filter_by(quiz_id=quiz.id).all()
+                for question in all_questions:
+                    db.session.delete(question)
+                db.session.delete(quiz)
+            db.session.delete(chap)
         db.session.delete(sub)
         db.session.commit()
-        return flash_and_redirect("Subject deleted successfully", "success", url_for('subject.admin_subject'))
+        return flash_and_redirect("Subject and related data deleted successfully", "success", url_for('subject.admin_subject'))
     except Exception as e:
         db.session.rollback()
         return flash_and_redirect(f"An error occurred {e}", 'danger', url_for('subject.admin_subject'))
