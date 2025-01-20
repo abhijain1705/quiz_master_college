@@ -2,7 +2,30 @@ import uuid
 import random
 from models import db
 from datetime import datetime
-from models.model import Subject, Chapter, Quiz
+from models.model import Subject, Chapter, Quiz, Questions
+
+def create_dummy_questions(count):
+    for x in range(count):
+        random_uuid = str(uuid.uuid4())
+        question = Questions(
+        id=random_uuid,
+        question_title=f'Dummy Question {x}',
+        question_statement=f'Dummy Question Statement {x}',
+        created_at=datetime.now(),
+        quiz_id='6abf10dd-8be0-411e-9f6f-63e0f9987708',
+        chapter_id='0339fa7e-8787-44c3-90be-7386ca24dd3a',
+        chapter_code='CHP711',
+        option_1=f'Dummy Option 1 {x}',
+        option_2=f'Dummy Option 2 {x}',
+        option_3=f'Dummy Option 3 {x}',
+        option_4=f'Dummy Option 4 {x}',
+        correct_option=random.randint(1, 4),
+        marks=4,
+        updated_at=datetime.now(),
+        )
+        db.session.add(question)
+    db.session.commit()
+    print("dummy questions created successfully")
 
 def create_dummy_quiz(count):
     for x in range(count):
