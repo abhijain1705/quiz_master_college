@@ -29,11 +29,13 @@ block content %} {% include "admin/admin_wrapper.html" %}
           >
             {{ message }}
             <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="alert"
-              aria-label="Close"
-            ></button>
+            type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
           </div>
           {% endfor %}
         </div>
@@ -43,11 +45,11 @@ block content %} {% include "admin/admin_wrapper.html" %}
     <form
       method="post"
       class="container p-3"
-      action="{% if chap %}/admin/subject/chapter/update?sub_id={{ sub_id }}?chap_id={{ chap.id }}&sub_id={{ sub_id }}{% else %}/admin/subject/chapter/new?sub_id={{ sub_id }}{% endif %}"
+      action="{% if chap %}/admin/subject/chapter/update?sub_id={{ sub_id }}&chap_id={{ chap.id }}{% else %}/admin/subject/chapter/new?sub_id={{ sub_id }}{% endif %}"
     >
-      <div class="modal-body">
+      <div>
         <div class="form-group">
-          <label for="exampleInputName1">Chapter Name</label>
+          <label for="exampleInputName1">Chapter Name <span class="required">*</span></label>
           <input
             type="text"
             class="form-control"
@@ -59,7 +61,7 @@ block content %} {% include "admin/admin_wrapper.html" %}
           />
         </div>
         <div class="form-group">
-          <label for="exampleInputDescription1">Chapter Description</label>
+          <label for="exampleInputDescription1">Chapter Description <span class="required">*</span></label>
           <input
             type="text"
             class="form-control"
@@ -72,7 +74,7 @@ block content %} {% include "admin/admin_wrapper.html" %}
           />
         </div>
         <div class="form-group">
-          <label for="exampleInputPages1">Chapter Page Count</label>
+          <label for="exampleInputPages1">Chapter Page Count <span class="required">*</span></label>
           <input
             type="number"
             class="form-control"
@@ -83,7 +85,7 @@ block content %} {% include "admin/admin_wrapper.html" %}
           />
         </div>
         <div class="form-group">
-          <label for="exampleInputChapterNo1">Chapter Number</label>
+          <label for="exampleInputChapterNo1">Chapter Number <span class="required">*</span></label>
           <input
             type="number"
             class="form-control"
@@ -94,7 +96,7 @@ block content %} {% include "admin/admin_wrapper.html" %}
           />
         </div>
         <div class="form-group">
-          <label for="exampleInputCode1">Chapter Code</label>
+          <label for="exampleInputCode1">Chapter Code <span class="required">*</span></label>
           <input
             type="text"
             class="form-control"
@@ -105,7 +107,7 @@ block content %} {% include "admin/admin_wrapper.html" %}
           />
         </div>
       </div>
-      <div class="modal-footer">
+      <div>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">
           <a
             href="/admin/subject/view?sub_id={{ sub_id }}&skip=0&take=25"
