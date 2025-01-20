@@ -5,9 +5,9 @@ from models.model import User, Score
 from controllers.decorator import role_required
 from flask_login import current_user, login_required
 from flask import Blueprint, render_template, session, flash, request
+from controllers.admin.admin_subject import validate_fields, flash_and_redirect
 
 admin= Blueprint("admin", __name__, url_prefix="/admin")
-
 
 @admin.route("/", methods=['GET'])
 @login_required
@@ -119,17 +119,16 @@ def admin_home():
     take = int(request.args.get('take', 25))
     where = request.args.get('where', '{}')
     try:
-        where = eval(where)
+        where = eval(where)  # Ensure this is safe; use `json.loads` if possible
         users = User.query.filter_by(**where).order_by(desc(User.created_at)).limit(take).offset(skip).all()
-        total_users = User.query.all()
+        total_users = User.query.count()
+        
         users_list = []
         for user in users:
             score_of_user = Score.query.filter_by(user_id=user.id).all()
-            total_score = 0
-            quiz_played = 0
-            for quiz in score_of_user:
-                quiz_played += 1
-                total_score += quiz.total_scored
+            total_score = sum(quiz.total_scored for quiz in score_of_user)
+            quiz_played = len(score_of_user)
+
             users_list.append({
                 'id': user.id,
                 'email': user.email,
@@ -142,7 +141,8 @@ def admin_home():
                 'created_at': user.created_at,
                 'updated_at': user.updated_at
             })
-        return render_template("admin/admin.html", rows=users_list, total_rows=len(total_users))
+
+        return render_template("admin/admin.html", rows=users_list, total_rows=total_users)
+
     except Exception as e:
-        flash("An error occurred while fetching users.", 'danger')
-        return render_template("admin/admin.html", rows=[], total_rows=0)    
+        return flash_and_redirect(f"An error occurred while fetching users: {e}", 'danger', url_for("admin_home"))
