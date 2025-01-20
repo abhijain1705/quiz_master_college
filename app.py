@@ -18,7 +18,6 @@ from controllers.admin.admin_subject import subject as subject_blueprint
 
 from dummy_data import create_dummy_subjects, create_dummy_chapters, create_dummy_quiz
 
-
 app = Flask(__name__, instance_relative_config=True)
 app.config['DEBUG'] = True
 app.config["SESSION_PERMANENT"] = False
