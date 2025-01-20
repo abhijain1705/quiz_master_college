@@ -59,6 +59,7 @@ class Questions(db.Model):
     __tablename__='questions'
     id=db.Column(db.VARCHAR(100), primary_key=True)
     quiz_id=db.Column(db.VARCHAR(100), db.ForeignKey('quiz.id'), nullable=False)
+    question_title=db.Column(db.VARCHAR(100),nullable=False)
     question_statement=db.Column(db.VARCHAR(100), nullable=False)
     chapter_id=db.Column(db.VARCHAR(100), db.ForeignKey('chapters.id'), nullable=False)
     chapter_code=db.Column(db.VARCHAR(100), db.ForeignKey('chapters.code'), nullable=False)
