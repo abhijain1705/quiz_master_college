@@ -244,7 +244,9 @@ def view_quiz():
     quiz_id = request.args.get("quiz_id", "")
     sub_id = request.args.get("sub_id", "")
     chap_id = request.args.get("chap_id", "")
-    
+    skip = int(request.args.get("skip","0"))
+    take = int(request.args.get("take", "25"))
+    where = request.args.get("where", "{}")
     if not sub_id:
         return flash_and_redirect("Subject is required", "danger", url_for("subject.admin_subject"))
     if not chap_id:
@@ -256,7 +258,10 @@ def view_quiz():
         sub = Subject.query.get_or_404(sub_id)
         chap = Chapter.query.get_or_404(chap_id)
         quiz = Quiz.query.get_or_404(quiz_id)
-        return render_template("admin/admin_single_quiz.html", sub=sub, chap=chap, quiz=quiz)
+        where = json.loads(where) if where else {}
+        filterd_questions = Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id, **where).order_by(desc(Questions.created_at)).limit(take).offset(skip).all()
+        total_rows  = Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id).order_by(desc(Questions.created_at)).count()
+        return render_template("admin/admin_single_quiz.html",rows=filterd_questions, total_rows=total_rows,skip=skip,take=take, sub=sub, chap=chap, quiz=quiz)
     except Exception as e:
         return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))
 
