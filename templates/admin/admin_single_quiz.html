@@ -184,9 +184,16 @@ content %}{% include "admin/admin_wrapper.html" %}
     </div>
     <div class="form-inline my-2 my-lg-0">
       <div class="d-flex">
-        <button type="button" class="btn btn-primary mr-3">
-          <a class="text-white">New Question</a>
+        {% if quiz.number_of_questions < total_rows %}<button
+          type="button"
+          class="btn btn-primary mr-3"
+        >
+          <a class="text-white">New Question</a></button
+        >{% else %}
+        <button type="button" class="btn mr-3">
+          No More question space available
         </button>
+        {% endif %}
         <button
           type="button"
           class="btn btn-primary mr-3"
