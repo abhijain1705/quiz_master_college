@@ -23,7 +23,6 @@ class Subject(db.Model):
     description=db.Column(db.VARCHAR(100), nullable=False)
     created_at=db.Column(db.TIMESTAMP, nullable=False)
     updated_at=db.Column(db.TIMESTAMP, nullable=False)
-    isActive=db.Column(db.Boolean, default=True, nullable=False)
     code=db.Column(db.VARCHAR(100), nullable=False)
 
 # score model
@@ -51,7 +50,6 @@ class Quiz(db.Model):
     time_duration=db.Column(db.Integer, nullable=False) # timestamps stored in milliseconds
     remarks=db.Column(db.VARCHAR(100), nullable=False)
     created_at=db.Column(db.TIMESTAMP, nullable=False)
-    isActive=db.Column(db.Boolean, default=True, nullable=False)
     updated_at=db.Column(db.TIMESTAMP, nullable=False)
     number_of_questions=db.Column(db.Integer, nullable=False)
     user_id=db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=True)
@@ -72,7 +70,6 @@ class Questions(db.Model):
     option_4=db.Column(db.VARCHAR(100), nullable=False)
     created_at = db.Column(db.TIMESTAMP, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, nullable=False)
-    isActive=db.Column(db.Boolean, default=True, nullable=False)
     correct_option=db.Column(db.Integer, nullable=False)
     marks=db.Column(db.Integer, nullable=False)
 
@@ -84,7 +81,6 @@ class Chapter(db.Model):
     description=db.Column(db.VARCHAR(100), nullable=False)
     subject_id=db.Column(db.VARCHAR(100), db.ForeignKey('subjects.id'), nullable=False)
     created_at = db.Column(db.TIMESTAMP, nullable=False)
-    isActive=db.Column(db.Boolean, default=True, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, nullable=False)
     chapter_number=db.Column(db.Integer, nullable=False)
     code=db.Column(db.VARCHAR(100), nullable=False)
