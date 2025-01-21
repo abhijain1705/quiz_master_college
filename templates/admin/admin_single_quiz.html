@@ -245,7 +245,10 @@ content %}{% include "admin/admin_wrapper.html" %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
             <td class="link">
-              <a>{{ question.question_title }}</a>
+              <a
+                href="/admin/subject/chapter/quiz/question/view?sub_id={{ sub.id }}&question_id={{ question.id }}&chap_id={{ chap.id }}&quiz_id={{ quiz.id }}"
+                >{{ question.question_title }}</a
+              >
             </td>
             <td>{{ question.question_statement }}</td>
             <td>{{ question.option_1 }}</td>
