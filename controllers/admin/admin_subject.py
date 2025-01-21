@@ -51,24 +51,6 @@ def validate_quiz_fields(fields):
             return False
     return True
 
-@subject.route("/manage/status", methods=['POST'])
-@login_required
-@role_required("admin")
-@swag_from({})
-def manage_subject_status():
-    val=request.form.get("status", "")
-
-    sub_id=request.args.get("sub_id","")
-    val = True if val == 'on'  else False
-    if not sub_id:
-        return flash_and_redirect("Subject is required", "danger", url_for("subject.admin_subject"))    
-    sub = Subject.query.get_or_404(sub_id)
-    sub.isActive=val
-    try:
-        db.session.commit()
-        return flash_and_redirect("Subject updated successfully", "success", url_for("subject.admin_subject"))
-    except Exception as e: 
-        return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))
 
 @subject.route("/chapter/quiz/question/view")
 @login_required
@@ -168,7 +150,64 @@ def view_question():
 @subject.route("/chapter/quiz/delete", methods=['POST'])
 @login_required
 @role_required("admin")
-@swag_from({})
+@swag_from({
+    "tags": ['Admin'],
+    "summary": "Delete existing quiz",
+    "description":"This endpoint will delete an existing quiz",
+    "parameters": [
+        {
+            'name': 'sub_id',
+            "in": 'query',
+            "required": True,
+            "type": "string",
+            "description": "Subject ID of subject",
+            "example": "ENG023"
+        },
+        {
+            'name': 'chap_id',
+            "in": 'query',
+            "required": True,
+            "type": "string",
+            "description": "Chapter ID of subject",
+            "example": "CHP023"
+        }, 
+        {
+            'name': 'quiz_id',
+            "in": 'query',
+            "required": True,
+            "type": "string",
+            "description": "Quiz ID of subject",
+            "example": "QUZ023"
+        },        
+    ],
+    'responses': {
+        200: {
+            'description': 'Quiz deleted successfully',
+            'examples': {
+                'application/json': {
+                    'message': 'Success',
+                    'data': {}
+                }
+            }
+        },
+        401: {
+            "description": "Unauthorized access.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "Login required"}
+                }
+            }
+        },
+        500: {
+            "description": "Internal server error.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "An error occurred."}
+                }
+            }
+        }
+    }     
+})
 def delete_quiz():
     sub_id = request.args.get("sub_id", "")
     chap_id = request.args.get("chap_id", "")
@@ -195,6 +234,104 @@ def delete_quiz():
 @subject.route("/chapter/quiz/update", methods=['POST', 'GET'])
 @login_required
 @role_required("admin")
+@swag_from({
+    "tags": ['Admin'],
+    "summary": "Update existing quiz",
+    "description":"This endpoint will update an existing quiz",
+    "parameters": [
+        {
+            'name': 'sub_id',
+            "in": 'query',
+            "required": True,
+            "type": "string",
+            "description": "Subject ID of subject",
+            "example": "ENG023"
+        },
+        {
+            'name': 'chap_id',
+            "in": 'query',
+            "required": True,
+            "type": "string",
+            "description": "Chapter ID of subject",
+            "example": "CHP023"
+        },
+        {
+            'name': 'quiz_title',
+            "in": 'formData',
+            "required": True,
+            "type": "string",
+            "description": "Quiz Title of subject",
+            "example": "Quiz Title 1"
+        },
+        {
+            'name': 'date_of_quiz',
+            "in": 'formData',
+            "required": True,
+            "type": "date",
+            "description": "Quiz Date of subject",
+            "example": "2025-01-25"
+        },
+        {
+            'name': 'time_duration',
+            "in": 'formData',
+            "required": True,
+            "type": "integer",
+            "description": "Quiz Time of subject",
+            "example": "360000"
+        },
+        {
+            'name': 'number_of_questions',
+            "in": 'formData',
+            "required": True,
+            "type": "integer",
+            "description": "Number of Questions of subject",
+            "example": "15"
+        },
+        {
+            'name': 'total_marks',
+            "in": 'formData',
+            "required": True,
+            "type": "integer",
+            "description": "Total marks of subject",
+            "example": "100"
+        },
+        {
+            'name': 'remarks',
+            "in": 'formData',
+            "required": True,
+            "type": "string",
+            "description": "Some remarks of subject",
+            "example": "Some remarks"
+        }   
+    ],
+    'responses': {
+        200: {
+            'description': 'Quiz updated successfully',
+            'examples': {
+                'application/json': {
+                    'message': 'Success',
+                    'data': {}
+                }
+            }
+        },
+        401: {
+            "description": "Unauthorized access.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "Login required"}
+                }
+            }
+        },
+        500: {
+            "description": "Internal server error.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "An error occurred."}
+                }
+            }
+        }
+    }     
+})
 def update_quiz():
     sub_id = request.args.get("sub_id", "")
     chap_id = request.args.get("chap_id", "")
@@ -243,6 +380,104 @@ def update_quiz():
 @subject.route("/chapter/quiz/new", methods=['POST', 'GET'])
 @login_required
 @role_required("admin")
+@swag_from({
+    "tags": ['Admin'],
+    "summary": "Create new quiz",
+    "description":"This endpoint will create a new quiz",
+    "parameters": [
+        {
+            'name': 'sub_id',
+            "in": 'query',
+            "required": True,
+            "type": "string",
+            "description": "Subject ID of subject",
+            "example": "ENG023"
+        },
+        {
+            'name': 'chap_id',
+            "in": 'query',
+            "required": True,
+            "type": "string",
+            "description": "Chapter ID of subject",
+            "example": "CHP023"
+        },
+        {
+            'name': 'quiz_title',
+            "in": 'formData',
+            "required": True,
+            "type": "string",
+            "description": "Quiz Title of subject",
+            "example": "Quiz Title 1"
+        },
+        {
+            'name': 'date_of_quiz',
+            "in": 'formData',
+            "required": True,
+            "type": "date",
+            "description": "Quiz Date of subject",
+            "example": "2025-01-25"
+        },
+        {
+            'name': 'time_duration',
+            "in": 'formData',
+            "required": True,
+            "type": "integer",
+            "description": "Quiz Time of subject",
+            "example": "360000"
+        },
+        {
+            'name': 'number_of_questions',
+            "in": 'formData',
+            "required": True,
+            "type": "integer",
+            "description": "Number of Questions of subject",
+            "example": "15"
+        },
+        {
+            'name': 'total_marks',
+            "in": 'formData',
+            "required": True,
+            "type": "integer",
+            "description": "Total marks of subject",
+            "example": "100"
+        },
+        {
+            'name': 'remarks',
+            "in": 'formData',
+            "required": True,
+            "type": "string",
+            "description": "Some remarks of subject",
+            "example": "Some remarks"
+        }   
+    ],
+    'responses': {
+        200: {
+            'description': 'Quiz created successfully',
+            'examples': {
+                'application/json': {
+                    'message': 'Success',
+                    'data': {}
+                }
+            }
+        },
+        401: {
+            "description": "Unauthorized access.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "Login required"}
+                }
+            }
+        },
+        500: {
+            "description": "Internal server error.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "An error occurred."}
+                }
+            }
+        }
+    }     
+})
 def new_quiz():
     sub_id = request.args.get("sub_id", "")
     chap_id = request.args.get("chap_id", "")
