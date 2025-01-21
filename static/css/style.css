@@ -6,6 +6,14 @@
   padding: 6px;
 }
 
+.color-green {
+  color: green;
+}
+
+.color-red {
+  color: red;
+}
+
 .adminLogo {
   height: 50px;
   background-color: white !important;
