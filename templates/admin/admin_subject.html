@@ -77,12 +77,10 @@ block content %} {% include "admin/admin_wrapper.html" %}
           <tr>
             <th scope="col">S.No.</th>
             <th scope="col">Course Code</th>
-            <th scope="col">Status</th>
             <th scope="col">Name</th>
             <th scope="col">Description</th>
             <th scope="col">Created At</th>
             <th scope="col">Updated At</th>
-            <th scope="col">Manage Status</th>
             <th scope="col">Action</th>
           </tr>
         </thead>
@@ -90,39 +88,16 @@ block content %} {% include "admin/admin_wrapper.html" %}
           {% for sub in rows %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
-            <td class="{{ 'link' if sub.isActive else '' }}">
-              {% if sub.isActive %}<a
-                href="/admin/subject/view?sub_id={{ sub.id }}&take=25&skip=0"
+            <td class="link">
+              <a href="/admin/subject/view?sub_id={{ sub.id }}&take=25&skip=0"
                 >{{ sub.code }}</a
-              >{% else %}{{ sub.code }}{% endif %}
+              >
             </td>
-            <th class="color-{{ 'green' if sub.isActive else 'red' }}">
-              {{ sub.isActive }}
-            </th>
+
             <td>{{ sub.name }}</td>
             <td>{{ sub.description }}</td>
             <td>{{ sub.created_at }}</td>
             <td>{{ sub.updated_at }}</td>
-            <td>
-              <form
-                method="post"
-                action="/admin/subject/manage/status?sub_id={{ sub.id }}"
-              >
-                <input
-                  name="status"
-                  type="checkbox"
-                  data-toggle="switchbutton"
-                  data-onstyle="success"
-                  {%
-                  if
-                  sub.isActive
-                  %}checked{%
-                  endif
-                  %}
-                  onchange="this.form.submit()"
-                />
-              </form>
-            </td>
             <td>
               <button
                 type="button"
