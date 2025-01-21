@@ -194,7 +194,7 @@ content %}{% include "admin/admin_wrapper.html" %}
           <tr>
             <th scope="col">S.No.</th>
             <th scope="col">Quiz Title</th>
-            <th scope="col">Chapter Code</th>
+            <th scope="col">Status</th>
             <th scope="col">Date of Quiz</th>
             <th scope="col">Time Duration</th>
             <th scope="col">Number of Questions</th>
@@ -209,13 +209,15 @@ content %}{% include "admin/admin_wrapper.html" %}
           {% for quiz in rows %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
-            <td>{{ quiz.quiz_title }}</td>
-            <td class="link">
+            <td>
               <a
                 href="/admin/subject/chapter/quiz/view?quiz_id={{ quiz.id }}&sub_id={{ sub.id }}&chap_id={{ chap.id }}"
-                >{{ quiz.chapter_code }}</a
+                >{{ quiz.quiz_title }}</a
               >
             </td>
+            <th class="color-{{ 'green' if quiz.isActive else 'red' }}">
+              {{ quiz.isActive }}
+            </th>
             <td>{{ quiz.date_of_quiz }}</td>
             <td>{{ quiz.time_duration|int/3600000 }} hour</td>
             <td>{{ quiz.number_of_questions }}</td>
