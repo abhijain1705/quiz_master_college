@@ -51,6 +51,119 @@ def validate_quiz_fields(fields):
             return False
     return True
 
+@subject.route("/manage/status", methods=['POST'])
+@login_required
+@role_required("admin")
+@swag_from({})
+def manage_subject_status():
+    val=request.form.get("status", "")
+
+    sub_id=request.args.get("sub_id","")
+    val = True if val == 'on'  else False
+    if not sub_id:
+        return flash_and_redirect("Subject is required", "danger", url_for("subject.admin_subject"))    
+    sub = Subject.query.get_or_404(sub_id)
+    sub.isActive=val
+    try:
+        db.session.commit()
+        return flash_and_redirect("Subject updated successfully", "success", url_for("subject.admin_subject"))
+    except Exception as e: 
+        return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))
+
+@subject.route("/chapter/quiz/question/view")
+@login_required
+@role_required("admin")
+@swag_from({
+    "tags": ['Admin'],
+    "summary": "View existing question",
+    "description":"This endpoint will view an existing question",
+    "parameters": [
+        {
+            'name': 'question_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Question ID of the subject',
+            'example': 'QG001'
+        },        
+        {
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Subject ID of the subject',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'quiz_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Quiz ID of the quiz',
+            'example': 'CHP001'
+        }, 
+        {
+            'name': 'chap_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Chapter ID of the chapter',
+            'example': 'CHP001'
+        },                 
+    ],
+    'responses': {
+        200: {
+            'description': 'Subject and chapter and quiz successfully retrieved',
+            'examples': {
+                'application/json': {
+                    'message': 'Success',
+                    'data': {}
+                }
+            }
+        },
+        401: {
+            "description": "Unauthorized access.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "Login required"}
+                }
+            }
+        },
+        500: {
+            "description": "Internal server error.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "An error occurred."}
+                }
+            }
+        }
+    }    
+})
+def view_question():
+    quiz_id = request.args.get("quiz_id", "")
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+    question_id = request.args.get("question_id", "")
+
+    if not sub_id:
+        return flash_and_redirect("Subject is required", "danger", url_for("subject.admin_subject"))
+    if not chap_id:
+        return flash_and_redirect("Chapter is required", "danger", url_for("subject.view_subject", sub_id=sub_id))
+    if not quiz_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    if not question_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_quiz", quiz_id=quiz_id, sub_id=sub_id, chap_id=chap_id))
+        
+    
+    try:
+        sub = Subject.query.get_or_404(sub_id)
+        chap = Chapter.query.get_or_404(chap_id)
+        quiz = Quiz.query.get_or_404(quiz_id)
+        question = Questions.query.get_or_404(question_id)
+        return render_template("admin/admin_single_question.html",question=question, sub=sub, chap=chap, quiz=quiz)
+    except Exception as e:
+        return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))
+
 
 @subject.route("/chapter/quiz/delete", methods=['POST'])
 @login_required
