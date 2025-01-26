@@ -13,4 +13,19 @@ user = Blueprint('user', __name__, url_prefix='/user')
 @login_required
 @role_required("user")
 def user_home():
-    return render_template("user.html")
+    return render_template("user/user.html")
+
+
+@user.route("/scores")
+@login_required 
+@role_required("user")
+def user_scores():
+    return render_template("user/scores.html")
+
+
+@user.route("/quizzes")
+@login_required 
+@role_required("user")
+def user_quizzes():
+    return render_template("user/quizzes.html")
+        
