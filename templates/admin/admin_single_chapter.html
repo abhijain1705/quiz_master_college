@@ -153,8 +153,8 @@ content %}{% include "admin/admin_wrapper.html" %}
           aria-label="Search"
         />
         <button
-          onclick="searchByChapter('{{skip}}', '{{take}}')"
           class="btn btn-dark"
+          onclick="searchByQuiz('{{skip}}', '{{take}}', '{{ chap.id }}' , '{{ sub.id }}')"
         >
           <a>Search</a>
         </button>
@@ -208,7 +208,7 @@ content %}{% include "admin/admin_wrapper.html" %}
           {% for quiz in rows %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
-            <td>
+            <td class="link">
               <a
                 href="/admin/subject/chapter/quiz/view?quiz_id={{ quiz.id }}&sub_id={{ sub.id }}&chap_id={{ chap.id }}"
                 >{{ quiz.quiz_title }}</a
@@ -273,4 +273,34 @@ content %}{% include "admin/admin_wrapper.html" %}
     </div>
   </section>
 </section>
+<script>
+  const url = new URL(window.location.href);
+  let showWhere = url.searchParams.get("where");
+  if (showWhere) {
+    showWhere = JSON.parse(decodeURIComponent(showWhere));
+    if ("quiz_title" in showWhere) {
+      document.getElementById("quizInput").value = showWhere["quiz_title"];
+    }
+  }
+  function searchByQuiz(skip, take, chap_id, sub_id) {
+    var searchTerm = document.getElementById("quizInput").value;
+    var queryParams =
+      "?skip=" +
+      skip +
+      "&take=" +
+      take +
+      "&sub_id=" +
+      sub_id +
+      "&chap_id=" +
+      chap_id;
+    if (searchTerm) {
+      queryParams +=
+        "&where=" +
+        encodeURIComponent(JSON.stringify({ quiz_title: searchTerm }));
+      window.location.href = "/admin/subject/chapter/view" + queryParams;
+    } else {
+      window.location.href = "/admin/subject/chapter/view" + queryParams;
+    }
+  }
+</script>
 {% endblock %}
