@@ -159,8 +159,8 @@ block content %} {% include "admin/admin_wrapper.html" %}
   let showWhere = url.searchParams.get("where");
   if (showWhere) {
     showWhere = JSON.parse(decodeURIComponent(showWhere));
-    if ("name" in obj) {
-      document.getElementById("subjectInput").value = obj["name"];
+    if ("name" in showWhere) {
+      document.getElementById("subjectInput").value = showWhere["name"];
     }
   }
   function searchBySubject(skip, take) {
