@@ -148,5 +148,58 @@ content %}{% include "admin/admin_wrapper.html" %}
       </p>
     </div>
   </div>
+  <h6 class="mt-2">Question Details</h6>
+  <div class="border p-3">
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Question Title:</strong> {% if question %}{{
+        question.question_title }}{% else %}N/a{% endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Question Statement:</strong> {% if question %}{{
+        question.question_statement }}{% else %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Option 1:</strong> {% if question %}{{ question.option_1 }}{%
+        else %}N/a{% endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Option 2:</strong> {% if question %}{{ question.option_2 }}{%
+        else %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Option 3:</strong> {% if question %}{{ question.option_3 }}{%
+        else %}N/a{% endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Option 4:</strong> {% if question %}{{ question.option_4 }}{%
+        else %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Correct option:</strong> {% if question %}{{
+        question.correct_option }}{% else %}N/a{% endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Mark:</strong> {% if question %}{{ question.marks }}{% else
+        %}N/a{% endif %}
+      </p>
+    </div>
+    <div class="row">
+      <p class="col-12 col-sm-6">
+        <strong>Last Updated At:</strong> {% if question %}{{
+        question.updated_at }}{% else %}N/a{% endif %}
+      </p>
+      <p class="col-12 col-sm-6">
+        <strong>Created At:</strong> {% if question %}{{ question.created_at
+        }}{% else %}N/a{% endif %}
+      </p>
+    </div>
+  </div>
 </section>
 {% endblock %}
