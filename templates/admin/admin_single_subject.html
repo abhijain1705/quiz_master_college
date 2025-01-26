@@ -232,8 +232,8 @@ content %}{% include "admin/admin_wrapper.html" %}
   let showWhere = url.searchParams.get("where");
   if (showWhere) {
     showWhere = JSON.parse(decodeURIComponent(showWhere));
-    if ("name" in obj) {
-      document.getElementById("chapterInput").value = obj["name"];
+    if ("name" in showWhere) {
+      document.getElementById("chapterInput").value = showWhere["name"];
     }
   }
   function searchByChapter(skip, take, sub_id) {
