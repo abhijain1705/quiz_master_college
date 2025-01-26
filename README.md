@@ -4,6 +4,13 @@
 
 Quiz Master is a multi-user application designed as an exam preparation site for multiple courses. It supports two roles: Admin and User. The Admin manages the application, while Users can register, log in, and attempt quizzes.
 
+## Setup
+
+- **Create Virtual ENV**: python3 -m venv venv
+- **Enter into existing virtual ENV**: .\venv\Scripts\activate
+- **Install required dependency**: pip install -r requirements.txt
+- **Run the application locally**: python app.py
+
 ## Frameworks Used
 
 - **Backend**: Flask
