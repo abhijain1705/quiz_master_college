@@ -40,9 +40,9 @@ def create_dummy_quiz(count):
         quiz = Quiz(
         id=random_uuid,
         quiz_title=f'Quiz Title{x}',
-        chapter_id='ae6b9316-1e5d-4b7e-aacd-dbf9d6cde021',
+        chapter_id='0a156df4-fb91-44c3-8923-45edbf83aa23',
         chapter_code='CHP921',
-        date_of_quiz=datetime.now(),
+        date_of_quiz=datetime(2025, 4, 5),
         time_duration=3600000,
         total_marks=100,
         number_of_questions=random.randint(10, 25),
