@@ -171,6 +171,33 @@ content %}{% include "admin/admin_wrapper.html" %}
     </div>
   </div>
 
+  <!-- flash message -->
+  {% with messages = get_flashed_messages(with_categories=True) %}{% if messages
+  %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-6">
+        {% for category, message in messages %}
+        <div
+          class="alert alert-{{ category }} alert-dismissible fade show"
+          role="alert"
+        >
+          {{ message }}
+          <button
+            type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}{% endwith %}
+
   <div class="d-flex mt-3 flex-wrap justify-content-between">
     <div>
       <h3>Question Management</h3>
@@ -188,7 +215,11 @@ content %}{% include "admin/admin_wrapper.html" %}
           type="button"
           class="btn btn-primary mr-3"
         >
-          <a class="text-white">New Question</a></button
+          <a
+            href="/admin/subject/chapter/quiz/question/new?sub_id={{ sub.id }}&quiz_id={{ quiz.id }}&chap_id={{ chap.id }}"
+            class="text-white"
+            >New Question</a
+          ></button
         >{% else %}
         <button type="button" class="btn mr-3">
           No More question space available
@@ -207,12 +238,12 @@ content %}{% include "admin/admin_wrapper.html" %}
         <input
           class="form-control mr-2"
           type="search"
-          id="quizInput"
+          id="questionInput"
           placeholder="Search by Question Name"
           aria-label="Search"
         />
         <button
-          onclick="searchByQuestion('{{skip}}', '{{take}}')"
+          onclick="searchByQuestion('{{skip}}', '{{ chap.id }}' , '{{ sub.id }}' ,'{{ quiz.id }}' ,'{{take}}')"
           class="btn btn-dark"
         >
           <a>Search</a>
@@ -260,7 +291,11 @@ content %}{% include "admin/admin_wrapper.html" %}
             <td>{{ question.created_at }}</td>
             <td>{{ question.updated_at }}</td>
             <td>
-              <button type="button" class="btn btn-secondary mr-3 mb-3">
+              <button
+                onclick="window.location.href='/admin/subject/chapter/quiz/question/update?question_id={{ question.id }}&quiz_id={{ quiz.id }}&chap_id={{ chap.id }}&sub_id={{ sub.id }}'"
+                type="button"
+                class="btn btn-secondary mr-3 mb-3"
+              >
                 Update
               </button>
               <form
@@ -306,4 +341,37 @@ content %}{% include "admin/admin_wrapper.html" %}
     </div>
   </section>
 </section>
+<script>
+  const url = new URL(window.location.href);
+  let showWhere = url.searchParams.get("where");
+  if (showWhere) {
+    showWhere = JSON.parse(decodeURIComponent(showWhere));
+    if ("question_title" in showWhere) {
+      document.getElementById("questionInput").value =
+        showWhere["question_title"];
+    }
+  }
+  function searchByQuestion(skip, chap_id, sub_id, quiz_id, take) {
+    var searchTerm = document.getElementById("questionInput").value;
+    var queryParams =
+      "?skip=" +
+      skip +
+      "&take=" +
+      take +
+      "&sub_id=" +
+      sub_id +
+      "&chap_id=" +
+      chap_id +
+      "&quiz_id=" +
+      quiz_id;
+    if (searchTerm) {
+      queryParams +=
+        "&where=" +
+        encodeURIComponent(JSON.stringify({ question_title: searchTerm }));
+      window.location.href = "/admin/subject/chapter/quiz/view" + queryParams;
+    } else {
+      window.location.href = "/admin/subject/chapter/quiz/view" + queryParams;
+    }
+  }
+</script>
 {% endblock %}
