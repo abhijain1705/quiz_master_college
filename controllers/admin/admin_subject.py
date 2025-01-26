@@ -33,6 +33,26 @@ def date_extractor(datestring):
             return ky
     return date(int(yr),int(month),int(day))
 
+def validate_question_fields(fields):
+    required_fields = ["question_title", "question_statement", "option_1", "option_2", "option_3", "option_4", "correct_option", "marks"]
+    error_messages = {
+        "question_title": "Question title is required",
+        "question_statement": "Question statement is required",
+        "option_1": "Option 1 is required",
+        "option_2": "Option 2 is required",
+        "option_3": "Option 3 is required",
+        "option_4": "Option 4 is required",
+        "correct_option": "Correct option is required",
+        "marks": "Marks are required and must be greater than 0",
+    }
+
+    for field in required_fields:
+        value = fields.get(field)
+        if not value or (field == "marks" and int(value) <= 0) or (field == "correct_option" and int(value) not in [1, 2, 3, 4]):
+            flash(error_messages[field], "danger")
+            return False
+    return True
+
 def validate_quiz_fields(fields):
     required_fields = ["quiz_title", "date_of_quiz", "time_duration", "number_of_questions", "total_marks", "remarks"]
     error_messages = {
@@ -50,6 +70,244 @@ def validate_quiz_fields(fields):
             flash(error_messages[field], "danger")
             return False
     return True
+
+
+@subject.route("/chapter/quiz/question/update", methods=['GET', 'POST'])
+@login_required
+@role_required("admin")
+@swag_from({
+    "tags": ['Admin'],
+    "summary": "Update an existing question",
+    "description":"This endpoint will update an existing question",
+    "parameters": [    
+        {
+            'name': 'question_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Question ID of the subject',
+            'example': 'QG001'
+        },             
+        {
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Subject ID of the subject',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'quiz_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Quiz ID of the quiz',
+            'example': 'CHP001'
+        }, 
+        {
+            'name': 'chap_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Chapter ID of the chapter',
+            'example': 'CHP001'
+        },                 
+    ],
+    'responses': {
+        200: {
+            'description': 'Question updated successfully',
+            'examples': {
+                'application/json': {
+                    'message': 'Success',
+                    'data': {}
+                }
+            }
+        },
+        401: {
+            "description": "Unauthorized access.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "Login required"}
+                }
+            }
+        },
+        500: {
+            "description": "Internal server error.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "An error occurred."}
+                }
+            }
+        }
+    }    
+})
+def update_question():
+    quiz_id = request.args.get("quiz_id", "")
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+    question_id = request.args.get("question_id", "")
+
+    if not sub_id:
+        return flash_and_redirect("Subject is required", "danger", url_for("subject.admin_subject"))
+    if not chap_id:
+        return flash_and_redirect("Chapter is required", "danger", url_for("subject.view_subject", sub_id=sub_id))
+    if not quiz_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    if not question_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_quiz", quiz_id=quiz_id, sub_id=sub_id, chap_id=chap_id))
+        
+    try:
+        sub = Subject.query.get_or_404(sub_id)
+        chap = Chapter.query.get_or_404(chap_id)
+        quiz = Quiz.query.get_or_404(quiz_id)
+        question = Questions.query.get_or_404(question_id)
+        if request.method == 'GET':
+            return render_template("admin/admin_question_manage.html",question=question,sub=sub,chap=chap,quiz=quiz)
+        else:
+            fields = {
+                "question_title": request.form.get("question_title"),
+                "question_statement": request.form.get("question_statement"),
+                "option_1": request.form.get("option_1"),
+                "option_2": request.form.get("option_2"),
+                "option_3": request.form.get("option_3"),
+                "option_4": request.form.get("option_4"),
+                "correct_option": request.form.get("correct_option"),
+                "marks": request.form.get("marks"),
+            }
+
+            if not validate_question_fields(fields):
+                return render_template('admin/admin_question_manage.html', question=question, sub=sub, chap=chap, quiz=quiz)
+
+            question.question_title=fields['question_title']
+            question.question_statement=fields['question_statement']
+            question.option_1=fields['option_1']
+            question.option_2=fields['option_2']
+            question.option_3=fields['option_3']
+            question.option_4=fields['option_4']
+            question.correct_option=int(fields['correct_option'])
+            question.marks=int(fields['marks'])
+            question.updated_at=datetime.now()
+            db.session.commit()    
+            return flash_and_redirect(f"Question updated successfully", "success", url_for("subject.view_quiz",chap_id=chap_id,sub_id=sub_id,quiz_id=quiz_id))
+    except Exception as e:
+        return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))
+
+
+
+@subject.route("/chapter/quiz/question/new", methods=['POST',"GET"])
+@login_required
+@role_required("admin")
+@swag_from({
+    "tags": ['Admin'],
+    "summary": "Create new question",
+    "description":"This endpoint will create a new question",
+    "parameters": [    
+        {
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Subject ID of the subject',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'quiz_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Quiz ID of the quiz',
+            'example': 'CHP001'
+        }, 
+        {
+            'name': 'chap_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Chapter ID of the chapter',
+            'example': 'CHP001'
+        },                 
+    ],
+    'responses': {
+        200: {
+            'description': 'New question created successfully',
+            'examples': {
+                'application/json': {
+                    'message': 'Success',
+                    'data': {}
+                }
+            }
+        },
+        401: {
+            "description": "Unauthorized access.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "Login required"}
+                }
+            }
+        },
+        500: {
+            "description": "Internal server error.",
+            "content": {
+                "application/json": {
+                    "example": {"message": "An error occurred."}
+                }
+            }
+        }
+    }    
+})
+def new_question():
+    quiz_id = request.args.get("quiz_id", "")
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+
+    if not sub_id:
+        return flash_and_redirect("Subject is required", "danger", url_for("subject.admin_subject"))
+    if not chap_id:
+        return flash_and_redirect("Chapter is required", "danger", url_for("subject.view_subject", sub_id=sub_id))
+    if not quiz_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    
+    try:
+        sub = Subject.query.get_or_404(sub_id)
+        chap = Chapter.query.get_or_404(chap_id)
+        quiz = Quiz.query.get_or_404(quiz_id)
+        if request.method == 'GET':
+            return render_template("admin/admin_question_manage.html", sub=sub, chap=chap, quiz=quiz) 
+        else:
+            fields = {
+                "question_title": request.form.get("question_title"),
+                "question_statement": request.form.get("question_statement"),
+                "option_1": request.form.get("option_1"),
+                "option_2": request.form.get("option_2"),
+                "option_3": request.form.get("option_3"),
+                "option_4": request.form.get("option_4"),
+                "correct_option": request.form.get("correct_option"),
+                "marks": request.form.get("marks"),
+            }
+            if not validate_question_fields(fields):
+                return render_template('admin/admin_question_manage.html', sub=sub, chap=chap, quiz=quiz)
+
+            new_question = Questions(
+                id=str(uuid.uuid4()),
+                quiz_id=quiz.id,
+                question_title=fields['question_title'],
+                question_statement=fields['question_statement'],
+                option_1=fields['option_1'],
+                option_2=fields['option_2'],
+                option_3=fields['option_3'],
+                option_4=fields['option_4'],
+                correct_option=int(fields['correct_option']),
+                marks=int(fields['marks']),
+                chapter_id=chap.id,
+                chapter_code=chap.code,
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+                )
+            db.session.add(new_question)
+            db.session.commit()    
+            return flash_and_redirect(f"Question created successfully", "success", url_for("subject.view_quiz",chap_id=chap_id,sub_id=sub_id,quiz_id=quiz_id))
+    except Exception as e:
+        return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))
 
 
 @subject.route("/chapter/quiz/question/view")
@@ -95,7 +353,7 @@ def validate_quiz_fields(fields):
     ],
     'responses': {
         200: {
-            'description': 'Subject and chapter and quiz successfully retrieved',
+            'description': 'Subject and chapter and quiz and question successfully retrieved',
             'examples': {
                 'application/json': {
                     'message': 'Success',
@@ -374,7 +632,6 @@ def update_quiz():
         db.session.commit()
         return flash_and_redirect("Quiz updated successfully", "success",url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
     except Exception as e:
-        print(e, "mdflergirhguvvrmrt")
         return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
 
 @subject.route("/chapter/quiz/new", methods=['POST', 'GET'])
@@ -607,6 +864,7 @@ def view_quiz():
         chap = Chapter.query.get_or_404(chap_id)
         quiz = Quiz.query.get_or_404(quiz_id)
         where = json.loads(where) if where else {}
+        print(where, "fmwklemlfmerlmgv")
         filterd_questions = Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id, **where).order_by(desc(Questions.created_at)).limit(take).offset(skip).all()
         total_rows  = Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id).order_by(desc(Questions.created_at)).count()
         return render_template("admin/admin_single_quiz.html",rows=filterd_questions, total_rows=total_rows,skip=skip,take=take, sub=sub, chap=chap, quiz=quiz)
