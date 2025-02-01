@@ -1,0 +1,56 @@
+.logo {
+  width: 150px;
+  margin: 25px auto;
+  background-color: white !important;
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.color-green {
+  color: green;
+}
+
+.color-red {
+  color: red;
+}
+
+.adminLogo {
+  height: 50px;
+  background-color: white !important;
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+#emailHelp {
+  color: white !important;
+}
+
+.anchor {
+  color: white !important;
+  text-decoration: underline !important;
+}
+
+.required {
+  color: red;
+}
+
+.link {
+  text-decoration: underline !important;
+}
+
+#body {
+  background-color: #1f1147 !important;
+  color: white !important;
+  background: url("./bg.svg") no-repeat center bottom;
+  background-size: cover;
+  background-position: top;
+  height: 320px !important;
+}
+
+.button {
+  background-color: #6949fd !important;
+}

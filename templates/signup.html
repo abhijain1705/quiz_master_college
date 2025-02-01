@@ -1,0 +1,114 @@
+{% extends "base.html" %} {% block title %}Sign up to Quiz Time{% endblock %} {%
+block content %}
+
+<section
+  id="body"
+  class="d-flex flex-column min-vh-100 justify-content-center align-items-center"
+>
+  <img alt="logo" src="/static/images/logo.png" class="logo" />
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=True) %} {% if
+  messages %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-6">
+        {% for category, message in messages %}
+        <div
+          class="alert alert-{{ category }} alert-dismissible fade show"
+          role="alert"
+        >
+          {{ message }}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+          ></button>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %} {% endwith %}
+
+  <!-- signup form -->
+  <form method="post" class="container p-3" action="/auth/signup">
+    <div class="container">
+      <div class="row">
+        <div class="form-group mx-auto col-12 col-sm-6">
+          <label for="exampleInputName">Full Name</label>
+          <input
+            type="text"
+            name="full_name"
+            class="form-control w-100"
+            id="exampleInputName"
+            aria-describedby="nameHelp"
+            placeholder="Enter Full Name"
+          />
+        </div>
+        <div class="form-group mx-auto col-12 col-sm-6">
+          <label for="exampleInputEmail1">Email address</label>
+          <input
+            type="email"
+            name="email"
+            class="form-control w-100"
+            id="exampleInputEmail1"
+            aria-describedby="emailHelp"
+            placeholder="Enter email"
+          />
+          <small id="emailHelp" class="form-text text-muted"
+            >We'll never share your email with anyone else.</small
+          >
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group mx-auto col-12 col-sm-6">
+          <label for="exampleInputPassword1">Password</label>
+          <input
+            type="password"
+            class="form-control w-100"
+            id="exampleInputPassword1"
+            name="password"
+            placeholder="Password"
+          />
+        </div>
+        <div class="form-group mx-auto col-12 col-sm-6">
+          <label for="exampleInputQualification">Qualification</label>
+          <input
+            type="text"
+            name="qualification"
+            class="form-control w-100"
+            id="exampleInputQualification"
+            aria-describedby="qualificationHelp"
+            placeholder="Enter Qualification"
+          />
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group mx-auto col-12 col-sm-6">
+          <label for="exampleInputDOB">Date of birth</label>
+          <input
+            type="date"
+            name="dob"
+            class="form-control w-100"
+            id="exampleInputDOB"
+            aria-describedby="dob"
+            placeholder="Enter Date of birth"
+          />
+        </div>
+        <div class="form-group mx-auto col-12 col-sm-6">
+          <label for="exampleInputDOB">Submit</label>
+          <button type="submit" class="button w-100 btn btn-primary">
+            Submit
+          </button>
+          <small id="emailHelp" class="form-text text-muted"
+            >Already have an Account?
+            <a class="anchor" href="/auth/login">Login now</a></small
+          >
+        </div>
+      </div>
+    </div>
+  </form>
+</section>
+{% endblock %}
