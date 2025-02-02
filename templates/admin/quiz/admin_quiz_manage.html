@@ -89,25 +89,32 @@ content %} {% include "admin/admin_wrapper.html" %}
             >Quiz Duration <span class="required">*</span></label
           >
           <div class="d-flex justify-content-between">
-            <input
-              type="number"
-              class="form-control"
-              id="exampleInputTime1"
-              name="time_duration"
-              min="0"
-              aria-describedby="nameHelp"
-              placeholder="Enter Quiz Duration"
-              value="{{ quiz.time_duration if quiz else '' }}"
-            />
-            <select
-              aria-describedby="nameHelp"
-              name="time_unit"
-              class="form-control ml-4"
-            >
-              <option {% if quiz and quiz.time_unit == 'seconds' %}selected{% endif %} value="seconds">Seconds</option>
-              <option {% if quiz and quiz.time_unit == 'minutes' %}selected{% endif %} value="minutes">Minutes</option>
-              <option {% if quiz and quiz.time_unit == 'hours'  %}selected{% endif %} value="hours">Hours</option>
-            </select>
+            <div class="w-100">
+              <label for="exampleInputTime2">Hour</label>
+              <input
+                type="number"
+                class="form-control w-100"
+                id="exampleInputTime2"
+                name="time_duration_hr"
+                min="0"
+                aria-describedby="nameHelp"
+                placeholder="Enter Quiz Duration (Hours)"
+                value="{{ quiz.time_duration_hr if quiz else '' }}"
+              />
+            </div>
+            <div class="ml-3 w-100">
+              <label for="exampleInputTime1">Minute</label>
+              <input
+                type="number"
+                class="form-control w-100"
+                id="exampleInputTime1"
+                name="time_duration_min"
+                min="0"
+                aria-describedby="nameHelp"
+                placeholder="Enter Quiz Duration (Minutes)"
+                value="{{ quiz.time_duration_min if quiz else '' }}"
+              />
+            </div>
           </div>
         </div>
         <div class="form-group">

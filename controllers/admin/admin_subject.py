@@ -31,12 +31,12 @@ def date_extractor(datestring):
     return date(int(yr),int(month),int(day))
 
 def validate_quiz_fields(fields):
-    required_fields = ["quiz_title","time_unit", "date_of_quiz", "time_duration", "number_of_questions", "total_marks", "remarks"]
+    required_fields = ["quiz_title", "time_duration_hr", "date_of_quiz", "time_duration_min", "number_of_questions", "total_marks", "remarks"]
     error_messages = {
         "quiz_title": "Quiz title is required",
         "date_of_quiz": "Date of quiz is required",
-        "time_unit": "Time unit is required",
-        "time_duration": "Time duration is required and must be greater than 0",
+        "time_duration_min": "Time duration min is required and must be greater than 0",
+        "time_duration_hr": "Time duration hr is required and must be 0 or greater",
         "number_of_questions": "Number of questions is required and must be greater than 0",
         "total_marks": "Total marks are required and must be greater than 0",
         "remarks": "Remarks are required",
@@ -44,10 +44,27 @@ def validate_quiz_fields(fields):
 
     for field in required_fields:
         value = fields.get(field)
-        if not value or (field in ["time_duration", "number_of_questions", "total_marks"] and int(value) <= 0):
+
+        if value is None or value == "":
             flash(error_messages[field], "danger")
             return False
+
+        if field in ["time_duration_hr", "time_duration_min", "number_of_questions", "total_marks"]:
+            try:
+                value = int(value)
+            except ValueError:
+                flash(f"{field} must be a valid number", "danger")
+                return False
+
+        if (field == "time_duration_hr" and value < 0) or \
+           (field == "time_duration_min" and value <= 0) or \
+           (field in ["number_of_questions", "total_marks"] and value <= 0):
+            flash(error_messages[field], "danger")
+            return False
+
     return True
+
+
 
 def validate_question_fields(fields):
     required_fields = ["question_title", "question_statement", "option_1", "option_2", "option_3", "option_4", "correct_option", "marks"]
@@ -312,11 +329,11 @@ def update_quiz():
         fields = {
             "quiz_title": request.form.get("quiz_title"),
             "date_of_quiz": request.form.get("date_of_quiz"),
-            "time_duration": request.form.get("time_duration"),
+            "time_duration_hr": request.form.get("time_duration_hr"),
             "number_of_questions": request.form.get("number_of_questions"),
             "total_marks": request.form.get("total_marks"),
             "remarks": request.form.get("remarks"),
-            "time_unit": request.form.get("time_unit")
+            "time_duration_min": request.form.get("time_duration_min")
         }
 
         if not validate_quiz_fields(fields):
@@ -325,12 +342,12 @@ def update_quiz():
         try:
             quiz.quiz_title=fields['quiz_title']
             quiz.date_of_quiz = date_extractor(fields['date_of_quiz'])
-            quiz.time_duration=int(fields['time_duration'])
             quiz.remarks=fields['remarks']
             quiz.updated_at=datetime.now()
             quiz.number_of_questions=int(fields['number_of_questions'])
             quiz.total_marks=int(fields['total_marks'])
-            quiz.time_unit=fields['time_unit']
+            quiz.time_duration_min=int(fields['time_duration_min'])
+            quiz.time_duration_hr=int(fields['time_duration_hr'])
             db.session.commit()
             return flash_and_redirect("Quiz updated successfully", "success",url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
         except Exception as e:
@@ -353,28 +370,27 @@ def new_quiz():
 
     sub = Subject.query.filter_by(id=sub_id).first()
     chap = Chapter.query.filter_by(id=chap_id).first()
-    print(request.method, "memethodmethodthod")
     if request.method == 'POST':
         fields = {
             "quiz_title": request.form.get("quiz_title"),
             "date_of_quiz": request.form.get("date_of_quiz"),
-            "time_duration":int(request.form.get("time_duration")),
+            "time_duration_hr":int(request.form.get("time_duration_hr")),
+            "time_duration_min": int(request.form.get("time_duration_min")),
             "number_of_questions": request.form.get("number_of_questions"),
             "total_marks": request.form.get("total_marks"),
             "remarks": request.form.get("remarks"),
-            "time_unit": request.form.get("time_unit")
         }
         if not validate_quiz_fields(fields):
             return render_template('admin/quiz/admin_quiz_manage.html', sub=sub, chap=chap)
         try:
             new_quiz = Quiz(
-                id=str(uuid.uuid4()), 
+                id=str(uuid.uuid4()),
                 quiz_title=fields['quiz_title'],
                 chapter_id=chap.id,
                 chapter_code=chap.code,
                 date_of_quiz=date_extractor(fields['date_of_quiz']),
-                time_duration= fields['time_duration'],
-                time_unit=fields['time_unit'],
+                time_duration_hr= fields['time_duration_hr'],
+                time_duration_min= fields['time_duration_min'],
                 remarks=fields['remarks'],
                 created_at=datetime.now(),
                 updated_at=datetime.now(),
@@ -387,7 +403,7 @@ def new_quiz():
             return flash_and_redirect("Quiz created successfully", "success",url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
         except Exception as e:
             return flash_and_redirect(f"An error occurred: {e}", "danger",url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
-    else:            
+    else:
         return render_template("admin/quiz/admin_quiz_manage.html", sub=sub, chap=chap)
 
 @subject.route("/chapter/view")

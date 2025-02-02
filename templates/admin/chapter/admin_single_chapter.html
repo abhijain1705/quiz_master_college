@@ -121,8 +121,8 @@ content %}{% include "admin/admin_wrapper.html" %}
       <div class="d-flex align-items-center">
         <p class="mr-4">Total Rows: {{ total_rows }}</p>
         <p>
-          Current Page: {% if skip and take %} {{ ((skip|int)//take)+1 }} {%
-          else %}1{% endif %}
+          Current Page: {% if skip and take %} {{ ((skip|int)/take)+1 }} {% else
+          %}1{% endif %}
         </p>
       </div>
     </div>
@@ -215,7 +215,9 @@ content %}{% include "admin/admin_wrapper.html" %}
               >
             </td>
             <td>{{ quiz.date_of_quiz }}</td>
-            <td>{{ quiz.time_duration }} {{ quiz.time_unit }}</td>
+            <td>
+              {{ quiz.time_duration_hr }} hr. {{ quiz.time_duration_min }} min.
+            </td>
             <td>{{ quiz.number_of_questions }}</td>
             <td>{{ quiz.remarks }}</td>
             <td>{{ quiz.total_marks }}</td>
