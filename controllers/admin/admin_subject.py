@@ -21,10 +21,154 @@ def validate_fields(fields_to_validate):
             return label
     return None 
 
+@subject.route("/chapter/delete", methods=['POST'])
+@login_required
+@role_required("admin")
+@swag_from({
+    "tags": ['Admin'],
+    "summary": "Delete chapter",
+    "description": "This endpoint will delete chapter",
+    "parameters": [
+        {
+            'name': 'chap_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Chapter id',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Subject id',
+            'example': 'ENG001'
+        }
+    ],
+    "responses": {
+        200: {
+            'description': 'Chapter deleted successfully',
+            'examples': {
+                'application/json': {'message': 'Chapter deleted successfully'}
+            }
+        },
+        400: {
+            'description': 'Invalid input',
+            'examples': {
+                'application/json': {'error': 'Chapter is required'}
+            }
+        },
+        500:{
+            'description': 'Internal Server Error',
+            'examples': {
+                'application/json': {'error': 'An error occurred'}
+            }
+        }
+    }
+})
+def delete_chapter():
+    chap_id = request.args.get("chap_id", "")
+    sub_id = request.args.get("sub_id", "")
+    if not chap_id:
+        return flash_and_redirect("Chapter is required", "danger", url_for("subject.view_subject", sub_id=sub_id))
+    chap = Chapter.query.filter_by(id=chap_id).first()
+    if not chap:
+        return flash_and_redirect("Chapter not found", "danger", url_for("subject.view_subject", sub_id=sub_id))
+    try:
+        db.session.delete(chap)
+        db.session.commit()
+        return flash_and_redirect("Chapter deleted successfully", "success", url_for("subject.view_subject", sub_id=sub_id))
+    except Exception as e:
+        db.session.rollback()
+        return flash_and_redirect(str(e), "danger", url_for("subject.view_subject", sub_id=sub_id))
+
 @subject.route("/chapter/update", methods=['GET', 'POST'])
 @login_required
 @role_required("admin")
-@swag_from({})
+@swag_from({
+    "tags": ['Admin'],
+    "summary": "Update chapter",
+    "description": "This endpoint will update chapter",
+    "parameters": [
+        {
+            'name': 'chap_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Chapter id',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'sub_id',
+            'in': 'query',
+            'required': True,
+            'type': 'string',
+            'description': 'Subject id',
+            'example': 'ENG001'
+        },
+        {
+            'name': 'name',
+            'in': 'formData',
+            'required': True,
+            'type': 'string',
+            'description': 'Name of chapter',
+            'example': 'English'
+        },
+        {
+            'name': 'description',
+            'in': 'formData',
+            'required': True,
+            'type': 'string',
+            'description': 'Description of chapter',
+            'example': 'Basic English course'
+        },
+        {
+            'name': 'code',
+            'in': 'formData',
+            'required': True,
+            'type': 'string',
+            'description': 'Code of chapter',
+            'example': 'ENG101'
+        },
+        {
+            'name': 'chapter_number',
+            'in': 'formData',
+            'required': True,
+            'type': 'integer',
+            'description': 'Chapter number of the chapter',
+            'example': '3'
+        },
+        {
+            'name': 'pages',
+            'in': 'formData',
+            'required': True,
+            'type': 'integer',
+            'description': 'Count of pages',
+            'example': '75'
+        }
+    ],
+    "responses": {
+        200: {
+            'description': 'Chapter updated successfully',
+            'examples': {
+                'application/json': {'message': 'Chapter updated successfully'}
+            }
+        },
+        400: {
+            'description': 'Invalid input',
+            'examples': {
+                'application/json': {'error': 'Name is required'}
+            }
+        },
+        500:{
+            'description': 'Internal Server Error',
+            'examples': {
+                'application/json': {'error': 'An error occurred'}
+            }
+        }
+    }
+})
 def update_chapter():
     chap_id = request.args.get("chap_id", "")
     sub_id = request.args.get("sub_id", "")
@@ -179,7 +323,7 @@ def new_chapter():
     else:
         return render_template("admin/chapter/admin_chapter_manage.html",sub_id=sub_id)
 
-@subject.route("/delete")
+@subject.route("/delete", methods=['POST'])
 @login_required
 @role_required("admin")
 @swag_from({
