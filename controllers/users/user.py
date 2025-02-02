@@ -1,5 +1,4 @@
 from models import db
-from flasgger import  swag_from
 from datetime import datetime,date
 from config import admin_credentials
 from flask_login import login_required

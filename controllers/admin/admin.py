@@ -1,6 +1,5 @@
 #controllers/admin.py
 from sqlalchemy import desc
-from flasgger import swag_from
 from models.model import User, Score
 from controllers.decorator import role_required
 from flask_login import current_user, login_required

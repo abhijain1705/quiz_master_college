@@ -1,6 +1,5 @@
 import uuid
 from models import db
-from flasgger import Swagger
 from models.model import User
 from sqlalchemy import inspect
 from flask_session import Session
@@ -20,14 +19,7 @@ app.config['DEBUG']=True
 app.config['SESSION_PERMANENT']=False
 app.config['SESSION_TYPE']='filesystem'
 app.secret_key='mysecretkey'
-app.config['SWAGGER'] = {
-    "swagger_version": "2.0",
-    "title": "Flask Swagger",
-    "description": "API for a simple Quiz management system"
-}
 Session(app)
-swagger = Swagger(app)
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 db.init_app(app)
