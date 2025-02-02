@@ -1,0 +1,123 @@
+{% extends "base.html" %} {% block title %} Manage Chapter {% endblock %} {%
+block content %} {% include "admin/admin_wrapper.html" %}
+<section class="p-3">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item">
+        <a href="/admin/subject/?skip=0&take=25">Subjects List</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="/admin/subject/view?sub_id={{ sub_id }}">Single Subject</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {% if chap %}Update Chapter{% else %}New Chapter{% endif %}
+      </li>
+    </ol>
+  </nav>
+  <section class="d-flex flex-column align-items-center justify-content-center">
+    <!-- flash message -->
+    {% with messages = get_flashed_messages(with_categories=True) %}{% if
+    messages %}
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-sm-6">
+          {% for category, message in messages %}
+          <div
+            role="alert"
+            class="alert alert-{{ category }} alert-dismissible fade show"
+          >
+            {{ message }}
+            <button
+            type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}{% endwith %}
+    <form
+      method="post"
+      class="container p-3"
+      action="{% if chap %}/admin/subject/chapter/update?sub_id={{ sub_id }}&chap_id={{ chap.id }}{% else %}/admin/subject/chapter/new?sub_id={{ sub_id }}{% endif %}"
+    >
+      <div>
+        <div class="form-group">
+          <label for="exampleInputName1">Chapter Name <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            id="exampleInputName1"
+            name="name"
+            aria-describedby="nameHelp"
+            placeholder="Enter Chapter Name"
+            value="{{ chap.name if chap else '' }}"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputDescription1">Chapter Description <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            name="description"
+            multiple
+            min="4"
+            value="{{ chap.description if chap else '' }}"
+            id="exampleInputDescription1"
+            placeholder="Enter Chapter Description"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPages1">Chapter Page Count <span class="required">*</span></label>
+          <input
+            type="number"
+            class="form-control"
+            id="exampleInputPages1"
+            name="pages"
+            value="{{ chap.pages if chap else '' }}"
+            placeholder="Enter Chapter Page Count"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputChapterNo1">Chapter Number <span class="required">*</span></label>
+          <input
+            type="number"
+            class="form-control"
+            id="exampleInputChapterNo1"
+            name="chapter_number"
+            value="{{ chap.chapter_number if chap else '' }}"
+            placeholder="Enter Chapter Number"
+          />
+        </div>
+        <div class="form-group">
+          <label for="exampleInputCode1">Chapter Code <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            id="exampleInputCode1"
+            name="code"
+            value="{{ chap.code if chap else '' }}"
+            placeholder="Enter Chapter Code"
+          />
+        </div>
+      </div>
+      <div>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <a
+            href="/admin/subject/view?sub_id={{ sub_id }}&skip=0&take=25"
+            class="text-white"
+            >Close</a
+          >
+        </button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+    </form>
+  </section>
+</section>
+{% endblock %}
