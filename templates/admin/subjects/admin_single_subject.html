@@ -185,7 +185,7 @@ content %}{% include "admin/admin_wrapper.html" %}
               </button>
               <form
                 method="post"
-                action="/admin/subject/chapter/delete?sub_id={{ sub.id }}&chapter_id={{ chpt.id }}"
+                action="/admin/subject/chapter/delete?sub_id={{ sub.id }}&chap_id={{ chpt.id }}"
                 onsubmit="return confirm('Are you sure you wish to delete the chapter with {{sub.code}}?, !! This will delete all quizzes and questions associated with it !!');"
               >
                 <input type="submit" class="btn btn-danger" value="Delete" />

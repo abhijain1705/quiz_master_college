@@ -1,4 +1,4 @@
-{% extends "base.html" %}{% block title %}View Chapter{% endblock %} {% block
+{% extends "base.html" %} {% block title %}View Quiz{% endblock %} {% block
 content %}{% include "admin/admin_wrapper.html" %}
 <section class="p-3">
   <nav aria-label="breadcrumb">
@@ -13,7 +13,14 @@ content %}{% include "admin/admin_wrapper.html" %}
         </a>
       </li>
       <li class="breadcrumb-item">
-        {% if chap %}{{ chap.code }}{% else %} {% endif %}
+        <a
+          href="/admin/subject/chapter/view?sub_id={{ sub.id }}&skip=0&take=25&chap_id={{ chap.id }}"
+        >
+          {% if chap %}{{ chap.code }}{% else %} {% endif %}
+        </a>
+      </li>
+      <li class="breadcrumb-item">
+        {% if quiz %}{{ quiz.quiz_title }}{% else %} {% endif %}
       </li>
     </ol>
   </nav>
@@ -30,7 +37,7 @@ content %}{% include "admin/admin_wrapper.html" %}
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalScrollableTitle">
-            Subject & Chapter Details
+            Subject, Chapter & Quiz Details
           </h5>
           <button
             type="button"
@@ -110,57 +117,60 @@ content %}{% include "admin/admin_wrapper.html" %}
               </p>
             </div>
           </div>
+          <h6 class="mt-2">Quiz Details</h6>
+          <div class="border p-3">
+            <div class="row">
+              <p class="col-12 col-sm-6">
+                <strong>Quiz Title:</strong> {% if quiz %}{{ quiz.quiz_title
+                }}{% else %}N/a{% endif %}
+              </p>
+              <p class="col-12 col-sm-6">
+                <strong>Chapter Code:</strong> {% if quiz %}{{ quiz.chapter_code
+                }}{% else %}N/a{% endif %}
+              </p>
+            </div>
+            <div class="row">
+              <p class="col-12 col-sm-6">
+                <strong>Date of Quiz:</strong> {% if quiz %}{{ quiz.date_of_quiz
+                }}{% else %}N/a{% endif %}
+              </p>
+              <p class="col-12 col-sm-6">
+                <strong>Quiz Duration:</strong> {% if quiz %}{{
+                (quiz.time_duration|int)/3600000 }} Hour{% else %}N/a{% endif %}
+              </p>
+            </div>
+            <div class="row">
+              <p class="col-12 col-sm-6">
+                <strong>Remarks:</strong> {% if quiz %}{{ quiz.remarks }}{% else
+                %}N/a{% endif %}
+              </p>
+              <p class="col-12 col-sm-6">
+                <strong>Number of Questions:</strong> {% if quiz %}{{
+                quiz.number_of_questions }}{% else %}N/a{% endif %}
+              </p>
+            </div>
+            <div class="row">
+              <p class="col-12 col-sm-6">
+                <strong>Total Marks:</strong> {% if quiz %}{{ quiz.total_marks
+                }}{% else %}N/a{% endif %}
+              </p>
+              <p class="col-12 col-sm-6">
+                <strong>Last Updated At:</strong> {% if quiz %}{{
+                quiz.updated_at }}{% else %}N/a{% endif %}
+              </p>
+            </div>
+            <div class="row">
+              <p class="col-12 col-sm-6">
+                <strong>Created At:</strong> {% if quiz %}{{ quiz.created_at
+                }}{% else %}N/a{% endif %}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="d-flex mt-3 flex-wrap justify-content-between">
-    <div>
-      <h3>Quiz Management</h3>
-      <div class="d-flex align-items-center">
-        <p class="mr-4">Total Rows: {{ total_rows }}</p>
-        <p>
-          Current Page: {% if skip and take %} {{ ((skip|int)//take)+1 }} {%
-          else %}1{% endif %}
-        </p>
-      </div>
-    </div>
-    <div class="form-inline my-2 my-lg-0">
-      <div class="d-flex">
-        <button type="button" class="btn btn-primary mr-3">
-          <a
-            class="text-white"
-            href="/admin/subject/chapter/quiz/new?sub_id={{ sub.id }}&chap_id={{ chap.id }}"
-            >New Quiz</a
-          >
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary mr-3"
-          data-toggle="modal"
-          data-target="#exampleModalScrollable"
-        >
-          View Chapter
-        </button>
-      </div>
-      <div class="d-flex mt-2 mt-sm-0 justify-content-between">
-        <input
-          class="form-control mr-2"
-          type="search"
-          id="quizInput"
-          placeholder="Search by Quiz Name"
-          aria-label="Search"
-        />
-        <button
-          class="btn btn-dark"
-          onclick="searchByQuiz('{{skip}}', '{{take}}', '{{ chap.id }}' , '{{ sub.id }}')"
-        >
-          <a>Search</a>
-        </button>
-      </div>
-    </div>
-  </div>
   <!-- flash message -->
   {% with messages = get_flashed_messages(with_categories=True) %}{% if messages
   %}
@@ -187,43 +197,102 @@ content %}{% include "admin/admin_wrapper.html" %}
     </div>
   </div>
   {% endif %}{% endwith %}
+
+  <div class="d-flex mt-3 flex-wrap justify-content-between">
+    <div>
+      <h3>Question Management</h3>
+      <div class="d-flex align-items-center">
+        <p class="mr-4">Total Rows: {{ total_rows }}</p>
+        <p>
+          Current Page: {% if skip and take %} {{ ((skip|int)//take)+1 }} {%
+          else %}1{% endif %}
+        </p>
+      </div>
+    </div>
+    <div class="form-inline my-2 my-lg-0">
+      <div class="d-flex">
+        {% if quiz.number_of_questions > total_rows %}<button
+          type="button"
+          class="btn btn-primary mr-3"
+        >
+          <a
+            href="/admin/subject/chapter/quiz/question/new?sub_id={{ sub.id }}&quiz_id={{ quiz.id }}&chap_id={{ chap.id }}"
+            class="text-white"
+            >New Question</a
+          ></button
+        >{% else %}
+        <button type="button" class="btn mr-3">
+          No More question space available
+        </button>
+        {% endif %}
+        <button
+          type="button"
+          class="btn btn-primary mr-3"
+          data-toggle="modal"
+          data-target="#exampleModalScrollable"
+        >
+          View Quiz
+        </button>
+      </div>
+      <div class="d-flex mt-2 mt-sm-0 justify-content-between">
+        <input
+          class="form-control mr-2"
+          type="search"
+          id="questionInput"
+          placeholder="Search by Question Name"
+          aria-label="Search"
+        />
+        <button
+          onclick="searchByQuestion('{{skip}}', '{{ chap.id }}' , '{{ sub.id }}' ,'{{ quiz.id }}' ,'{{take}}')"
+          class="btn btn-dark"
+        >
+          <a>Search</a>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <section class="mt-3">
     <div class="table-responsive">
       <table class="table table-bordered table-hover">
         <thead>
           <tr>
             <th scope="col">S.No.</th>
-            <th scope="col">Quiz Title</th>
-            <th scope="col">Date of Quiz</th>
-            <th scope="col">Time Duration</th>
-            <th scope="col">Number of Questions</th>
-            <th scope="col">Remarks</th>
-            <th scope="col">Total Marks</th>
+            <th scope="col">Question Title</th>
+            <th scope="col">Question Statement</th>
+            <th scope="col">Option 1</th>
+            <th scope="col">Option 2</th>
+            <th scope="col">Option 3</th>
+            <th scope="col">Option 4</th>
+            <th scope="col">Correct Option</th>
+            <th scope="col">Marks</th>
             <th scope="col">Created At</th>
             <th scope="col">Updated At</th>
             <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
-          {% for quiz in rows %}
+          {% for question in rows %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
             <td class="link">
               <a
-                href="/admin/subject/chapter/quiz/view?quiz_id={{ quiz.id }}&sub_id={{ sub.id }}&chap_id={{ chap.id }}"
-                >{{ quiz.quiz_title }}</a
+                href="/admin/subject/chapter/quiz/question/view?sub_id={{ sub.id }}&question_id={{ question.id }}&chap_id={{ chap.id }}&quiz_id={{ quiz.id }}"
+                >{{ question.question_title }}</a
               >
             </td>
-            <td>{{ quiz.date_of_quiz }}</td>
-            <td>{{ quiz.time_duration }} {{ quiz.time_unit }}</td>
-            <td>{{ quiz.number_of_questions }}</td>
-            <td>{{ quiz.remarks }}</td>
-            <td>{{ quiz.total_marks }}</td>
-            <td>{{ quiz.created_at }}</td>
-            <td>{{ quiz.updated_at }}</td>
+            <td>{{ question.question_statement }}</td>
+            <td>{{ question.option_1 }}</td>
+            <td>{{ question.option_2 }}</td>
+            <td>{{ question.option_3 }}</td>
+            <td>{{ question.option_4 }}</td>
+            <td>{{ question.correct_option }}</td>
+            <td>{{ question.marks }}</td>
+            <td>{{ question.created_at }}</td>
+            <td>{{ question.updated_at }}</td>
             <td>
               <button
-                onclick="window.location.href='/admin/subject/chapter/quiz/update?quiz_id={{ quiz.id }}&chap_id={{ chap.id }}&sub_id={{ sub.id }}'"
+                onclick="window.location.href='/admin/subject/chapter/quiz/question/update?question_id={{ question.id }}&quiz_id={{ quiz.id }}&chap_id={{ chap.id }}&sub_id={{ sub.id }}'"
                 type="button"
                 class="btn btn-secondary mr-3 mb-3"
               >
@@ -231,7 +300,6 @@ content %}{% include "admin/admin_wrapper.html" %}
               </button>
               <form
                 method="post"
-                action="/admin/subject/chapter/quiz/delete?sub_id={{ sub.id }}&chap_id={{ chap.id }}&quiz_id={{ quiz.id }}"
                 onsubmit="return confirm('Are you sure you wish to delete the quiz with {{sub.code}}?, !! This will delete all questions associated with it !!');"
               >
                 <input type="submit" class="btn btn-danger" value="Delete" />
@@ -246,7 +314,7 @@ content %}{% include "admin/admin_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/subject/chapter/view?chap_id={{ chap.id }}&sub_id={{ sub.id }}&skip={{ (skip - take) if skip > 0 else 0 }}&take={{ take }}"
+              href="/admin/subject/chapter/quiz/view?quiz_id={{ quiz.id }}&chap_id={{ chap.id }}&sub_id={{ sub.id }}&skip={{ (skip - take) if skip > 0 else 0 }}&take={{ take }}"
               aria-label="Previous"
             >
               <span aria-hidden="true">&laquo;</span>
@@ -258,7 +326,7 @@ content %}{% include "admin/admin_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/subject/chapter/view?chap_id={{ chap.id }}&sub_id={{ sub.id }}&skip={{ ( ((skip//take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              href="/admin/subject/chapter/quiz/view?quiz_id={{ quiz.id }}&chap_id={{ chap.id }}&sub_id={{ sub.id }}&skip={{ ( ((skip//take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
               aria-label="Next"
             >
               <span
@@ -278,12 +346,13 @@ content %}{% include "admin/admin_wrapper.html" %}
   let showWhere = url.searchParams.get("where");
   if (showWhere) {
     showWhere = JSON.parse(decodeURIComponent(showWhere));
-    if ("quiz_title" in showWhere) {
-      document.getElementById("quizInput").value = showWhere["quiz_title"];
+    if ("question_title" in showWhere) {
+      document.getElementById("questionInput").value =
+        showWhere["question_title"];
     }
   }
-  function searchByQuiz(skip, take, chap_id, sub_id) {
-    var searchTerm = document.getElementById("quizInput").value;
+  function searchByQuestion(skip, chap_id, sub_id, quiz_id, take) {
+    var searchTerm = document.getElementById("questionInput").value;
     var queryParams =
       "?skip=" +
       skip +
@@ -292,14 +361,16 @@ content %}{% include "admin/admin_wrapper.html" %}
       "&sub_id=" +
       sub_id +
       "&chap_id=" +
-      chap_id;
+      chap_id +
+      "&quiz_id=" +
+      quiz_id;
     if (searchTerm) {
       queryParams +=
         "&where=" +
-        encodeURIComponent(JSON.stringify({ quiz_title: searchTerm }));
-      window.location.href = "/admin/subject/chapter/view" + queryParams;
+        encodeURIComponent(JSON.stringify({ question_title: searchTerm }));
+      window.location.href = "/admin/subject/chapter/quiz/view" + queryParams;
     } else {
-      window.location.href = "/admin/subject/chapter/view" + queryParams;
+      window.location.href = "/admin/subject/chapter/quiz/view" + queryParams;
     }
   }
 </script>

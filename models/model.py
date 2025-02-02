@@ -47,7 +47,8 @@ class Quiz(db.Model):
     chapter_id=db.Column(db.VARCHAR(100), db.ForeignKey('chapters.id'), nullable=False)
     chapter_code=db.Column(db.VARCHAR(100), db.ForeignKey('chapters.code'), nullable=False)
     date_of_quiz=db.Column(db.DATE, nullable=False)
-    time_duration=db.Column(db.Integer, nullable=False) # timestamps stored in milliseconds
+    time_duration=db.Column(db.Integer, nullable=False)
+    time_unit=db.Column(db.Enum('minutes','hours', 'seconds'), nullable=False)
     remarks=db.Column(db.VARCHAR(100), nullable=False)
     created_at=db.Column(db.TIMESTAMP, nullable=False)
     updated_at=db.Column(db.TIMESTAMP, nullable=False)

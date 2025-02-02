@@ -1,0 +1,155 @@
+{% extends "base.html" %} {% block title %}Manage Question{% endblock %} {%
+block content %} {% include "admin/admin_wrapper.html" %}
+<section class="p-3">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item">
+        <a href="/admin/subject/?skip=0&take=25">Subjects List</a>
+      </li>
+      <li class="breadcrumb-item" aria-current="page">
+        <a href="/admin/subject/view?sub_id={{ sub.id }}&take=25&skip=0"
+          >{% if sub %}{{ sub.code }}{% else %} {% endif %}
+        </a>
+      </li>
+      <li class="breadcrumb-item">
+        <a
+          href="/admin/subject/chapter/view?sub_id={{ sub.id }}&skip=0&take=25&chap_id={{ chap.id }}"
+        >
+          {% if chap %}{{ chap.code }}{% else %} {% endif %}
+        </a>
+      </li>
+      <li class="breadcrumb-item">
+        <a
+          href="/admin/subject/chapter/quiz/view?sub_id={{ sub.id }}&skip=0&take=25&chap_id={{ chap.id }}&quiz_id={{ quiz.id }}"
+          >{% if quiz %}{{ quiz.quiz_title }}{% else %} {% endif %}</a
+        >
+      </li>
+      <li class="breadcrumb-item">
+        {% if question %}Update Question{% else %}New Question{% endif %}
+      </li>
+    </ol>
+  </nav>
+
+  <section class="d-flex flex-column align-items-center justify-content-center">
+    {% with messages = get_flashed_messages(with_categories=True) %}{% if
+    messages %}
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-12 col-sm-6">
+          {% for category, message in messages %}
+          <div
+            role="alert"
+            class="alert alert-{{ category }} alert-dismissible fade show"
+          >
+            {{ message }}
+            <button
+              type="button"
+              class="close"
+              data-dismiss="alert"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}{% endwith %}
+    <form
+      class="container p-3"
+      method="post"
+      action="{% if question %}/admin/subject/chapter/quiz/question/update?question_id={{ question.id }}&sub_id={{ sub.id }}&quiz_id={{ quiz.id }}&chap_id={{ chap.id }}{% else %}/admin/subject/chapter/quiz/question/new?sub_id={{ sub.id }}&quiz_id={{ quiz.id }}&chap_id={{ chap.id }}{% endif %}"
+    >
+      <div class="form-group">
+        <label for="exampleInputQTitle1"
+          >Question Title <span class="required">*</span></label
+        >
+        <input
+          type="text"
+          class="form-control"
+          id="exampleInputQTitle1"
+          name="question_title"
+          aria-describedby="nameHelp"
+          placeholder="Enter Question Title"
+          value="{{ question.question_title if question else '' }}"
+        />
+      </div>
+      <div class="form-group">
+        <label for="exampleInputQStatement1"
+          >Question Statement <span class="required">*</span></label
+        >
+        <textarea
+          class="form-control"
+          id="exampleInputQStatement1"
+          name="question_statement"
+          aria-describedby="nameHelp"
+          placeholder="Enter Question Statement"
+        >
+{{ question.question_statement if question else '' }}</textarea
+        >
+      </div>
+      <div class="form-group">
+        <label for="exampleInputQMarks1"
+          >Question Marks <span class="required">*</span></label
+        >
+        <input
+          type="number"
+          min="1"
+          class="form-control"
+          id="exampleInputQMarks1"
+          name="marks"
+          aria-describedby="nameHelp"
+          placeholder="Enter Question Marks"
+          value="{{ question.marks if question else '' }}"
+        />
+      </div>
+      {% for i in range(4) %}
+      <div class="form-group">
+        <label for="exampleInputQoption_{{ i + 1 }}1">
+          Option {{ i + 1 }} <span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          min="1"
+          class="form-control"
+          id="exampleInputQoption_{{ i + 1 }}1"
+          name="option_{{ i + 1 }}"
+          aria-describedby="nameHelp"
+          placeholder="Enter Option {{ i + 1 }}"
+          value="{{ question['option_' ~ (i + 1)] if question else '' }}"
+        />
+      </div>
+      {% endfor %}
+      <div class="form-group">
+        <label for="exampleInputQCO1"
+          >Correct Option <span class="required">*</span></label
+        >
+        <select
+          class="form-control"
+          id="exampleInputQCO1"
+          name="correct_option"
+          aria-describedby="nameHelp"
+          value="{{ question.correct_option if question else '' }}"
+        >
+          <option value="1">Option 1</option>
+          <option value="2">Option 2</option>
+          <option value="3">Option 3</option>
+          <option value="4">Option 4</option>
+        </select>
+      </div>
+      <div>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <a
+            href="/admin/subject/chapter/quiz/view?chap_id={{ chap.id }}&quiz_id={{ quiz.id }}&sub_id={{ sub.id }}&skip=0&take=25"
+            class="text-white"
+            >Close</a
+          >
+        </button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+    </form>
+  </section>
+</section>
+{% endblock %}

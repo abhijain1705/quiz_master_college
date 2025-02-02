@@ -2,10 +2,10 @@ import json
 import  uuid
 from models import db
 from sqlalchemy import desc
-from datetime import datetime
+from datetime import datetime, date
 from controllers.decorator import role_required
 from flask_login import current_user, login_required
-from models.model import Subject, User, Chapter, Quiz
+from models.model import Subject, Chapter, Quiz, Questions
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 
 subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
@@ -20,6 +20,375 @@ def validate_fields(fields_to_validate):
             flash(error_message, "danger")
             return label
     return None 
+
+def date_extractor(datestring):
+    dt = datestring.split("-")
+    [yr, month, day]=dt
+    for ky in dt:
+        if not int(ky):
+            flash(f"{ky} must be integer", "danger")
+            return ky
+    return date(int(yr),int(month),int(day))
+
+def validate_quiz_fields(fields):
+    required_fields = ["quiz_title","time_unit", "date_of_quiz", "time_duration", "number_of_questions", "total_marks", "remarks"]
+    error_messages = {
+        "quiz_title": "Quiz title is required",
+        "date_of_quiz": "Date of quiz is required",
+        "time_unit": "Time unit is required",
+        "time_duration": "Time duration is required and must be greater than 0",
+        "number_of_questions": "Number of questions is required and must be greater than 0",
+        "total_marks": "Total marks are required and must be greater than 0",
+        "remarks": "Remarks are required",
+    }
+
+    for field in required_fields:
+        value = fields.get(field)
+        if not value or (field in ["time_duration", "number_of_questions", "total_marks"] and int(value) <= 0):
+            flash(error_messages[field], "danger")
+            return False
+    return True
+
+def validate_question_fields(fields):
+    required_fields = ["question_title", "question_statement", "option_1", "option_2", "option_3", "option_4", "correct_option", "marks"]
+    error_messages = {
+        "question_title": "Question title is required",
+        "question_statement": "Question statement is required",
+        "option_1": "Option 1 is required",
+        "option_2": "Option 2 is required",
+        "option_3": "Option 3 is required",
+        "option_4": "Option 4 is required",
+        "correct_option": "Correct option is required",
+        "marks": "Marks are required and must be greater than 0",
+    }
+
+    for field in required_fields:
+        value = fields.get(field)
+        if not value or (field == "marks" and int(value) <= 0) or (field == "correct_option" and int(value) not in [1, 2, 3, 4]):
+            flash(error_messages[field], "danger")
+            return False
+    return True
+
+@subject.route("/chapter/quiz/question/view")    
+@login_required
+@role_required("admin")
+def view_question():
+    quiz_id = request.args.get("quiz_id", "")
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+    question_id = request.args.get("question_id", "")
+
+    if not sub_id:
+        return flash_and_redirect("Subject is required", "danger", url_for("subject.admin_subject"))
+    if not chap_id:
+        return flash_and_redirect("Chapter is required", "danger", url_for("subject.view_subject", sub_id=sub_id))
+    if not quiz_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    if not question_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_quiz", quiz_id=quiz_id, sub_id=sub_id, chap_id=chap_id))
+        
+    
+    try:
+        sub = Subject.query.get_or_404(sub_id)
+        chap = Chapter.query.get_or_404(chap_id)
+        quiz = Quiz.query.get_or_404(quiz_id)
+        question = Questions.query.get_or_404(question_id)
+        return render_template("admin/question/admin_single_question.html",question=question, sub=sub, chap=chap, quiz=quiz)
+    except Exception as e:
+        return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))
+
+@subject.route("/chapter/quiz/question/delete")
+@login_required
+@role_required("admin")
+def delete_question():
+    quiz_id = request.args.get("quiz_id", "")
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+    question_id = request.args.get("question_id", "")
+
+    if not sub_id:
+        return flash_and_redirect("Subject is required", "danger", url_for("subject.admin_subject"))
+    if not chap_id:
+        return flash_and_redirect("Chapter is required", "danger", url_for("subject.view_subject", sub_id=sub_id))
+    if not quiz_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    if not question_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_quiz", quiz_id=quiz_id, sub_id=sub_id, chap_id=chap_id))
+        
+    try:
+        question = Questions.query.get_or_404(question_id)
+        db.session.delete(question)
+        db.session.commit()
+        return flash_and_redirect("Question deleted successfully", "success", url_for("subject.view_quiz", quiz_id=quiz_id, sub_id=sub_id, chap_id=chap_id))
+    except Exception as e:
+        db.session.rollback()
+        return flash_and_redirect(f"An error occurred {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))
+
+@subject.route("/chapter/quiz/question/update", methods=['GET', 'POST'])
+@login_required
+@role_required("admin")
+def update_question():
+    quiz_id = request.args.get("quiz_id", "")
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+    question_id = request.args.get("question_id", "")
+
+    if not sub_id:
+        return flash_and_redirect("Subject is required", "danger", url_for("subject.admin_subject"))
+    if not chap_id:
+        return flash_and_redirect("Chapter is required", "danger", url_for("subject.view_subject", sub_id=sub_id))
+    if not quiz_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    if not question_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_quiz", quiz_id=quiz_id, sub_id=sub_id, chap_id=chap_id))
+        
+    try:
+        sub = Subject.query.get_or_404(sub_id)
+        chap = Chapter.query.get_or_404(chap_id)
+        quiz = Quiz.query.get_or_404(quiz_id)
+        question = Questions.query.get_or_404(question_id)
+        if request.method == 'POST':
+            fields = {
+                "question_title": request.form.get("question_title"),
+                "question_statement": request.form.get("question_statement"),
+                "option_1": request.form.get("option_1"),
+                "option_2": request.form.get("option_2"),
+                "option_3": request.form.get("option_3"),
+                "option_4": request.form.get("option_4"),
+                "correct_option": request.form.get("correct_option"),
+                "marks": request.form.get("marks"),
+            }
+
+            if not validate_question_fields(fields):
+                return render_template('admin/question/admin_question_manage.html', question=question, sub=sub, chap=chap, quiz=quiz)
+
+            question.question_title=fields['question_title']
+            question.question_statement=fields['question_statement']
+            question.option_1=fields['option_1']
+            question.option_2=fields['option_2']
+            question.option_3=fields['option_3']
+            question.option_4=fields['option_4']
+            question.correct_option=int(fields['correct_option'])
+            question.marks=int(fields['marks'])
+            question.updated_at=datetime.now()
+            db.session.commit()    
+            return flash_and_redirect(f"Question updated successfully", "success", url_for("subject.view_quiz",chap_id=chap_id,sub_id=sub_id,quiz_id=quiz_id))            
+        else:    
+            return render_template("admin/question/admin_question_manage.html",question=question,sub=sub,chap=chap,quiz=quiz)
+    except Exception as e:
+        return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))
+
+
+@subject.route("/chapter/quiz/question/new", methods=['GET', 'POST'])
+@login_required
+@role_required("admin")
+def new_question():
+    quiz_id = request.args.get("quiz_id", "")
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+
+    if not sub_id:
+        return flash_and_redirect("Subject is required", "danger", url_for("subject.admin_subject"))
+    if not chap_id:
+        return flash_and_redirect("Chapter is required", "danger", url_for("subject.view_subject", sub_id=sub_id))
+    if not quiz_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    
+    try:
+        sub = Subject.query.get_or_404(sub_id)
+        chap = Chapter.query.get_or_404(chap_id)
+        quiz = Quiz.query.get_or_404(quiz_id)
+        if request.method == 'POST':
+            fields = {
+                "question_title": request.form.get("question_title"),
+                "question_statement": request.form.get("question_statement"),
+                "option_1": request.form.get("option_1"),
+                "option_2": request.form.get("option_2"),
+                "option_3": request.form.get("option_3"),
+                "option_4": request.form.get("option_4"),
+                "correct_option": request.form.get("correct_option"),
+                "marks": request.form.get("marks"),
+            }
+            if not validate_question_fields(fields):
+                return render_template('admin/question/admin_question_manage.html', sub=sub, chap=chap, quiz=quiz)
+
+            new_question = Questions(
+                id=str(uuid.uuid4()),
+                quiz_id=quiz.id,
+                question_title=fields['question_title'],
+                question_statement=fields['question_statement'],
+                option_1=fields['option_1'],
+                option_2=fields['option_2'],
+                option_3=fields['option_3'],
+                option_4=fields['option_4'],
+                correct_option=int(fields['correct_option']),
+                marks=int(fields['marks']),
+                chapter_id=chap.id,
+                chapter_code=chap.code,
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+                )
+            db.session.add(new_question)
+            db.session.commit()    
+            return flash_and_redirect(f"Question created successfully", "success", url_for("subject.view_quiz",chap_id=chap_id,sub_id=sub_id,quiz_id=quiz_id))
+        else:    
+            return render_template("admin/question/admin_question_manage.html", sub=sub, chap=chap, quiz=quiz) 
+    except Exception as e:
+        return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))            
+
+@subject.route("/chapter/quiz/view")
+@login_required
+@role_required("admin")
+def view_quiz():
+    quiz_id = request.args.get("quiz_id", "")
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+    skip = int(request.args.get("skip","0"))
+    take = int(request.args.get("take", "25"))
+    where = request.args.get("where", "{}")
+    if not sub_id:
+        return flash_and_redirect("Subject is required", "danger", url_for("subject.admin_subject"))
+    if not chap_id:
+        return flash_and_redirect("Chapter is required", "danger", url_for("subject.view_subject", sub_id=sub_id))
+    if not quiz_id:
+        return flash_and_redirect("Quiz is required", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    
+    try:
+        sub = Subject.query.get_or_404(sub_id)
+        chap = Chapter.query.get_or_404(chap_id)
+        quiz = Quiz.query.get_or_404(quiz_id)
+        where = json.loads(where) if where else {}
+        filterd_questions = Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id, **where).order_by(desc(Questions.created_at)).limit(take).offset(skip).all()
+        total_rows  = Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id).order_by(desc(Questions.created_at)).count()
+        return render_template("admin/quiz/admin_single_quiz.html",rows=filterd_questions, total_rows=total_rows,skip=skip,take=take, sub=sub, chap=chap, quiz=quiz)
+    except Exception as e:
+        return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))    
+
+@subject.route("/chapter/quiz/delete", methods=['POST'])
+@login_required
+@role_required("admin")
+def delete_quiz():
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+    quiz_id = request.args.get("quiz_id", "")
+
+    if not quiz_id:
+        raise ValueError("quiz id is required")
+
+    quiz = Quiz.query.filter_by(id=quiz_id).first()
+    if not quiz:
+        return flash_and_redirect("Code doesn't exist, please use a different quiz code", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    try:
+        all_questions = Questions.query.filter_by(quiz_id=quiz.id).all()
+        for question in all_questions:
+            db.session.delete(question)  
+        db.session.delete(quiz)
+        db.session.commit()
+        return flash_and_redirect("Quiz deleted successfully", "success", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    except Exception as e:
+        db.session.rollback()
+        return flash_and_redirect(f"An error occurred {e}", 'danger', url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))   
+
+@subject.route("/chapter/quiz/update", methods=['GET', 'POST'])
+@login_required
+@role_required("admin")
+def update_quiz():
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+    quiz_id = request.args.get("quiz_id", "")
+
+    if not sub_id:
+        raise ValueError("Subject is required")
+    if not chap_id:
+        raise ValueError("Chapter is required")
+    if not quiz_id:
+        raise ValueError("Quiz is required")
+
+    sub = Subject.query.filter_by(id=sub_id).first()
+    chap = Chapter.query.filter_by(id=chap_id).first()
+    quiz = Quiz.query.filter_by(id=quiz_id).first()
+
+    if request.method == 'POST':        
+        fields = {
+            "quiz_title": request.form.get("quiz_title"),
+            "date_of_quiz": request.form.get("date_of_quiz"),
+            "time_duration": request.form.get("time_duration"),
+            "number_of_questions": request.form.get("number_of_questions"),
+            "total_marks": request.form.get("total_marks"),
+            "remarks": request.form.get("remarks"),
+            "time_unit": request.form.get("time_unit")
+        }
+
+        if not validate_quiz_fields(fields):
+            return render_template('admin/quiz/admin_quiz_manage.html', quiz=quiz, sub=sub, chap=chap)
+
+        try:
+            quiz.quiz_title=fields['quiz_title']
+            quiz.date_of_quiz = date_extractor(fields['date_of_quiz'])
+            quiz.time_duration=int(fields['time_duration'])
+            quiz.remarks=fields['remarks']
+            quiz.updated_at=datetime.now()
+            quiz.number_of_questions=int(fields['number_of_questions'])
+            quiz.total_marks=int(fields['total_marks'])
+            quiz.time_unit=fields['time_unit']
+            db.session.commit()
+            return flash_and_redirect("Quiz updated successfully", "success",url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+        except Exception as e:
+            return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))  
+    else:    
+        return render_template("admin/quiz/admin_quiz_manage.html", quiz=quiz, sub=sub, chap=chap)
+  
+
+@subject.route("/chapter/quiz/new", methods=['GET', 'POST'])
+@login_required
+@role_required("admin")
+def new_quiz():
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+
+    if not sub_id:
+        raise ValueError("Subject is required")
+    if not chap_id:
+        raise ValueError("Chapter is required")
+
+    sub = Subject.query.filter_by(id=sub_id).first()
+    chap = Chapter.query.filter_by(id=chap_id).first()
+    print(request.method, "memethodmethodthod")
+    if request.method == 'POST':
+        fields = {
+            "quiz_title": request.form.get("quiz_title"),
+            "date_of_quiz": request.form.get("date_of_quiz"),
+            "time_duration":int(request.form.get("time_duration")),
+            "number_of_questions": request.form.get("number_of_questions"),
+            "total_marks": request.form.get("total_marks"),
+            "remarks": request.form.get("remarks"),
+            "time_unit": request.form.get("time_unit")
+        }
+        if not validate_quiz_fields(fields):
+            return render_template('admin/quiz/admin_quiz_manage.html', sub=sub, chap=chap)
+        try:
+            new_quiz = Quiz(
+                id=str(uuid.uuid4()), 
+                quiz_title=fields['quiz_title'],
+                chapter_id=chap.id,
+                chapter_code=chap.code,
+                date_of_quiz=date_extractor(fields['date_of_quiz']),
+                time_duration= fields['time_duration'],
+                time_unit=fields['time_unit'],
+                remarks=fields['remarks'],
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
+                number_of_questions=int(fields['number_of_questions']),
+                user_id=None,  # Nullable user_id
+                total_marks=int(fields['total_marks'])
+            )
+            db.session.add(new_quiz)
+            db.session.commit()
+            return flash_and_redirect("Quiz created successfully", "success",url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+        except Exception as e:
+            return flash_and_redirect(f"An error occurred: {e}", "danger",url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    else:            
+        return render_template("admin/quiz/admin_quiz_manage.html", sub=sub, chap=chap)
 
 @subject.route("/chapter/view")
 @login_required
@@ -51,20 +420,28 @@ def view_chapter():
 @login_required
 @role_required("admin")
 def delete_chapter():
-    chap_id = request.args.get("chap_id", "")
     sub_id = request.args.get("sub_id", "")
-    if not chap_id:
-        return flash_and_redirect("Chapter is required", "danger", url_for("subject.view_subject", sub_id=sub_id))
-    chap = Chapter.query.filter_by(id=chap_id).first()
+    chapter_id = request.args.get("chapter_id", "")
+
+    if not chapter_id:
+        raise ValueError("chapter id is required")
+
+    chap = Chapter.query.filter_by(id=chapter_id).first()
     if not chap:
-        return flash_and_redirect("Chapter not found", "danger", url_for("subject.view_subject", sub_id=sub_id))
+        return flash_and_redirect("Code doesn't exist, please use a different chapter code", "danger", url_for("subject.view_subject", sub_id=sub_id))
     try:
+        all_quizzes = Quiz.query.filter_by(chapter_id=chap.id).all()
+        for quiz in all_quizzes:
+            all_questions = Questions.query.filter_by(quiz_id=quiz.id).all()
+            for question in all_questions:
+                db.session.delete(question)
+            db.session.delete(quiz)    
         db.session.delete(chap)
         db.session.commit()
         return flash_and_redirect("Chapter deleted successfully", "success", url_for("subject.view_subject", sub_id=sub_id))
     except Exception as e:
         db.session.rollback()
-        return flash_and_redirect(str(e), "danger", url_for("subject.view_subject", sub_id=sub_id))
+        return flash_and_redirect(f"An error occurred {e}", 'danger', url_for("subject.view_subject", sub_id=sub_id))
 
 
 @subject.route("/chapter/update", methods=['GET', 'POST'])
@@ -111,7 +488,6 @@ def update_chapter():
 @role_required("admin")
 def new_chapter():
     sub_id = request.args.get('sub_id')
-    print(sub_id,"sub_sub_idsub_idid")
     if request.method=='POST':
         fields = [
             ("name", request.form.get('name'), lambda v: bool(v), "Name is required"),
@@ -153,21 +529,32 @@ def new_chapter():
 @login_required
 @role_required("admin")
 def delete_subject():
+    sub_id = request.args.get("sub_id", "")
+    if not sub_id:
+        raise ValueError("subject id is required")
+    sub = Subject.query.filter_by(id=sub_id).first()
+    if not sub:
+        return flash_and_redirect(
+            "Code doesn't exist, please use a different subject code", 
+            "danger", 
+            url_for('subject.admin_subject')
+        )        
     try:
-        sub_id = request.args.get("sub_id", "")
-        if not sub_id:
-            raise ValueError("Subject is required")
-
-        sub = Subject.query.filter_by(id=sub_id).first()
-        if not sub:
-            return flash_and_redirect("Subject not found", "danger", url_for("subject.subject_home"))
-
+        all_chaps = Chapter.query.filter_by(subject_id=sub_id).all()
+        for chap in all_chaps:
+            all_quizzes = Quiz.query.filter_by(chapter_id=chap.id).all()
+            for quiz in all_quizzes:
+                all_questions = Questions.query.filter_by(quiz_id=quiz.id).all()
+                for question in all_questions:
+                    db.session.delete(question)
+                db.session.delete(quiz)
+            db.session.delete(chap)
         db.session.delete(sub)
-        db.session.commit()        
-        return flash_and_redirect("Subject deleted successfully", "success", url_for("subject.subject_home"))
+        db.session.commit()
+        return flash_and_redirect("Subject and related data deleted successfully", "success", url_for('subject.admin_subject'))
     except Exception as e:
         db.session.rollback()
-        return flash_and_redirect(str(e), "danger", url_for("subject.subject_home"))
+        return flash_and_redirect(f"An error occurred {e}", 'danger', url_for('subject.admin_subject'))
 
 @subject.route("/view")
 @login_required
