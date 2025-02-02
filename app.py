@@ -13,6 +13,7 @@ from controllers.home import home as home_blueprint
 from werkzeug.security import generate_password_hash
 from controllers.users.user import user as user_blueprint
 from controllers.admin.admin import admin as admin_blueprint
+from controllers.admin.admin_subject import subject as subject_blueprint
 
 app=Flask(__name__)
 app.config['DEBUG']=True
@@ -27,7 +28,7 @@ app.config['SWAGGER'] = {
 Session(app)
 swagger = Swagger(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 db.init_app(app)
 
@@ -38,6 +39,8 @@ app.register_blueprint(user_blueprint)
 app.register_blueprint(home_blueprint)
 
 app.register_blueprint(admin_blueprint)
+
+app.register_blueprint(subject_blueprint)
 
 @app.route("/")
 def home():

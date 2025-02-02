@@ -6,7 +6,7 @@ from controllers.decorator import role_required
 from flask_login import current_user, login_required
 from flask import Blueprint, render_template, session, flash, request
 
-admin= Blueprint("admin", __name__, url_prefix="/admin")
+admin = Blueprint("admin", __name__, url_prefix="/admin")
 
 @admin.route("/")
 @login_required
