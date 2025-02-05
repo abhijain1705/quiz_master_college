@@ -11,4 +11,5 @@ def home_home():
 
     if current_user.user_type == "admin":
         return redirect(url_for("admin.admin_home"))
-    return redirect(url_for("user.user_home")) 
+    return redirect(url_for("user.user_home"))
+

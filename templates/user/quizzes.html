@@ -12,12 +12,15 @@ block content %} {% include "user/user_wrapper.html" %}
 
   <div class="d-flex mt-3 flex-wrap justify-content-between">
     <div>
-      <h3>Quiz Management</h3>
+      <h3>Quiz List</h3>
       <div class="d-flex align-items-center">
-        <p class="mr-4">Total Rows: {{ total_rows }}</p>
+        <p class="mr-4">Total Rows: <strong>{{ total_rows }}</strong></p>
         <p>
-          Current Page: {% if skip and take %} {{ ((skip|int)/take)+1 }} {% else
-          %}1{% endif %}
+          Current Page:
+          <strong
+            >{% if skip and take %} {{ ((skip|int)/take)+1 }} {% else %}1{%
+            endif %}</strong
+          >
         </p>
       </div>
     </div>
@@ -57,7 +60,6 @@ block content %} {% include "user/user_wrapper.html" %}
             <th scope="col">Quiz Title</th>
             <th scope="col">Date of Quiz</th>
             <th scope="col">Time Duration</th>
-            <th scope="col">Number of Questions</th>
             <th scope="col">Total Marks</th>
             <th scope="col">Action</th>
           </tr>
@@ -71,7 +73,6 @@ block content %} {% include "user/user_wrapper.html" %}
             <td>
               {{ quiz.time_duration_hr }} hr. {{ quiz.time_duration_min }} min.
             </td>
-            <td>{{ quiz.number_of_questions }}</td>
             <td>{{ quiz.total_marks }}</td>
             <td>
               <button type="button" class="btn btn-primary">

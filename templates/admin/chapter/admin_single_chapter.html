@@ -60,13 +60,13 @@ content %}{% include "admin/admin_wrapper.html" %}
                 %}N/a{% endif %}
               </p>
               <p class="col-12 col-sm-6">
-                <strong>Last Updated At:</strong> {% if sub %}{{ sub.updated_at
+                <strong>Last Updated At:</strong> {% if sub %}{{ sub.updated_at.strftime('%Y-%m-%d')
                 }}{% else %}N/a{% endif %}
               </p>
             </div>
             <div class="row">
               <p class="col-12 col-sm-6">
-                <strong>Created At:</strong> {% if sub %}{{ sub.created_at }}{%
+                <strong>Created At:</strong> {% if sub %}{{ sub.created_at.strftime('%Y-%m-%d') }}{%
                 else %}N/a{% endif %}
               </p>
             </div>
@@ -100,12 +100,12 @@ content %}{% include "admin/admin_wrapper.html" %}
               </p>
               <p class="col-12 col-sm-6">
                 <strong>Last Updated At:</strong> {% if chap %}{{
-                chap.updated_at }}{% else %}N/a{% endif %}
+                chap.updated_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
             <div class="row">
               <p class="col-12 col-sm-6">
-                <strong>Created At:</strong> {% if chap %}{{ chap.created_at
+                <strong>Created At:</strong> {% if chap %}{{ chap.created_at.strftime('%Y-%m-%d')
                 }}{% else %}N/a{% endif %}
               </p>
             </div>
@@ -119,10 +119,10 @@ content %}{% include "admin/admin_wrapper.html" %}
     <div>
       <h3>Quiz Management</h3>
       <div class="d-flex align-items-center">
-        <p class="mr-4">Total Rows: {{ total_rows }}</p>
+        <p class="mr-4">Total Rows: <strong>{{ total_rows }}</strong></p>
         <p>
-          Current Page: {% if skip and take %} {{ ((skip|int)/take)+1 }} {% else
-          %}1{% endif %}
+          Current Page: <strong>{% if skip and take %} {{ ((skip|int)/take)+1 }} {% else
+          %}1{% endif %}</strong>
         </p>
       </div>
     </div>
@@ -196,7 +196,7 @@ content %}{% include "admin/admin_wrapper.html" %}
             <th scope="col">Quiz Title</th>
             <th scope="col">Date of Quiz</th>
             <th scope="col">Time Duration</th>
-            <th scope="col">Number of Questions</th>
+            <th scope="col">Status</th>
             <th scope="col">Remarks</th>
             <th scope="col">Total Marks</th>
             <th scope="col">Created At</th>
@@ -214,15 +214,24 @@ content %}{% include "admin/admin_wrapper.html" %}
                 >{{ quiz.quiz_title }}</a
               >
             </td>
-            <td>{{ quiz.date_of_quiz }}</td>
+            <td>
+              <p>{{ quiz.date_of_quiz }}</p>
+              <p>{{ "Expired" if quiz.date_of_quiz < now else "Not" }}</p>
+            </td>
             <td>
               {{ quiz.time_duration_hr }} hr. {{ quiz.time_duration_min }} min.
             </td>
-            <td>{{ quiz.number_of_questions }}</td>
+            <td>
+              <p class="{{"active" if quiz.is_active else "notactive"}}">{{ "Active" if quiz.is_active else "Not-Active" }}</p>
+              <form id="statusForm" action="/admin/subject/chapter/quiz/update/status?quiz_id={{ quiz.id }}&chap_id={{ chap.id }}&sub_id={{ sub.id }}" method="post">
+                  <input {% if quiz.is_active %}checked{% endif %} onchange="document.getElementById('statusForm').submit();" name="input" type="checkbox" id="toggle" />
+                  <label id="toggle-label" for="toggle"></label>
+              </form>
+            </td>
             <td>{{ quiz.remarks }}</td>
             <td>{{ quiz.total_marks }}</td>
-            <td>{{ quiz.created_at }}</td>
-            <td>{{ quiz.updated_at }}</td>
+            <td>{{ quiz.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>{{ quiz.updated_at.strftime('%Y-%m-%d') }}</td>
             <td>
               <button
                 onclick="window.location.href='/admin/subject/chapter/quiz/update?quiz_id={{ quiz.id }}&chap_id={{ chap.id }}&sub_id={{ sub.id }}'"

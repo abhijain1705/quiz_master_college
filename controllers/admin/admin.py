@@ -12,3 +12,4 @@ admin = Blueprint("admin", __name__, url_prefix="/admin")
 @role_required("admin")
 def admin_home():
     return render_template("admin/admin.html")
+

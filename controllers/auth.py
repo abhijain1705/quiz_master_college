@@ -29,6 +29,7 @@ def login_post():
 
     
     user = User.query.filter_by(email=email).first()
+    session['id'] = user.id
 
     if not user or not check_password_hash(user.password, password):
         flash('Please check your login details and try again.', "danger")

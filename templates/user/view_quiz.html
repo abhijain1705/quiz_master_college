@@ -31,13 +31,13 @@ content %} {% include "user/user_wrapper.html" %}
           %}N/a{% endif %}
         </p>
         <p class="col-12 col-sm-6">
-          <strong>Last Updated At:</strong> {% if sub %}{{ sub.updated_at }}{%
+          <strong>Last Updated At:</strong> {% if sub %}{{ sub.updated_at.strftime('%Y-%m-%d') }}{%
           else %}N/a{% endif %}
         </p>
       </div>
       <div class="row">
         <p class="col-12 col-sm-6">
-          <strong>Created At:</strong> {% if sub %}{{ sub.created_at }}{% else
+          <strong>Created At:</strong> {% if sub %}{{ sub.created_at.strftime('%Y-%m-%d') }}{% else
           %}N/a{% endif %}
         </p>
       </div>
@@ -70,13 +70,13 @@ content %} {% include "user/user_wrapper.html" %}
           }}{% else %}N/a{% endif %}
         </p>
         <p class="col-12 col-sm-6">
-          <strong>Last Updated At:</strong> {% if chap %}{{ chap.updated_at }}{%
+          <strong>Last Updated At:</strong> {% if chap %}{{ chap.updated_at.strftime('%Y-%m-%d') }}{%
           else %}N/a{% endif %}
         </p>
       </div>
       <div class="row">
         <p class="col-12 col-sm-6">
-          <strong>Created At:</strong> {% if chap %}{{ chap.created_at }}{% else
+          <strong>Created At:</strong> {% if chap %}{{ chap.created_at.strftime('%Y-%m-%d') }}{% else
           %}N/a{% endif %}
         </p>
       </div>
@@ -108,9 +108,9 @@ content %} {% include "user/user_wrapper.html" %}
           <strong>Remarks:</strong> {% if quiz %}{{ quiz.remarks }}{% else
           %}N/a{% endif %}
         </p>
-        <p class="col-12 col-sm-6">
-          <strong>Number of Questions:</strong> {% if quiz %}{{
-          quiz.number_of_questions }}{% else %}N/a{% endif %}
+        <p class="col-12 col-sm-6 {{"active" if quiz.is_active else "notactive"}}">
+          <strong>Status:</strong> {% if quiz %}{{ "Active" if quiz.is_active
+          else "Not-Active" }}{% else %}N/a{% endif %}
         </p>
       </div>
       <div class="row">
@@ -119,13 +119,13 @@ content %} {% include "user/user_wrapper.html" %}
           else %}N/a{% endif %}
         </p>
         <p class="col-12 col-sm-6">
-          <strong>Last Updated At:</strong> {% if quiz %}{{ quiz.updated_at }}{%
+          <strong>Last Updated At:</strong> {% if quiz %}{{ quiz.updated_at.strftime('%Y-%m-%d') }}{%
           else %}N/a{% endif %}
         </p>
       </div>
       <div class="row">
         <p class="col-12 col-sm-6">
-          <strong>Created At:</strong> {% if quiz %}{{ quiz.created_at }}{% else
+          <strong>Created At:</strong> {% if quiz %}{{ quiz.created_at.strftime('%Y-%m-%d') }}{% else
           %}N/a{% endif %}
         </p>
       </div>

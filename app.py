@@ -46,9 +46,8 @@ def init_db():
     db.session.add(admin)
     db.session.commit()
 
-
 if __name__ == "__main__":
-    with app.app_context():
+    with app.app_context(): 
         inspector = inspect(db.engine)
         table_names = inspector.get_table_names()
         if len(table_names) == 0:

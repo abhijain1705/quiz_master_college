@@ -25,13 +25,31 @@ class Subject(db.Model):
     updated_at=db.Column(db.TIMESTAMP, nullable=False)
     code=db.Column(db.VARCHAR(100), nullable=False)
 
+# attempt model
+class Attempt(db.Model):
+    __tablename__='attempts',
+    id = db.Column(db.VARCHAR(100), primary_key=True)
+    quiz_id = db.Column(db.VARCHAR(100), db.ForeignKey('quiz.id'), nullable=False)
+    user_id = db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=False)
+    score_id = db.Column(db.VARCHAR(100), db.ForeignKey('scores.id'), nullable=False)
+    question_id = db.Column(db.VARCHAR(100), db.ForeignKey('questions.id'), nullable=False)
+    actual_answer = db.Column(db.Integer, nullable=False)
+    attempted_answer = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.TIMESTAMP, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, nullable=False)
+    __table_args__ = (
+        db.UniqueConstraint('quiz_id', 'user_id', 'question_id', name='unique_user_quiz_question_attempt'),  # Prevents duplicate user-quiz-question pairs
+    )
+
 # score model
 class Score(db.Model):
     __tablename__='scores'
     id = db.Column(db.VARCHAR(100), primary_key=True)
     quiz_id = db.Column(db.VARCHAR(100), db.ForeignKey('quiz.id'), nullable=False)
     user_id = db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=False)
-    timestamp_of_attempt = db.Column(db.TIMESTAMP, nullable=False)
+    question_attempted = db.Column(db.Integer, nullable=False)
+    question_corrected = db.Column(db.Integer, nullable=False)
+    question_wronged =  db.Column(db.Integer, nullable=False)
     total_scored = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.TIMESTAMP, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, nullable=False)
@@ -52,7 +70,7 @@ class Quiz(db.Model):
     remarks=db.Column(db.VARCHAR(100), nullable=False)
     created_at=db.Column(db.TIMESTAMP, nullable=False)
     updated_at=db.Column(db.TIMESTAMP, nullable=False)
-    number_of_questions=db.Column(db.Integer, nullable=False)
+    is_active=db.Column(db.Boolean, default=True, nullable=False)
     user_id=db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=True)
     total_marks=db.Column(db.Integer, nullable=False)
 

@@ -28,16 +28,15 @@ def date_extractor(datestring):
         if not int(ky):
             flash(f"{ky} must be integer", "danger")
             return ky
-    return date(int(yr),int(month),int(day))
+    return datetime(int(yr),int(month),int(day))
 
 def validate_quiz_fields(fields):
-    required_fields = ["quiz_title", "time_duration_hr", "date_of_quiz", "time_duration_min", "number_of_questions", "total_marks", "remarks"]
+    required_fields = ["quiz_title", "time_duration_hr", "date_of_quiz", "time_duration_min", "total_marks", "remarks"]
     error_messages = {
         "quiz_title": "Quiz title is required",
         "date_of_quiz": "Date of quiz is required",
         "time_duration_min": "Time duration min is required and must be greater than 0",
         "time_duration_hr": "Time duration hr is required and must be 0 or greater",
-        "number_of_questions": "Number of questions is required and must be greater than 0",
         "total_marks": "Total marks are required and must be greater than 0",
         "remarks": "Remarks are required",
     }
@@ -49,7 +48,7 @@ def validate_quiz_fields(fields):
             flash(error_messages[field], "danger")
             return False
 
-        if field in ["time_duration_hr", "time_duration_min", "number_of_questions", "total_marks"]:
+        if field in ["time_duration_hr", "time_duration_min", "total_marks"]:
             try:
                 value = int(value)
             except ValueError:
@@ -58,7 +57,7 @@ def validate_quiz_fields(fields):
 
         if (field == "time_duration_hr" and value < 0) or \
            (field == "time_duration_min" and value <= 0) or \
-           (field in ["number_of_questions", "total_marks"] and value <= 0):
+           (field in [ "total_marks"] and value <= 0):
             flash(error_messages[field], "danger")
             return False
 
@@ -228,7 +227,12 @@ def new_question():
             }
             if not validate_question_fields(fields):
                 return render_template('admin/question/admin_question_manage.html', sub=sub, chap=chap, quiz=quiz)
-
+            total_marks=quiz.total_marks    
+            quiz_list=Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id).all()
+            marks_alloted = sum([quiz.marks for quiz in quiz_list])
+            marks_remaining=total_marks-marks_alloted
+            if marks_remaining<int(fields['marks']):
+                return flash_and_redirect(f"Marks alloted are greater than total marks", "danger", url_for("subject.new_question",chap_id=chap_id,sub_id=sub_id,quiz_id=quiz_id))
             new_question = Questions(
                 id=str(uuid.uuid4()),
                 quiz_id=quiz.id,
@@ -277,7 +281,11 @@ def view_quiz():
         where = json.loads(where) if where else {}
         filterd_questions = Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id, **where).order_by(desc(Questions.created_at)).limit(take).offset(skip).all()
         total_rows  = Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id).order_by(desc(Questions.created_at)).count()
-        return render_template("admin/quiz/admin_single_quiz.html",rows=filterd_questions, total_rows=total_rows,skip=skip,take=take, sub=sub, chap=chap, quiz=quiz)
+        total_marks = quiz.total_marks
+        quiz_list=Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id, **where).order_by(desc(Questions.created_at)).all()
+        marks_alloted = sum([quiz.marks for quiz in quiz_list])
+        marks_remaining=total_marks-marks_alloted
+        return render_template("admin/quiz/admin_single_quiz.html",marks_alloted=marks_alloted, marks_remaining=marks_remaining, rows=filterd_questions, total_rows=total_rows,skip=skip,take=take, sub=sub, chap=chap, quiz=quiz)
     except Exception as e:
         return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))    
 
@@ -306,6 +314,27 @@ def delete_quiz():
         db.session.rollback()
         return flash_and_redirect(f"An error occurred {e}", 'danger', url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))   
 
+
+@subject.route("/chapter/quiz/update/status", methods=['POST'])
+@login_required
+@role_required("admin")
+def update_quiz_status():
+    sub_id = request.args.get("sub_id", "")
+    chap_id = request.args.get("chap_id", "")
+    quiz_id = request.args.get("quiz_id", "")
+    value = request.form.get("input", "")
+    quiz = Quiz.query.filter_by(id=quiz_id).first()
+    print(value, value=='on', "valuevaluevaluevalue")
+    if not quiz:
+        return flash_and_redirect("Quiz not found", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    try:
+        quiz.is_active = bool(value)
+        db.session.commit()
+        return flash_and_redirect("Quiz status updated successfully", "success",url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+    except Exception as e:
+        db.session.rollback()
+        return flash_and_redirect(f"An error occured {e}", "danger",url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
+
 @subject.route("/chapter/quiz/update", methods=['GET', 'POST'])
 @login_required
 @role_required("admin")
@@ -330,7 +359,6 @@ def update_quiz():
             "quiz_title": request.form.get("quiz_title"),
             "date_of_quiz": request.form.get("date_of_quiz"),
             "time_duration_hr": request.form.get("time_duration_hr"),
-            "number_of_questions": request.form.get("number_of_questions"),
             "total_marks": request.form.get("total_marks"),
             "remarks": request.form.get("remarks"),
             "time_duration_min": request.form.get("time_duration_min")
@@ -344,7 +372,6 @@ def update_quiz():
             quiz.date_of_quiz = date_extractor(fields['date_of_quiz'])
             quiz.remarks=fields['remarks']
             quiz.updated_at=datetime.now()
-            quiz.number_of_questions=int(fields['number_of_questions'])
             quiz.total_marks=int(fields['total_marks'])
             quiz.time_duration_min=int(fields['time_duration_min'])
             quiz.time_duration_hr=int(fields['time_duration_hr'])
@@ -376,7 +403,6 @@ def new_quiz():
             "date_of_quiz": request.form.get("date_of_quiz"),
             "time_duration_hr":int(request.form.get("time_duration_hr")),
             "time_duration_min": int(request.form.get("time_duration_min")),
-            "number_of_questions": request.form.get("number_of_questions"),
             "total_marks": request.form.get("total_marks"),
             "remarks": request.form.get("remarks"),
         }
@@ -389,12 +415,12 @@ def new_quiz():
                 chapter_id=chap.id,
                 chapter_code=chap.code,
                 date_of_quiz=date_extractor(fields['date_of_quiz']),
+                is_active=False,
                 time_duration_hr= fields['time_duration_hr'],
                 time_duration_min= fields['time_duration_min'],
                 remarks=fields['remarks'],
                 created_at=datetime.now(),
                 updated_at=datetime.now(),
-                number_of_questions=int(fields['number_of_questions']),
                 user_id=None,  # Nullable user_id
                 total_marks=int(fields['total_marks'])
             )
@@ -427,7 +453,7 @@ def view_chapter():
         where = json.loads(where) if where else {}
         quizzes = Quiz.query.filter_by(chapter_id=chap_id, **where).order_by(desc(Quiz.created_at)).limit(take).offset(skip).all()
         total_rows = Quiz.query.filter_by(chapter_id=chap_id).count()
-        return render_template("admin/chapter/admin_single_chapter.html", sub=sub, chap=chap, rows=quizzes, skip=skip, take=take, total_rows=total_rows)
+        return render_template("admin/chapter/admin_single_chapter.html",now=datetime.now().date(), sub=sub, chap=chap, rows=quizzes, skip=skip, take=take, total_rows=total_rows)
     except Exception as e:
         return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))
 

@@ -54,13 +54,13 @@ content %}{% include "admin/admin_wrapper.html" %}
                 %}N/a{% endif %}
               </p>
               <p class="col-12 col-sm-6">
-                <strong>Last Updated At:</strong> {% if sub %}{{ sub.updated_at
+                <strong>Last Updated At:</strong> {% if sub %}{{ sub.updated_at.strftime('%Y-%m-%d')
                 }}{% else %}N/a{% endif %}
               </p>
             </div>
             <div class="row">
               <p class="col-12 col-sm-6">
-                <strong>Created At:</strong> {% if sub %}{{ sub.created_at }}{%
+                <strong>Created At:</strong> {% if sub %}{{ sub.created_at.strftime('%Y-%m-%d') }}{%
                 else %}N/a{% endif %}
               </p>
             </div>
@@ -74,10 +74,13 @@ content %}{% include "admin/admin_wrapper.html" %}
     <div>
       <h3>Chapter Management</h3>
       <div class="d-flex align-items-center">
-        <p class="mr-4">Total Rows: {{ total_rows }}</p>
+        <p class="mr-4">Total Rows: <strong>{{ total_rows }}</strong></p>
         <p>
-          Current Page: {% if skip and take %} {{ ((skip|int)/take)+1 }} {% else
-          %}1{% endif %}
+          Current Page:
+          <strong
+            >{% if skip and take %} {{ ((skip|int)/take)+1 }} {% else %}1{%
+            endif %}</strong
+          >
         </p>
       </div>
     </div>
@@ -173,8 +176,8 @@ content %}{% include "admin/admin_wrapper.html" %}
             <td>{{ chpt.description }}</td>
             <td>{{ chpt.pages }}</td>
             <td>{{ chpt.chapter_number }}</td>
-            <td>{{ chpt.created_at }}</td>
-            <td>{{ chpt.updated_at }}</td>
+            <td>{{ chpt.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>{{ chpt.updated_at.strftime('%Y-%m-%d') }}</td>
             <td>
               <button
                 onclick="window.location.href='/admin/subject/chapter/update?chap_id={{ chpt.id }}&sub_id={{ sub.id }}'"

@@ -15,10 +15,13 @@ block content %} {% include "admin/admin_wrapper.html" %}
     <div>
       <h3>Subject Management</h3>
       <div class="d-flex align-items-center">
-        <p class="mr-4">Total Rows: {{ total_rows }}</p>
+        <p class="mr-4">Total Rows: <strong>{{ total_rows }}</strong></p>
         <p>
-          Current Page: {% if skip and take %} {{ ((skip|int)/take)+1 }} {% else
-          %}1{% endif %}
+          Current Page:
+          <strong
+            >{% if skip and take %} {{ ((skip|int)/take)+1 }} {% else %}1{%
+            endif %}</strong
+          >
         </p>
       </div>
     </div>
@@ -96,8 +99,8 @@ block content %} {% include "admin/admin_wrapper.html" %}
 
             <td>{{ sub.name }}</td>
             <td>{{ sub.description }}</td>
-            <td>{{ sub.created_at }}</td>
-            <td>{{ sub.updated_at }}</td>
+            <td>{{ sub.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>{{ sub.updated_at.strftime('%Y-%m-%d') }}</td>
             <td>
               <button
                 type="button"

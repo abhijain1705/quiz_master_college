@@ -81,7 +81,7 @@ Quiz Master is a multi-user application designed as an exam preparation site for
 - `remarks`: VARCHAR(100), Not null
 - `created_at`: TIMESTAMP, Not null
 - `updated_at`: TIMESTAMP, Not null
-- `number_of_questions`: Integer, Not null
+- `is_active`: Boolean, Not null
 - `user_id`: VARCHAR(100), Foreign key to User, Nullable
 - `total_marks`: Integer, Not null
 

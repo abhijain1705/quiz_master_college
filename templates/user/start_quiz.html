@@ -1,4 +1,215 @@
 {% extends "base.html" %} {% block title %}Score Page{% endblock %} {% block
 content %} {% include "user/user_wrapper.html" %}
-<section></section>
+<section class="p-3 d-flex flex-column align-items-center min-vh-100">
+  <div
+    class="container align-items-center justify-content-center"
+    id="smallTitle"
+  >
+    <h4>Quiz Title 1</h4>
+  </div>
+  <div class="container d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center">
+      <p class="font-weight-bold m-0 mr-3">QNo.</p>
+      <div
+        style="width: 80px"
+        class="bg-primary text-center p-2 d-flex justify-content-center align-items-center border border-secondary"
+      >
+        <span class="font-weight-bold text-white"
+          >{{ paper_state.current_question }}/{{ total_rows }}</span
+        >
+      </div>
+    </div>
+    <div>
+      <h4 id="title">{{ quiz.quiz_title }}</h4>
+    </div>
+    <div>
+      <div
+        style="width: 140px"
+        class="bg-primary text-center p-2 d-flex justify-content-center align-items-center border border-secondary"
+      >
+        <span id="timer" class="font-weight-bold text-white"
+          >{{ quiz.time_duration_hr }}:{{ quiz.time_duration_min }}:00</span
+        >
+      </div>
+    </div>
+  </div>
+  {% if (total_rows|int) - (paper_state.current_question|int) == 1 %} {% set
+  form_action = "/user/quiz/evaluate?quiz_id=" + quiz.id|string +
+  "&question_id=" + rows[(paper_state.current_question|int)].id|string %} {%
+  else %} {% set form_action = "/user/quiz/answer?quiz_id=" + quiz.id|string +
+  "&question_id=" + rows[(paper_state.current_question|int)].id|string %} {%
+  endif %}
+  <form
+    action="{{ form_action }}"
+    method="post"
+    class="container p-3"
+    style="margin-top: 50px"
+    id="answer-form"
+  >
+    <div>
+      <h1>{{ rows[(paper_state.current_question|int)].question_statement }}</h1>
+      <span>Choose the right answers</span>
+      <p class="mt-3 mb-0 font-weight-bold">
+        STEP {{ (paper_state.current_question|int)+1 }} OF {{ total_rows }}
+      </p>
+      <div class="progress mb-3">
+        <div
+          class="progress-bar bg-success"
+          role="progressbar"
+          id="progress-bar"
+          style="width: 0%"
+          aria-valuenow="0"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        ></div>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-sm input-group d-flex mt-3 align-items-center">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <input type="radio" name="answer" value="1" {% if
+                rows[(paper_state.current_question|int)].id in
+                paper_state.answers and
+                paper_state.answers[rows[(paper_state.current_question|int)].id]
+                == 1 %} checked {% endif %} aria-label="Radio button for
+                following text input" />
+              </div>
+            </div>
+            <p class="m-0 ml-3">
+              {{ rows[(paper_state.current_question|int)].option_1 }}
+            </p>
+          </div>
+
+          <div class="col-sm input-group d-flex mt-3 align-items-center">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <input type="radio" name="answer" value="2" {% if
+                rows[(paper_state.current_question|int)].id in
+                paper_state.answers and
+                paper_state.answers[rows[(paper_state.current_question|int)].id]
+                == 2 %} checked {% endif %} aria-label="Radio button for
+                following text input" />
+              </div>
+            </div>
+            <p class="m-0 ml-3">
+              {{ rows[(paper_state.current_question|int)].option_2 }}
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm input-group d-flex mt-3 align-items-center">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <input type="radio" name="answer" value="3" {% if
+                rows[(paper_state.current_question|int)].id in
+                paper_state.answers and
+                paper_state.answers[rows[(paper_state.current_question|int)].id]
+                == 3 %} checked {% endif %} aria-label="Radio button for
+                following text input" />
+              </div>
+            </div>
+            <p class="m-0 ml-3">
+              {{ rows[(paper_state.current_question|int)].option_3 }}
+            </p>
+          </div>
+
+          <div class="col-sm input-group d-flex mt-3 align-items-center">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <input type="radio" value="4" {% if
+                rows[(paper_state.current_question|int)].id in
+                paper_state.answers and
+                paper_state.answers[rows[(paper_state.current_question|int)].id]
+                == 4 %} checked {% endif %} name="answer" aria-label="Radio
+                button for following text input" />
+              </div>
+            </div>
+            <p class="m-0 ml-3">
+              {{ rows[(paper_state.current_question|int)].option_4 }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <form
+    action="/user/quiz/go-back?quiz_id={{ quiz.id }}&question_id={{ rows[(paper_state.current_question|int)].id }}"
+    method="post"
+    id="back-form"
+  >
+    <div
+      class="container d-flex justify-content-center align-items-center"
+      style="margin-top: 50px"
+    >
+      <button type="submit" class="mr-3 btn btn-primary font-weight-bold">
+        Back
+      </button>
+      <button
+        type="button"
+        onclick="document.getElementById('answer-form').submit();"
+        class="btn btn-success font-weight-bold px-5"
+      >
+        {{ "Submit" if (total_rows|int)-paper_state.current_question == 1 else
+        "Next" }}
+      </button>
+    </div>
+    <span
+      >Note: if you refresh page, you will loose quiz and will receive 0
+      marks</span
+    >
+  </form>
+</section>
+<script>
+  if (performance.navigation.type === 1) {
+    console.log("Page was refreshed.");
+  } else {
+    console.log("Page loaded normally.");
+  }
+
+  let currentStep = "{{ paper_state.current_question }}";
+  const totalQuestions = "{{ total_rows }}";
+  const progressBar = document.getElementById("progress-bar");
+
+  function updateProgress() {
+    let progress = (currentStep / totalQuestions) * 100;
+    progressBar.style.width = progress + "%";
+    progressBar.setAttribute("aria-valuenow", progress);
+  }
+
+  updateProgress();
+
+  let hours = parseInt("{{ quiz.time_duration_hr }}", 10) || 0;
+  let minute = parseInt("{{ quiz.time_duration_min }}", 10) || 0;
+  let seconds = 59;
+  const spanDocument = document.getElementById("timer");
+
+  function formatTime(num) {
+    return num.toString().padStart(2, "0");
+  }
+
+  let time = setInterval(() => {
+    if (hours === 0 && minute === 0 && seconds === 0) {
+      clearInterval(time);
+      spanDocument.innerHTML = "00:00:00";
+      return;
+    }
+
+    spanDocument.innerHTML = `${formatTime(hours)}:${formatTime(
+      minute
+    )}:${formatTime(seconds)}`;
+
+    if (seconds > 0) {
+      seconds--;
+    } else if (minute > 0) {
+      seconds = 59;
+      minute--;
+    } else if (hours > 0) {
+      hours--;
+      minute = 59;
+      seconds = 59;
+    }
+  }, 1000);
+</script>
 {% endblock %}

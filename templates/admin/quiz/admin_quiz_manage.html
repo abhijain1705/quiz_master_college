@@ -118,21 +118,6 @@ content %} {% include "admin/admin_wrapper.html" %}
           </div>
         </div>
         <div class="form-group">
-          <label for="exampleInputCount1"
-            >Number of Questions <span class="required">*</span></label
-          >
-          <input
-            type="number"
-            class="form-control"
-            id="exampleInputCount1"
-            name="number_of_questions"
-            aria-describedby="nameHelp"
-            min="0"
-            placeholder="Enter Number of Questions"
-            value="{{ quiz.number_of_questions if quiz else '' }}"
-          />
-        </div>
-        <div class="form-group">
           <label for="exampleInputCount2"
             >Total Marks <span class="required">*</span></label
           >
