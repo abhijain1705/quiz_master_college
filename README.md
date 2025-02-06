@@ -77,11 +77,12 @@ Quiz Master is a multi-user application designed as an exam preparation site for
 - `chapter_id`: VARCHAR(100), Foreign key to Chapter, Not null
 - `chapter_code`: VARCHAR(100), Foreign key to Chapter, Not null
 - `date_of_quiz`: DATE, Not null
-- `time_duration`: Integer, Not null (stored in milliseconds)
+- `time_duration_hr`: Integer, Not null
+- `time_duration_min`: Integer, Not null
 - `remarks`: VARCHAR(100), Not null
 - `created_at`: TIMESTAMP, Not null
 - `updated_at`: TIMESTAMP, Not null
-- `is_active`: Boolean, Not null
+- `is_active`: Boolean, Default True, Not null
 - `user_id`: VARCHAR(100), Foreign key to User, Nullable
 - `total_marks`: Integer, Not null
 
@@ -107,11 +108,26 @@ Quiz Master is a multi-user application designed as an exam preparation site for
 - `id`: VARCHAR(100), Primary key
 - `quiz_id`: VARCHAR(100), Foreign key to Quiz, Not null
 - `user_id`: VARCHAR(100), Foreign key to User, Not null
-- `timestamp_of_attempt`: TIMESTAMP, Not null
+- `question_attempted`: Integer, Not null
+- `question_corrected`: Integer, Not null
+- `question_wronged`: Integer, Not null
 - `total_scored`: Integer, Not null
 - `created_at`: TIMESTAMP, Not null
 - `updated_at`: TIMESTAMP, Not null
 - `unique_user_quiz_score`: Unique constraint on `quiz_id` and `user_id`
+
+### Attempt
+
+- `id`: VARCHAR(100), Primary key
+- `quiz_id`: VARCHAR(100), Foreign key to Quiz, Not null
+- `user_id`: VARCHAR(100), Foreign key to User, Not null
+- `score_id`: VARCHAR(100), Foreign key to Score, Not null
+- `question_id`: VARCHAR(100), Foreign key to Question, Not null
+- `actual_answer`: Integer, Not null
+- `attempted_answer`: Integer, Not null
+- `created_at`: TIMESTAMP, Not null
+- `updated_at`: TIMESTAMP, Not null
+- `unique_user_quiz_question_attempt`: Unique constraint on `quiz_id`, `user_id`, and `question_id`
 
 ## Core Functionalities
 

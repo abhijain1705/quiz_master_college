@@ -156,14 +156,15 @@ content %} {% include "user/user_wrapper.html" %}
       </button>
     </div>
     <span
-      >Note: if you refresh page, you will loose quiz and will receive 0
-      marks</span
+      >Note: Make sure you don't refresh page which the quiz is running
+      otherwise you will loose your chance</span
     >
   </form>
 </section>
 <script>
   if (performance.navigation.type === 1) {
     console.log("Page was refreshed.");
+    window.location.href = "/user/quiz/refreshed?quiz_id={{ quiz.id }}";
   } else {
     console.log("Page loaded normally.");
   }
@@ -180,36 +181,50 @@ content %} {% include "user/user_wrapper.html" %}
 
   updateProgress();
 
-  let hours = parseInt("{{ quiz.time_duration_hr }}", 10) || 0;
-  let minute = parseInt("{{ quiz.time_duration_min }}", 10) || 0;
-  let seconds = 59;
+  let quizStartTime = localStorage.getItem("quizStartTime");
+
+  if (!quizStartTime) {
+    quizStartTime = Date.now();
+    localStorage.setItem("quizStartTime", quizStartTime);
+  }
+
+  const totalTimeInSeconds =
+    (parseInt("{{ quiz.time_duration_hr }}", 10) || 0) * 3600 +
+    (parseInt("{{ quiz.time_duration_min }}", 10) || 0) * 60;
+
+  const elapsedSeconds = Math.floor((Date.now() - quizStartTime) / 1000);
+  let remainingTime = totalTimeInSeconds - elapsedSeconds;
+
+  if (remainingTime <= 0) {
+    localStorage.clear();
+    window.location.href = "/user/quiz/refreshed?quiz_id={{ quiz.id }}";
+  }
+
   const spanDocument = document.getElementById("timer");
 
   function formatTime(num) {
     return num.toString().padStart(2, "0");
   }
-
-  let time = setInterval(() => {
-    if (hours === 0 && minute === 0 && seconds === 0) {
+  function updateTimer() {
+    if (remainingTime <= 0) {
       clearInterval(time);
       spanDocument.innerHTML = "00:00:00";
+      window.location.href = "/user/quiz/refreshed?quiz_id={{ quiz.id }}";
       return;
     }
 
+    let hours = Math.floor(remainingTime / 3600);
+    let minutes = Math.floor((remainingTime % 3600) / 60);
+    let seconds = remainingTime % 60;
+
     spanDocument.innerHTML = `${formatTime(hours)}:${formatTime(
-      minute
+      minutes
     )}:${formatTime(seconds)}`;
 
-    if (seconds > 0) {
-      seconds--;
-    } else if (minute > 0) {
-      seconds = 59;
-      minute--;
-    } else if (hours > 0) {
-      hours--;
-      minute = 59;
-      seconds = 59;
-    }
-  }, 1000);
+    remainingTime--;
+  }
+
+  updateTimer();
+  let time = setInterval(updateTimer, 1000);
 </script>
 {% endblock %}

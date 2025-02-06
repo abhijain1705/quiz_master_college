@@ -29,12 +29,12 @@ def login_post():
 
     
     user = User.query.filter_by(email=email).first()
-    session['id'] = user.id
 
     if not user or not check_password_hash(user.password, password):
         flash('Please check your login details and try again.', "danger")
         return redirect(url_for('auth.login'))
 
+    session['id'] = user.id
     login_user(user, remember=True)
     return redirect(url_for("admin.admin_home" if user.user_type =='admin' else 'user.user_home'))
 

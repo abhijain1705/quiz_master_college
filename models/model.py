@@ -27,7 +27,7 @@ class Subject(db.Model):
 
 # attempt model
 class Attempt(db.Model):
-    __tablename__='attempts',
+    __tablename__='attempts'
     id = db.Column(db.VARCHAR(100), primary_key=True)
     quiz_id = db.Column(db.VARCHAR(100), db.ForeignKey('quiz.id'), nullable=False)
     user_id = db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=False)
