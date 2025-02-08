@@ -54,14 +54,14 @@ content %}{% include "admin/admin_wrapper.html" %}
                 %}N/a{% endif %}
               </p>
               <p class="col-12 col-sm-6">
-                <strong>Last Updated At:</strong> {% if sub %}{{ sub.updated_at.strftime('%Y-%m-%d')
-                }}{% else %}N/a{% endif %}
+                <strong>Last Updated At:</strong> {% if sub %}{{
+                sub.updated_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
             <div class="row">
               <p class="col-12 col-sm-6">
-                <strong>Created At:</strong> {% if sub %}{{ sub.created_at.strftime('%Y-%m-%d') }}{%
-                else %}N/a{% endif %}
+                <strong>Created At:</strong> {% if sub %}{{
+                sub.created_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
           </div>
@@ -230,6 +230,7 @@ content %}{% include "admin/admin_wrapper.html" %}
     </div>
   </section>
 </section>
+{% endblock %} {% block scripts %}
 <script>
   const url = new URL(window.location.href);
   let showWhere = url.searchParams.get("where");

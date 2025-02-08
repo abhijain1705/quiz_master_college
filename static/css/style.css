@@ -117,3 +117,28 @@
     display: block;
   }
 }
+
+.guage-chart-container {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.guage-chart-label {
+  position: absolute;
+  bottom: 50px;
+  left: 35%;
+}
+
+.score-factor {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar {
+  position: absolute;
+  height: 100%;
+  width: 8px;
+  top: 0;
+  right: 0;
+}

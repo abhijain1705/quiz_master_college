@@ -67,14 +67,14 @@ content %}{% include "admin/admin_wrapper.html" %}
                 %}N/a{% endif %}
               </p>
               <p class="col-12 col-sm-6">
-                <strong>Last Updated At:</strong> {% if sub %}{{ sub.updated_at.strftime('%Y-%m-%d')
-                }}{% else %}N/a{% endif %}
+                <strong>Last Updated At:</strong> {% if sub %}{{
+                sub.updated_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
             <div class="row">
               <p class="col-12 col-sm-6">
-                <strong>Created At:</strong> {% if sub %}{{ sub.created_at.strftime('%Y-%m-%d') }}{%
-                else %}N/a{% endif %}
+                <strong>Created At:</strong> {% if sub %}{{
+                sub.created_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
           </div>
@@ -112,8 +112,8 @@ content %}{% include "admin/admin_wrapper.html" %}
             </div>
             <div class="row">
               <p class="col-12 col-sm-6">
-                <strong>Created At:</strong> {% if chap %}{{ chap.created_at.strftime('%Y-%m-%d')
-                }}{% else %}N/a{% endif %}
+                <strong>Created At:</strong> {% if chap %}{{
+                chap.created_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
           </div>
@@ -145,7 +145,9 @@ content %}{% include "admin/admin_wrapper.html" %}
                 <strong>Remarks:</strong> {% if quiz %}{{ quiz.remarks }}{% else
                 %}N/a{% endif %}
               </p>
-              <p class="col-12 col-sm-6 {{"active" if quiz.is_active else "notactive"}}">
+              <p
+                class="col-12 col-sm-6 {{'active' if quiz.is_active else 'notactive'}}"
+              >
                 <strong>Status:</strong> {% if quiz %}{{ "Active"if
                 quiz.is_active else "Not-Active" }}{% else %}N/a{% endif %}
               </p>
@@ -162,8 +164,8 @@ content %}{% include "admin/admin_wrapper.html" %}
             </div>
             <div class="row">
               <p class="col-12 col-sm-6">
-                <strong>Created At:</strong> {% if quiz %}{{ quiz.created_at.strftime('%Y-%m-%d')
-                }}{% else %}N/a{% endif %}
+                <strong>Created At:</strong> {% if quiz %}{{
+                quiz.created_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
           </div>
@@ -205,12 +207,17 @@ content %}{% include "admin/admin_wrapper.html" %}
       <div class="d-flex align-items-center">
         <p class="mr-4">Total Rows: <strong>{{ total_rows }}</strong></p>
         <p>
-          Current Page: <strong>{% if skip and take %} {{ ((skip|int)/take)+1 }} {% else
-          %}1{% endif %}</strong>
+          Current Page:
+          <strong
+            >{% if skip and take %} {{ ((skip|int)/take)+1 }} {% else %}1{%
+            endif %}</strong
+          >
         </p>
       </div>
-      <div class="d-flex align-items-center" style="flex-wrap: wrap;">
-        <p class="mr-4">Total marks of Quiz: <strong>{{ quiz.total_marks }}</strong></p>
+      <div class="d-flex align-items-center" style="flex-wrap: wrap">
+        <p class="mr-4">
+          Total marks of Quiz: <strong>{{ quiz.total_marks }}</strong>
+        </p>
         <p class="mr-4">Marks alloted: <strong>{{ marks_alloted }}</strong></p>
         <p>Marks remaining: <strong>{{ marks_remaining }}</strong></p>
       </div>
@@ -344,6 +351,7 @@ content %}{% include "admin/admin_wrapper.html" %}
     </div>
   </section>
 </section>
+{% endblock %} {% block scripts %}
 <script>
   const url = new URL(window.location.href);
   let showWhere = url.searchParams.get("where");

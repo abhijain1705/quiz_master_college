@@ -60,14 +60,14 @@ content %}{% include "admin/admin_wrapper.html" %}
                 %}N/a{% endif %}
               </p>
               <p class="col-12 col-sm-6">
-                <strong>Last Updated At:</strong> {% if sub %}{{ sub.updated_at.strftime('%Y-%m-%d')
-                }}{% else %}N/a{% endif %}
+                <strong>Last Updated At:</strong> {% if sub %}{{
+                sub.updated_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
             <div class="row">
               <p class="col-12 col-sm-6">
-                <strong>Created At:</strong> {% if sub %}{{ sub.created_at.strftime('%Y-%m-%d') }}{%
-                else %}N/a{% endif %}
+                <strong>Created At:</strong> {% if sub %}{{
+                sub.created_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
           </div>
@@ -105,8 +105,8 @@ content %}{% include "admin/admin_wrapper.html" %}
             </div>
             <div class="row">
               <p class="col-12 col-sm-6">
-                <strong>Created At:</strong> {% if chap %}{{ chap.created_at.strftime('%Y-%m-%d')
-                }}{% else %}N/a{% endif %}
+                <strong>Created At:</strong> {% if chap %}{{
+                chap.created_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
           </div>
@@ -121,8 +121,11 @@ content %}{% include "admin/admin_wrapper.html" %}
       <div class="d-flex align-items-center">
         <p class="mr-4">Total Rows: <strong>{{ total_rows }}</strong></p>
         <p>
-          Current Page: <strong>{% if skip and take %} {{ ((skip|int)/take)+1 }} {% else
-          %}1{% endif %}</strong>
+          Current Page:
+          <strong
+            >{% if skip and take %} {{ ((skip|int)/take)+1 }} {% else %}1{%
+            endif %}</strong
+          >
         </p>
       </div>
     </div>
@@ -222,11 +225,19 @@ content %}{% include "admin/admin_wrapper.html" %}
               {{ quiz.time_duration_hr }} hr. {{ quiz.time_duration_min }} min.
             </td>
             <td>
-              <p class="{{"active" if quiz.is_active else "notactive"}}">{{ "Active" if quiz.is_active else "Not-Active" }}</p>
-              <form id="statusForm" action="/admin/subject/chapter/quiz/update/status?quiz_id={{ quiz.id }}&chap_id={{ chap.id }}&sub_id={{ sub.id }}" method="post">
-                  <input {% if quiz.is_active %}checked{% endif %} onchange="document.getElementById('statusForm').submit();" name="input" type="checkbox" id="toggle" />
-                  <label id="toggle-label" for="toggle"></label>
-              </form>
+              <p
+                class="{% if quiz.is_active %}active{% else %}notactive{% endif %}"
+              >
+                {% if quiz.is_active %}Active{% else %}Not-Active{% endif %}
+              </p>
+              <button class="btn btn-secondary">
+                <a
+                  class="text-white"
+                  href="/admin/subject/chapter/quiz/update/status?quiz_id={{ quiz.id }}&chap_id={{ chap.id }}&sub_id={{ sub.id }}"
+                  >{% if quiz.is_active %}deactivate{% else %}activate{% endif
+                  %}</a
+                >
+              </button>
             </td>
             <td>{{ quiz.remarks }}</td>
             <td>{{ quiz.total_marks }}</td>
@@ -284,6 +295,7 @@ content %}{% include "admin/admin_wrapper.html" %}
     </div>
   </section>
 </section>
+{% endblock %} {% block scripts %}
 <script>
   const url = new URL(window.location.href);
   let showWhere = url.searchParams.get("where");

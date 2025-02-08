@@ -157,6 +157,7 @@ block content %} {% include "admin/admin_wrapper.html" %}
     </div>
   </section>
 </section>
+{% endblock %} {% block scripts %}
 <script>
   const url = new URL(window.location.href);
   let showWhere = url.searchParams.get("where");

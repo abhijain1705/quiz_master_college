@@ -64,6 +64,7 @@ content %} {% include "admin/admin_wrapper.html" %}
             type="text"
             class="form-control"
             id="exampleInputName1"
+            required
             name="quiz_title"
             aria-describedby="nameHelp"
             placeholder="Enter Quiz Title"
@@ -78,6 +79,7 @@ content %} {% include "admin/admin_wrapper.html" %}
             type="date"
             class="form-control"
             id="exampleInputDate1"
+            required
             name="date_of_quiz"
             aria-describedby="nameHelp"
             placeholder="Enter Quiz Date"
@@ -97,6 +99,7 @@ content %} {% include "admin/admin_wrapper.html" %}
                 id="exampleInputTime2"
                 name="time_duration_hr"
                 min="0"
+                required
                 aria-describedby="nameHelp"
                 placeholder="Enter Quiz Duration (Hours)"
                 value="{{ quiz.time_duration_hr if quiz else '' }}"
@@ -110,6 +113,7 @@ content %} {% include "admin/admin_wrapper.html" %}
                 id="exampleInputTime1"
                 name="time_duration_min"
                 min="0"
+                required
                 aria-describedby="nameHelp"
                 placeholder="Enter Quiz Duration (Minutes)"
                 value="{{ quiz.time_duration_min if quiz else '' }}"
@@ -128,6 +132,7 @@ content %} {% include "admin/admin_wrapper.html" %}
             name="total_marks"
             aria-describedby="nameHelp"
             min="0"
+            required
             placeholder="Enter Total Marks"
             value="{{ quiz.total_marks if quiz else '' }}"
           />

@@ -315,20 +315,18 @@ def delete_quiz():
         return flash_and_redirect(f"An error occurred {e}", 'danger', url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))   
 
 
-@subject.route("/chapter/quiz/update/status", methods=['POST'])
+@subject.route("/chapter/quiz/update/status")
 @login_required
 @role_required("admin")
 def update_quiz_status():
     sub_id = request.args.get("sub_id", "")
     chap_id = request.args.get("chap_id", "")
     quiz_id = request.args.get("quiz_id", "")
-    value = request.form.get("input", "")
     quiz = Quiz.query.filter_by(id=quiz_id).first()
-    print(value, value=='on', "valuevaluevaluevalue")
     if not quiz:
         return flash_and_redirect("Quiz not found", "danger", url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
     try:
-        quiz.is_active = bool(value)
+        quiz.is_active = not quiz.is_active
         db.session.commit()
         return flash_and_redirect("Quiz status updated successfully", "success",url_for("subject.view_chapter", sub_id=sub_id, chap_id=chap_id))
     except Exception as e:
