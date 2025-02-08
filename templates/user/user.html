@@ -1,6 +1,144 @@
 {% extends "base.html" %} {% block title %}User Page{% endblock %} {% block
 content %} {% include "user/user_wrapper.html" %}
-<section>
-  <h1>user page</h1>
+<section class="p-3">
+  <h4>User Dashboard</h4>
+  <div class="chart-groups">
+    <div class="chart-container"><canvas id="performanceChart"></canvas></div>
+    <div class="chart-container"><canvas id="scoreChart"></canvas></div>
+    <div class="chart-container">
+      <canvas id="subjectPerformanceChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="chapterPerformanceChart"></canvas>
+    </div>
+  </div>
 </section>
+{% endblock %} {% block scripts %}
+<script>
+  var ctx = document.getElementById("performanceChart").getContext("2d");
+  var performanceData = JSON.parse(`{{ performance_data|tojson }}`);
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: performanceData.labels,
+      datasets: [
+        {
+          label: "Total Score Over Time",
+          data: performanceData.scores,
+          borderColor: "red",
+          backgroundColor: "rgba(255, 0, 0, 0.1)",
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: "Average Score Percentage Over Time",
+        },
+      },
+    },
+  });
+
+  var ctx2 = document.getElementById("scoreChart").getContext("2d");
+  var scoreData = JSON.parse(`{{ score_bins|tojson }}`);
+
+  new Chart(ctx2, {
+    type: "doughnut",
+    data: {
+      labels: Object.keys(scoreData),
+      datasets: [
+        {
+          label: "Score Distribution",
+          data: Object.values(scoreData),
+          backgroundColor: [
+            "#FF6384",
+            "#36A2EB",
+            "#FFCE56",
+            "#4BC0C0",
+            "#9966FF",
+          ],
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: "Score Distribution (Percentage Slabs)",
+        },
+      },
+    },
+  });
+
+  var ctx3 = document
+    .getElementById("subjectPerformanceChart")
+    .getContext("2d");
+  var subjectPerformanceData = JSON.parse(
+    `{{ subject_performance_data|tojson }}`
+  );
+
+  new Chart(ctx3, {
+    type: "line",
+    data: {
+      labels: subjectPerformanceData.labels,
+      datasets: [
+        {
+          label: "Subject Performance",
+          data: subjectPerformanceData.scores,
+          borderColor: "green",
+          backgroundColor: "rgba(0, 255, 0, 0.1)",
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: "Average Score Percentage in Subjects",
+        },
+      },
+    },
+  });
+
+  var ctx4 = document
+    .getElementById("chapterPerformanceChart")
+    .getContext("2d");
+  var chapterPerformanceData = JSON.parse(
+    `{{ chapter_performance_data|tojson }}`
+  );
+
+  new Chart(ctx4, {
+    type: "line",
+    data: {
+      labels: chapterPerformanceData.labels,
+      datasets: [
+        {
+          label: "Chapter Performance",
+          data: chapterPerformanceData.scores,
+          borderColor: "blue",
+          backgroundColor: "rgba(0, 0, 255, 0.1)",
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: "Average Score Percentage in Chapters",
+        },
+      },
+    },
+  });
+</script>
 {% endblock %}

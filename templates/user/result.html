@@ -26,14 +26,17 @@ content %} {% include "user/user_wrapper.html" %}
       <canvas id="gauge-chart" width="150" height="150"> </canvas>
       <p class="guage-chart-label">points</p>
     </div>
-    <div class="d-flex justify-content-between" style="max-width: 400px; min-width: 250px;">
+    <div
+      class="d-flex justify-content-between"
+      style="max-width: 400px; min-width: 250px"
+    >
       <span>you score</span>
       <p>score factors</p>
     </div>
     <div>
       <div class="row">
         <div
-          class="container m-2 rounded-lg border border-secondary score-factor"
+          class="container m-2 mx-auto rounded-lg border border-secondary score-factor"
           style="width: 200px; height: 70px"
         >
           <h2 style="margin: 0px">{{ score.question_wronged }}</h2>
@@ -41,7 +44,7 @@ content %} {% include "user/user_wrapper.html" %}
           <div class="sidebar" style="background-color: red"></div>
         </div>
         <div
-          class="container m-2 rounded-lg border border-secondary score-factor"
+          class="container m-2 mx-auto rounded-lg border border-secondary score-factor"
           style="width: 200px; height: 70px"
         >
           <h2 style="margin: 0px">{{ score.question_attempted }}</h2>
@@ -51,7 +54,7 @@ content %} {% include "user/user_wrapper.html" %}
       </div>
       <div class="row">
         <div
-          class="container m-2 rounded-lg border border-secondary score-factor"
+          class="container m-2 mx-auto rounded-lg border border-secondary score-factor"
           style="width: 200px; height: 70px"
         >
           <h2 style="margin: 0px">
@@ -61,7 +64,7 @@ content %} {% include "user/user_wrapper.html" %}
           <div class="sidebar" style="background-color: yellow"></div>
         </div>
         <div
-          class="container m-2 rounded-lg border border-secondary score-factor"
+          class="container m-2 mx-auto rounded-lg border border-secondary score-factor"
           style="width: 200px; height: 70px"
         >
           <h2 style="margin: 0px">{{ score.question_corrected }}</h2>
@@ -70,9 +73,6 @@ content %} {% include "user/user_wrapper.html" %}
         </div>
       </div>
     </div>
-    <button class="btn btn-primary">
-      <a class="text-white" href="/user/quizzes?skip=0&take=25">Play More</a>
-    </button>
   </section>
 </section>
 {% endblock %} {% block scripts %}

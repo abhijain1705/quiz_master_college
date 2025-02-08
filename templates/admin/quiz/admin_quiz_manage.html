@@ -19,7 +19,7 @@ content %} {% include "admin/admin_wrapper.html" %}
           {% if chap %}{{ chap.code }}{% else %} {% endif %}</a
         >
       </li>
-      <li class="breadcrumb-item active" aria-current="page">
+      <li class="breadcrumb-item" aria-current="page">
         {% if quiz %}Update Quiz{% else %}New Quiz{% endif %}
       </li>
     </ol>
@@ -58,13 +58,14 @@ content %} {% include "admin/admin_wrapper.html" %}
       <div>
         <div class="form-group">
           <label for="exampleInputName1"
-            >Quiz Title <span class="required">*</span></label
+            >Quiz Title (Max 500 letters) <span class="required">*</span></label
           >
           <input
             type="text"
             class="form-control"
             id="exampleInputName1"
             required
+            maxlength="500"
             name="quiz_title"
             aria-describedby="nameHelp"
             placeholder="Enter Quiz Title"
@@ -139,7 +140,7 @@ content %} {% include "admin/admin_wrapper.html" %}
         </div>
         <div class="form-group">
           <label for="exampleInputText"
-            >Remarks <span class="required">*</span>
+            >Remarks (Max 2000 letters) <span class="required">*</span>
           </label>
           <input
             type="text"
@@ -148,6 +149,7 @@ content %} {% include "admin/admin_wrapper.html" %}
             required
             name="remarks"
             aria-describedby="nameHelp"
+            maxlength="2000"
             min="0"
             placeholder="Remarks"
             value="{{ quiz.remarks if quiz else '' }}"

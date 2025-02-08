@@ -1,19 +1,16 @@
-{% extends "base.html" %} {% block title %}Subject Management{% endblock %} {%
-block content %} {% include "admin/admin_wrapper.html" %}
-
+{% extends "base.html" %} {% block title %}User Page{% endblock %} {% block
+content %} {% include "user/user_wrapper.html" %}
 <section class="min-vh-100 p-4">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
-      <li class="breadcrumb-item">
-        <a>Subjects List</a>
-      </li>
+      <li class="breadcrumb-item"><a href="/user">Home</a></li>
+      <li class="breadcrumb-item">Subjects List</li>
     </ol>
   </nav>
 
   <div class="d-flex flex-wrap justify-content-between">
     <div>
-      <h3>Subject Management</h3>
+      <h3>Subject List</h3>
       <div class="d-flex align-items-center">
         <p class="mr-4">Total Rows: <strong>{{ total_rows }}</strong></p>
         <p>
@@ -26,12 +23,6 @@ block content %} {% include "admin/admin_wrapper.html" %}
       </div>
     </div>
     <div class="form-inline my-2 my-lg-0">
-      <button type="button" class="btn btn-primary mr-3">
-        <a class="text-white" href="/admin/subject/new">
-          Add New Subject
-          <span aria-hidden="true">&plus;</span>
-        </a>
-      </button>
       <input
         class="form-control mt-2 mt-sm-0 mr-sm-2"
         type="search"
@@ -84,7 +75,6 @@ block content %} {% include "admin/admin_wrapper.html" %}
             <th scope="col">Description</th>
             <th scope="col">Created At</th>
             <th scope="col">Updated At</th>
-            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -92,7 +82,7 @@ block content %} {% include "admin/admin_wrapper.html" %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
             <td class="link">
-              <a href="/admin/subject/view?sub_id={{ sub.id }}&take=25&skip=0"
+              <a href="/user/subject/view?sub_id={{ sub.id }}&take=25&skip=0"
                 >{{ sub.code }}</a
               >
             </td>
@@ -101,26 +91,6 @@ block content %} {% include "admin/admin_wrapper.html" %}
             <td>{{ sub.description }}</td>
             <td>{{ sub.created_at.strftime('%Y-%m-%d') }}</td>
             <td>{{ sub.updated_at.strftime('%Y-%m-%d') }}</td>
-            <td>
-              <button
-                type="button"
-                class="btn btn-secondary mr-3 mb-3 mb-sm-0"
-                onclick="window.location.href='/admin/subject/update?sub_id={{ sub.id }}'"
-              >
-                Update
-              </button>
-              <form
-                method="post"
-                action="/admin/subject/delete?sub_id={{ sub.id }}"
-                onsubmit="return confirm('Are you sure you wish to delete the subject with {{sub.code}}?, !! This will delete all chapters, quizzes and questions associated with it !!');"
-              >
-                <input
-                  type="submit"
-                  class="btn mt-3 btn-danger"
-                  value="Delete"
-                />
-              </form>
-            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -130,7 +100,7 @@ block content %} {% include "admin/admin_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/subject?skip={{ (skip - take) if skip > 0 else 0 }}&take={{ take }}"
+              href="/user/subjects?skip={{ (skip - take) if skip > 0 else 0 }}&take={{ take }}"
               aria-label="Previous"
             >
               <span aria-hidden="true">&laquo;</span>
@@ -142,7 +112,7 @@ block content %} {% include "admin/admin_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/subject?skip={{ ( (((skip|int)/take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              href="/user/subjects?skip={{ ( (((skip|int)/take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
               aria-label="Next"
             >
               <span
@@ -173,9 +143,9 @@ block content %} {% include "admin/admin_wrapper.html" %}
     if (searchTerm) {
       queryParams +=
         "&where=" + encodeURIComponent(JSON.stringify({ name: searchTerm }));
-      window.location.href = "/admin/subject" + queryParams;
+      window.location.href = "/user/subjects" + queryParams;
     } else {
-      window.location.href = "/admin/subject" + queryParams;
+      window.location.href = "/user/subjects" + queryParams;
     }
   }
 </script>

@@ -10,7 +10,7 @@ block content %} {% include "admin/admin_wrapper.html" %}
       <li class="breadcrumb-item">
         <a href="/admin/subject/view?sub_id={{ sub_id }}">Single Subject</a>
       </li>
-      <li class="breadcrumb-item active" aria-current="page">
+      <li class="breadcrumb-item" aria-current="page">
         {% if chap %}Update Chapter{% else %}New Chapter{% endif %}
       </li>
     </ol>
@@ -29,13 +29,13 @@ block content %} {% include "admin/admin_wrapper.html" %}
           >
             {{ message }}
             <button
-            type="button"
-            class="close"
-            data-dismiss="alert"
-            aria-label="Close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
+              type="button"
+              class="close"
+              data-dismiss="alert"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
           {% endfor %}
         </div>
@@ -49,43 +49,56 @@ block content %} {% include "admin/admin_wrapper.html" %}
     >
       <div>
         <div class="form-group">
-          <label for="exampleInputName1">Chapter Name <span class="required">*</span></label>
+          <label for="exampleInputName1"
+            >Chapter Name (Max 50 letters)
+            <span class="required">*</span></label
+          >
           <input
             type="text"
             class="form-control"
             id="exampleInputName1"
             name="name"
+            maxlength="50"
             aria-describedby="nameHelp"
             placeholder="Enter Chapter Name"
             value="{{ chap.name if chap else '' }}"
           />
         </div>
         <div class="form-group">
-          <label for="exampleInputDescription1">Chapter Description <span class="required">*</span></label>
+          <label for="exampleInputDescription1"
+            >Chapter Description (Max 300 letters)
+            <span class="required">*</span></label
+          >
           <input
             type="text"
             class="form-control"
             name="description"
             multiple
             min="4"
+            maxlength="300"
             value="{{ chap.description if chap else '' }}"
             id="exampleInputDescription1"
             placeholder="Enter Chapter Description"
           />
         </div>
         <div class="form-group">
-          <label for="exampleInputPages1">Chapter Page Count <span class="required">*</span></label>
+          <label for="exampleInputPages1"
+            >Chapter Page Count <span class="required">*</span></label
+          >
           <input
             type="number"
             class="form-control"
             id="exampleInputPages1"
+            max="100"
             name="pages"
             value="{{ chap.pages if chap else '' }}"
             placeholder="Enter Chapter Page Count"
           />
         </div>
         <div class="form-group">
-          <label for="exampleInputChapterNo1">Chapter Number <span class="required">*</span></label>
+          <label for="exampleInputChapterNo1"
+            >Chapter Number <span class="required">*</span></label
+          >
           <input
             type="number"
             class="form-control"
@@ -96,11 +109,14 @@ block content %} {% include "admin/admin_wrapper.html" %}
           />
         </div>
         <div class="form-group">
-          <label for="exampleInputCode1">Chapter Code <span class="required">*</span></label>
+          <label for="exampleInputCode1"
+            >Chapter Code (Max 4 letters) <span class="required">*</span></label
+          >
           <input
             type="text"
             class="form-control"
             id="exampleInputCode1"
+            maxlength="4"
             name="code"
             value="{{ chap.code if chap else '' }}"
             placeholder="Enter Chapter Code"

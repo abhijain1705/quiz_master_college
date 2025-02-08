@@ -25,9 +25,8 @@ class Subject(db.Model):
     updated_at=db.Column(db.TIMESTAMP, nullable=False)
     code=db.Column(db.VARCHAR(100), nullable=False)
 
-# attempt model
-class Attempt(db.Model):
-    __tablename__='attempts'
+class UserResponses(db.Model):
+    __tablename__ = 'user_responses'
     id = db.Column(db.VARCHAR(100), primary_key=True)
     quiz_id = db.Column(db.VARCHAR(100), db.ForeignKey('quiz.id'), nullable=False)
     user_id = db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=False)
@@ -35,26 +34,24 @@ class Attempt(db.Model):
     question_id = db.Column(db.VARCHAR(100), db.ForeignKey('questions.id'), nullable=False)
     actual_answer = db.Column(db.Integer, nullable=False)
     attempted_answer = db.Column(db.Integer, nullable=False)
+    attempt_number = db.Column(db.Integer, nullable=False) 
     created_at = db.Column(db.TIMESTAMP, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, nullable=False)
-    __table_args__ = (
-        db.UniqueConstraint('quiz_id', 'user_id', 'question_id', name='unique_user_quiz_question_attempt'),  # Prevents duplicate user-quiz-question pairs
-    )
 
-# score model
 class Score(db.Model):
-    __tablename__='scores'
+    __tablename__ = 'scores'
     id = db.Column(db.VARCHAR(100), primary_key=True)
     quiz_id = db.Column(db.VARCHAR(100), db.ForeignKey('quiz.id'), nullable=False)
     user_id = db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=False)
+    attempt_number = db.Column(db.Integer, nullable=False)
     question_attempted = db.Column(db.Integer, nullable=False)
     question_corrected = db.Column(db.Integer, nullable=False)
-    question_wronged =  db.Column(db.Integer, nullable=False)
+    question_wronged = db.Column(db.Integer, nullable=False)
     total_scored = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.TIMESTAMP, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, nullable=False)
     __table_args__ = (
-        db.UniqueConstraint('quiz_id', 'user_id', name='unique_user_quiz_score'),  # Prevents duplicate user-quiz pairs
+        db.UniqueConstraint('quiz_id', 'user_id', 'attempt_number', name='unique_user_quiz_attempt'),
     )
 
 # quiz model

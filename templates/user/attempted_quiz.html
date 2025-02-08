@@ -1,11 +1,11 @@
-{% extends "base.html" %} {% block title %}Upcoming Quiz Page{% endblock %} {%
-block content %} {% include "user/user_wrapper.html" %}
-<section class="min-vh-100 p-4">
+{% extends "base.html" %} {% block title %}Score Page{% endblock %} {% block
+content %} {% include "user/user_wrapper.html" %}
+<section class="p-3">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="/user">Home</a></li>
       <li class="breadcrumb-item">
-        <a>Upcoming Quizzes List</a>
+        <a>Attempted Quizzes List</a>
       </li>
     </ol>
   </nav>
@@ -67,7 +67,11 @@ block content %} {% include "user/user_wrapper.html" %}
           {% for quiz in rows %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
-            <td>{{ quiz.quiz_title }}</td>
+            <td>
+              <a href="/user/attempted-quizzes/view?quiz_id={{ quiz.id }}"
+                >{{ quiz.quiz_title }}</a
+              >
+            </td>
             <td>{{ quiz.date_of_quiz }}</td>
             <td>
               {{ quiz.time_duration_hr }} hr. {{ quiz.time_duration_min }} min.
@@ -97,4 +101,7 @@ block content %} {% include "user/user_wrapper.html" %}
     </div>
   </section>
 </section>
+
+{% endblock %} {% block scripts %}
+<script></script>
 {% endblock %}

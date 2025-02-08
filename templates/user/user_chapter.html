@@ -1,11 +1,11 @@
-{% extends "base.html" %} {% block title %}Single Subject{% endblock %} {% block
-content %}{% include "admin/admin_wrapper.html" %}
-<section class="p-3">
+{% extends "base.html" %} {% block title %}Score Page{% endblock %} {% block
+content %} {% include "user/user_wrapper.html" %}
+<section class="min-vh-100 p-4">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="/admin">Home</a></li>
       <li class="breadcrumb-item">
-        <a href="/admin/subject/?skip=0&take=25">Subjects List</a>
+        <a href="/user/subjects?skip=0&take=25">Subjects List</a>
       </li>
       <li class="breadcrumb-item" aria-current="page">
         {% if sub %}{{ sub.code }}{% else %} {% endif %}
@@ -72,7 +72,7 @@ content %}{% include "admin/admin_wrapper.html" %}
 
   <div class="d-flex mt-3 flex-wrap justify-content-between">
     <div>
-      <h3>Chapter Management</h3>
+      <h3>Chapter List</h3>
       <div class="d-flex align-items-center">
         <p class="mr-4">Total Rows: <strong>{{ total_rows }}</strong></p>
         <p>
@@ -93,14 +93,6 @@ content %}{% include "admin/admin_wrapper.html" %}
           data-target="#exampleModalScrollable"
         >
           View Subject
-        </button>
-        <button type="button" class="btn btn-primary mr-3">
-          <a
-            class="text-white"
-            href="/admin/subject/chapter/new?sub_id={{ sub.id }}"
-          >
-            New Chapter
-          </a>
         </button>
       </div>
       <div class="d-flex mt-2 mt-sm-0 justify-content-between">
@@ -159,7 +151,6 @@ content %}{% include "admin/admin_wrapper.html" %}
             <th scope="col">Chapter number</th>
             <th scope="col">Created At</th>
             <th scope="col">Updated At</th>
-            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -168,7 +159,7 @@ content %}{% include "admin/admin_wrapper.html" %}
             <th scope="row">{{ loop.index+skip }}</th>
             <td class="link">
               <a
-                href="/admin/subject/chapter/view?sub_id={{ sub.id }}&skip=0&take=25&chap_id={{ chpt.id }}"
+                href="/user/subject/chapter/view?sub_id={{ sub.id }}&skip=0&take=25&chap_id={{ chpt.id }}"
                 >{{ chpt.code }}</a
               >
             </td>
@@ -178,22 +169,6 @@ content %}{% include "admin/admin_wrapper.html" %}
             <td>{{ chpt.chapter_number }}</td>
             <td>{{ chpt.created_at.strftime('%Y-%m-%d') }}</td>
             <td>{{ chpt.updated_at.strftime('%Y-%m-%d') }}</td>
-            <td>
-              <button
-                onclick="window.location.href='/admin/subject/chapter/update?chap_id={{ chpt.id }}&sub_id={{ sub.id }}'"
-                type="button"
-                class="btn btn-secondary mr-3 mb-3"
-              >
-                Update
-              </button>
-              <form
-                method="post"
-                action="/admin/subject/chapter/delete?sub_id={{ sub.id }}&chap_id={{ chpt.id }}"
-                onsubmit="return confirm('Are you sure you wish to delete the chapter with {{sub.code}}?, !! This will delete all quizzes and questions associated with it !!');"
-              >
-                <input type="submit" class="btn btn-danger" value="Delete" />
-              </form>
-            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -203,7 +178,7 @@ content %}{% include "admin/admin_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/subject/view?sub_id={{ sub.id }}&skip={{ (skip - take) if skip > 0 else 0 }}&take={{ take }}"
+              href="/user/subject/view?sub_id={{ sub.id }}&skip={{ (skip - take) if skip > 0 else 0 }}&take={{ take }}"
               aria-label="Previous"
             >
               <span aria-hidden="true">&laquo;</span>
@@ -215,7 +190,7 @@ content %}{% include "admin/admin_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/subject/view?sub_id={{ sub.id }}&skip={{ ( (((skip|int)/take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              href="/user/subject/view?sub_id={{ sub.id }}&skip={{ ( (((skip|int)/take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
               aria-label="Next"
             >
               <span
@@ -246,9 +221,9 @@ content %}{% include "admin/admin_wrapper.html" %}
     if (searchTerm) {
       queryParams +=
         "&where=" + encodeURIComponent(JSON.stringify({ name: searchTerm }));
-      window.location.href = "/admin/subject/view" + queryParams;
+      window.location.href = "/user/subject/view" + queryParams;
     } else {
-      window.location.href = "/admin/subject/view" + queryParams;
+      window.location.href = "/user/subject/view" + queryParams;
     }
   }
 </script>
