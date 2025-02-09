@@ -1,16 +1,18 @@
-{% extends "base.html" %} {% block title %}Subject List{% endblock %} {% block
-content %} {% include "user/user_wrapper.html" %}
-<section class="min-vh-100 p-4">
+{% extends "base.html" %} {% block title %} Top Scorrers {% endblock %} {% block
+content %} {% include "admin/admin_wrapper.html" %}
+<section class="p-3">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/user">Home</a></li>
-      <li class="breadcrumb-item">Subjects List</li>
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item">
+        <a>Top Scorrers</a>
+      </li>
     </ol>
   </nav>
 
   <div class="d-flex flex-wrap justify-content-between">
     <div>
-      <h3>Subject List</h3>
+      <h3>Top Scorrers</h3>
       <div class="d-flex align-items-center">
         <p class="mr-4">Total Rows: <strong>{{ total_rows }}</strong></p>
         <p>
@@ -70,27 +72,32 @@ content %} {% include "user/user_wrapper.html" %}
         <thead>
           <tr>
             <th scope="col">S.No.</th>
-            <th scope="col">Course Code</th>
-            <th scope="col">Name</th>
-            <th scope="col">Description</th>
+            <th scope="col">Full Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Qualification</th>
+            <th scope="col">Score</th>
+            <th scope="col">Quiz Played</th>
+            <th scope="col">Status</th>
+            <th scope="col">DOB</th>
             <th scope="col">Created At</th>
-            <th scope="col">Updated At</th>
           </tr>
         </thead>
         <tbody>
-          {% for sub in rows %}
+          {% for usr in rows %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
             <td class="link">
-              <a href="/user/subject/view?sub_id={{ sub.id }}&take=25&skip=0"
-                >{{ sub.code }}</a
+              <a href="/admin/users/view?user_id={{ usr.id }}"
+                >{{ usr.full_name }}</a
               >
             </td>
-
-            <td>{{ sub.name }}</td>
-            <td>{{ sub.description }}</td>
-            <td>{{ sub.created_at.strftime('%Y-%m-%d') }}</td>
-            <td>{{ sub.updated_at.strftime('%Y-%m-%d') }}</td>
+            <td>{{ usr.email }}</td>
+            <td>{{ usr.qualification }}</td>
+            <td>{{ usr.score }}</td>
+            <td>{{ usr.quiz_played }}</td>
+            <td>{{ usr.dob }}</td>
+            <td>{{ usr.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>{{ usr.updated_at.strftime('%Y-%m-%d') }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -100,7 +107,7 @@ content %} {% include "user/user_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/user/subjects?skip={{ (skip - take) if skip > 0 else 0 }}&take={{ take }}"
+              href="/admin/subject?skip={{ (skip - take) if skip > 0 else 0 }}&take={{ take }}"
               aria-label="Previous"
             >
               <span aria-hidden="true">&laquo;</span>
@@ -112,7 +119,7 @@ content %} {% include "user/user_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/user/subjects?skip={{ ( (((skip|int)/take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              href="/admin/subject?skip={{ ( (((skip|int)/take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
               aria-label="Next"
             >
               <span
@@ -128,25 +135,5 @@ content %} {% include "user/user_wrapper.html" %}
   </section>
 </section>
 {% endblock %} {% block scripts %}
-<script>
-  const url = new URL(window.location.href);
-  let showWhere = url.searchParams.get("where");
-  if (showWhere) {
-    showWhere = JSON.parse(decodeURIComponent(showWhere));
-    if ("name" in showWhere) {
-      document.getElementById("subjectInput").value = showWhere["name"];
-    }
-  }
-  function searchBySubject(skip, take) {
-    var searchTerm = document.getElementById("subjectInput").value;
-    var queryParams = "?skip=" + skip + "&take=" + take;
-    if (searchTerm) {
-      queryParams +=
-        "&where=" + encodeURIComponent(JSON.stringify({ name: searchTerm }));
-      window.location.href = "/user/subjects" + queryParams;
-    } else {
-      window.location.href = "/user/subjects" + queryParams;
-    }
-  }
-</script>
+<script></script>
 {% endblock %}

@@ -108,15 +108,16 @@ Quiz Master is a multi-user application designed as an exam preparation site for
 - `id`: VARCHAR(100), Primary key
 - `quiz_id`: VARCHAR(100), Foreign key to Quiz, Not null
 - `user_id`: VARCHAR(100), Foreign key to User, Not null
+- `attempt_number`: Integer, Not null
 - `question_attempted`: Integer, Not null
 - `question_corrected`: Integer, Not null
 - `question_wronged`: Integer, Not null
 - `total_scored`: Integer, Not null
 - `created_at`: TIMESTAMP, Not null
 - `updated_at`: TIMESTAMP, Not null
-- `unique_user_quiz_score`: Unique constraint on `quiz_id` and `user_id`
+- `unique_user_quiz_attempt`: Unique constraint on `quiz_id`, `user_id`, and `attempt_number`
 
-### Attempt
+### UserResponses
 
 - `id`: VARCHAR(100), Primary key
 - `quiz_id`: VARCHAR(100), Foreign key to Quiz, Not null
@@ -125,9 +126,9 @@ Quiz Master is a multi-user application designed as an exam preparation site for
 - `question_id`: VARCHAR(100), Foreign key to Question, Not null
 - `actual_answer`: Integer, Not null
 - `attempted_answer`: Integer, Not null
+- `attempt_number`: Integer, Not null
 - `created_at`: TIMESTAMP, Not null
 - `updated_at`: TIMESTAMP, Not null
-- `unique_user_quiz_question_attempt`: Unique constraint on `quiz_id`, `user_id`, and `question_id`
 
 ## Core Functionalities
 

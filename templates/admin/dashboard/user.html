@@ -1,6 +1,17 @@
 {% extends "base.html" %} {% block title %}User Page{% endblock %} {% block
-content %} {% include "user/user_wrapper.html" %}
+content %} {% include "admin/admin_wrapper.html" %}
 <section class="p-3">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/admin">Home</a></li>
+      <li class="breadcrumb-item">
+        <a href="/admin/users?skip=0&take=25">Top Scorrers</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a>User Dashboard</a>
+      </li>
+    </ol>
+  </nav>
   <!-- flash message -->
   {% with messages = get_flashed_messages(with_categories=True) %} {% if
   messages %}

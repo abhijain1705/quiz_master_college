@@ -1,15 +1,21 @@
 import uuid
 import json
 from models import db
+from sqlalchemy import extract
 from datetime import datetime,date
 from config import admin_credentials
 from flask_login import login_required
+from controllers.admin.admin import month_list
 from controllers.decorator import role_required
 from controllers.admin.admin_subject import flash_and_redirect
 from models.model import User, Score, Quiz, Chapter, Subject, Questions, UserResponses
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, session
 
 user = Blueprint('user', __name__, url_prefix='/user')
+
+
+current_month = datetime.now().month
+current_year = datetime.now().year
 
 @user.route("/")
 @login_required
@@ -20,13 +26,20 @@ def user_home():
         if not user_id:
             return flash_and_redirect("User not found", "danger", url_for("auth.logout"))
 
-        quiz_scores = Score.query.filter_by(user_id=user_id).order_by(Score.created_at).all()
+        quiz_scores = Score.query.filter(
+            Score.user_id == user_id,
+            extract('month', Score.created_at) == current_month,
+            extract('year', Score.created_at) == current_year
+        ).order_by(Score.created_at).all()
+
         grouped_percentages = {}
         count_per_date = {}
+
         for score in quiz_scores:
             quiz = Quiz.query.get(score.quiz_id)
             if not quiz or quiz.total_marks == 0:
                 continue
+            
             date_str = score.created_at.strftime("%d %b %Y")
             percentage = (score.total_scored / quiz.total_marks) * 100
 
@@ -107,6 +120,7 @@ def user_home():
         }
         return render_template(
             "user/user.html",
+            current_month=month_list[current_month-1],
             quiz_scores=quiz_scores,
             performance_data=performance_data,
             score_bins=score_bins,

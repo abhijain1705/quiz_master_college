@@ -85,6 +85,7 @@ def validate_question_fields(fields):
             return False
     return True
 
+
 @subject.route("/chapter/quiz/question/view")    
 @login_required
 @role_required("admin")
