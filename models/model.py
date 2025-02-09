@@ -2,7 +2,7 @@ from . import db
 from flask_login import UserMixin
 
 # user model
-class User(UserMixin, db.Model):
+class User(UserMixin,db.Model):
     __tablename__='users'
     id= db.Column(db.VARCHAR(100), primary_key=True)
     email=db.Column(db.VARCHAR(100), unique=True,nullable=False)
@@ -25,18 +25,33 @@ class Subject(db.Model):
     updated_at=db.Column(db.TIMESTAMP, nullable=False)
     code=db.Column(db.VARCHAR(100), nullable=False)
 
-# score model
-class Score(db.Model):
-    __tablename__='scores'
+class UserResponses(db.Model):
+    __tablename__ = 'user_responses'
     id = db.Column(db.VARCHAR(100), primary_key=True)
     quiz_id = db.Column(db.VARCHAR(100), db.ForeignKey('quiz.id'), nullable=False)
     user_id = db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=False)
-    timestamp_of_attempt = db.Column(db.TIMESTAMP, nullable=False)
+    score_id = db.Column(db.VARCHAR(100), db.ForeignKey('scores.id'), nullable=False)
+    question_id = db.Column(db.VARCHAR(100), db.ForeignKey('questions.id'), nullable=False)
+    actual_answer = db.Column(db.Integer, nullable=False)
+    attempted_answer = db.Column(db.Integer, nullable=False)
+    attempt_number = db.Column(db.Integer, nullable=False) 
+    created_at = db.Column(db.TIMESTAMP, nullable=False)
+    updated_at = db.Column(db.TIMESTAMP, nullable=False)
+
+class Score(db.Model):
+    __tablename__ = 'scores'
+    id = db.Column(db.VARCHAR(100), primary_key=True)
+    quiz_id = db.Column(db.VARCHAR(100), db.ForeignKey('quiz.id'), nullable=False)
+    user_id = db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=False)
+    attempt_number = db.Column(db.Integer, nullable=False)
+    question_attempted = db.Column(db.Integer, nullable=False)
+    question_corrected = db.Column(db.Integer, nullable=False)
+    question_wronged = db.Column(db.Integer, nullable=False)
     total_scored = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.TIMESTAMP, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, nullable=False)
     __table_args__ = (
-        db.UniqueConstraint('quiz_id', 'user_id', name='unique_user_quiz_score'),  # Prevents duplicate user-quiz pairs
+        db.UniqueConstraint('quiz_id', 'user_id', 'attempt_number', name='unique_user_quiz_attempt'),
     )
 
 # quiz model
@@ -47,11 +62,12 @@ class Quiz(db.Model):
     chapter_id=db.Column(db.VARCHAR(100), db.ForeignKey('chapters.id'), nullable=False)
     chapter_code=db.Column(db.VARCHAR(100), db.ForeignKey('chapters.code'), nullable=False)
     date_of_quiz=db.Column(db.DATE, nullable=False)
-    time_duration=db.Column(db.Integer, nullable=False) # timestamps stored in milliseconds
+    time_duration_hr=db.Column(db.Integer, nullable=False)
+    time_duration_min=db.Column(db.Integer, nullable=False)
     remarks=db.Column(db.VARCHAR(100), nullable=False)
     created_at=db.Column(db.TIMESTAMP, nullable=False)
     updated_at=db.Column(db.TIMESTAMP, nullable=False)
-    number_of_questions=db.Column(db.Integer, nullable=False)
+    is_active=db.Column(db.Boolean, default=True, nullable=False)
     user_id=db.Column(db.VARCHAR(100), db.ForeignKey('users.id'), nullable=True)
     total_marks=db.Column(db.Integer, nullable=False)
 

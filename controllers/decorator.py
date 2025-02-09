@@ -1,7 +1,6 @@
-# # controllers/home.py
-from flask import redirect, url_for, session
 from functools import wraps
 from flask_login import current_user
+from flask import redirect, url_for, session
 
 def role_required(role):
     """Custom decorator to restrict access based on user role."""

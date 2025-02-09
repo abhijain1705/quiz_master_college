@@ -1,0 +1,135 @@
+{% extends "base.html" %} {% block title %}User Page{% endblock %} {% block
+content %} {% include "user/user_wrapper.html" %}
+<section class="min-vh-100 p-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/user">Home</a></li>
+      <li class="breadcrumb-item">
+        <a href="/user/quizzes">Upcoming Quizzes List</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a>View Quiz</a>
+      </li>
+    </ol>
+  </nav>
+  <section class="mt-3">
+    <h6>Subject Details</h6>
+    <div class="border p-3">
+      <div class="row">
+        <p class="col-12 col-sm-6">
+          <strong>Subject Name:</strong> {% if sub %}{{ sub.name }}{% else
+          %}N/a{% endif %}
+        </p>
+        <p class="col-12 col-sm-6">
+          <strong>Subject Description:</strong> {% if sub %}{{ sub.description
+          }}{% else %}N/a{% endif %}
+        </p>
+      </div>
+      <div class="row">
+        <p class="col-12 col-sm-6">
+          <strong>Subject Code:</strong> {% if sub %}{{ sub.code }}{% else
+          %}N/a{% endif %}
+        </p>
+        <p class="col-12 col-sm-6">
+          <strong>Last Updated At:</strong> {% if sub %}{{ sub.updated_at.strftime('%Y-%m-%d') }}{%
+          else %}N/a{% endif %}
+        </p>
+      </div>
+      <div class="row">
+        <p class="col-12 col-sm-6">
+          <strong>Created At:</strong> {% if sub %}{{ sub.created_at.strftime('%Y-%m-%d') }}{% else
+          %}N/a{% endif %}
+        </p>
+      </div>
+    </div>
+    <h6 class="mt-2">Chapter Details</h6>
+    <div class="border mt-3 p-3">
+      <div class="row">
+        <p class="col-12 col-sm-6">
+          <strong>Chapter Name:</strong> {% if chap %}{{ chap.name }}{% else
+          %}N/a{% endif %}
+        </p>
+        <p class="col-12 col-sm-6">
+          <strong>Chapter Description:</strong> {% if chap %}{{ chap.description
+          }}{% else %}N/a{% endif %}
+        </p>
+      </div>
+      <div class="row">
+        <p class="col-12 col-sm-6">
+          <strong>Chapter Code:</strong> {% if chap %}{{ chap.code }}{% else
+          %}N/a{% endif %}
+        </p>
+        <p class="col-12 col-sm-6">
+          <strong>Number of Pages:</strong> {% if chap %}{{ chap.pages }}{% else
+          %}N/a{% endif %}
+        </p>
+      </div>
+      <div class="row">
+        <p class="col-12 col-sm-6">
+          <strong>Chapter Number:</strong> {% if chap %}{{ chap.chapter_number
+          }}{% else %}N/a{% endif %}
+        </p>
+        <p class="col-12 col-sm-6">
+          <strong>Last Updated At:</strong> {% if chap %}{{ chap.updated_at.strftime('%Y-%m-%d') }}{%
+          else %}N/a{% endif %}
+        </p>
+      </div>
+      <div class="row">
+        <p class="col-12 col-sm-6">
+          <strong>Created At:</strong> {% if chap %}{{ chap.created_at.strftime('%Y-%m-%d') }}{% else
+          %}N/a{% endif %}
+        </p>
+      </div>
+    </div>
+    <h6 class="mt-2">Quiz Details</h6>
+    <div class="border p-3">
+      <div class="row">
+        <p class="col-12 col-sm-6">
+          <strong>Quiz Title:</strong> {% if quiz %}{{ quiz.quiz_title }}{% else
+          %}N/a{% endif %}
+        </p>
+        <p class="col-12 col-sm-6">
+          <strong>Chapter Code:</strong> {% if quiz %}{{ quiz.chapter_code }}{%
+          else %}N/a{% endif %}
+        </p>
+      </div>
+      <div class="row">
+        <p class="col-12 col-sm-6">
+          <strong>Date of Quiz:</strong> {% if quiz %}{{ quiz.date_of_quiz }}{%
+          else %}N/a{% endif %}
+        </p>
+        <p class="col-12 col-sm-6">
+          <strong>Quiz Duration:</strong> {% if quiz %}{{ quiz.time_duration_hr
+          }} hr. {{ quiz.time_duration_min }} min. {% else %}N/a{% endif %}
+        </p>
+      </div>
+      <div class="row">
+        <p class="col-12 col-sm-6">
+          <strong>Remarks:</strong> {% if quiz %}{{ quiz.remarks }}{% else
+          %}N/a{% endif %}
+        </p>
+        <p class="col-12 col-sm-6 {{"active" if quiz.is_active else "notactive"}}">
+          <strong>Status:</strong> {% if quiz %}{{ "Active" if quiz.is_active
+          else "Not-Active" }}{% else %}N/a{% endif %}
+        </p>
+      </div>
+      <div class="row">
+        <p class="col-12 col-sm-6">
+          <strong>Total Marks:</strong> {% if quiz %}{{ quiz.total_marks }}{%
+          else %}N/a{% endif %}
+        </p>
+        <p class="col-12 col-sm-6">
+          <strong>Last Updated At:</strong> {% if quiz %}{{ quiz.updated_at.strftime('%Y-%m-%d') }}{%
+          else %}N/a{% endif %}
+        </p>
+      </div>
+      <div class="row">
+        <p class="col-12 col-sm-6">
+          <strong>Created At:</strong> {% if quiz %}{{ quiz.created_at.strftime('%Y-%m-%d') }}{% else
+          %}N/a{% endif %}
+        </p>
+      </div>
+    </div>
+  </section>
+</section>
+{% endblock %}

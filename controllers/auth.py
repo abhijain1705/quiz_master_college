@@ -3,7 +3,6 @@ from models import db
 from models.model import User
 from datetime import datetime
 from config import admin_credentials
-from flasgger import Swagger, swag_from
 from flask_login import login_user, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
@@ -15,39 +14,6 @@ def login():
     return render_template('login.html')
 
 @auth.route('/login', methods=['POST'])
-@swag_from({
-    'tags':['Auth'],
-    'parameters':[
-         {
-            'name': 'email',
-            'in': 'formData',
-            'type': 'string',
-            'required': True,
-            'description': 'The email of the user'
-        },
-        {
-            'name': 'password',
-            'in': 'formData',
-            'type': 'string',
-            'required': True,
-            'description': 'The password of the user'
-        }
-    ],
-    'responses':{
-        200:{
-            'description': 'User successfully login',
-            'examples': {
-                'application/json': {'message': 'User logged in successfully'}
-            }
-        },
-        400: {
-            'description': 'Invalid input',
-            'examples': {
-                'application/json': {'error': 'email is required'}
-            }
-        }
-    }
-})
 def login_post():
     email = request.form.get("email")
     password = request.form.get("password")
@@ -68,6 +34,7 @@ def login_post():
         flash('Please check your login details and try again.', "danger")
         return redirect(url_for('auth.login'))
 
+    session['id'] = user.id
     login_user(user, remember=True)
     return redirect(url_for("admin.admin_home" if user.user_type =='admin' else 'user.user_home'))
 
@@ -78,60 +45,6 @@ def signup():
 
 
 @auth.route('/signup', methods=['POST'])
-@swag_from({
-    'tags':['Auth'],
-    'parameters':[
-        {
-            'name': 'full_name',
-            'in': 'formData',
-            'type': 'string',
-            'required': True,
-            'description': 'The full name of the user'
-        },
-        {
-            'name': 'email',
-            'in': 'formData',
-            'type': 'string',
-            'required': True,
-            'description': 'The email of the user'
-        },
-        {
-            'name': 'password',
-            'in': 'formData',
-            'type': 'string',
-            'required': True,
-            'description': 'The password of the user'
-        },
-        {
-            'name': 'qualification',
-            'in': 'formData',
-            'type': 'string',
-            'required': True,
-            'description': 'The qualification of the user'
-        },
-        {
-            'name': 'dob',
-            'in': 'formData',
-            'type': 'string',
-            'required': True,
-            'description': 'The date of birth of the user'
-        }
-    ],
-    'responses':{
-        200:{
-            'description': 'User successfully registered',
-            'examples': {
-                'application/json': {'message': 'User registered successfully'}
-            }
-        },
-        400: {
-            'description': 'Invalid input',
-            'examples': {
-                'application/json': {'error': 'Full name is required'}
-            }
-        }
-    }
-})
 def signup_post():
     full_name=request.form.get("full_name")
     email = request.form.get("email")

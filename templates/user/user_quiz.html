@@ -1,23 +1,27 @@
-{% extends "base.html" %} {% block title %}Score Page{% endblock %} {% block
-content %} {% include "user/user_wrapper.html" %}
+{% extends "base.html" %} {% block title %}Upcoming Quiz Page{% endblock %} {%
+block content %} {% include "user/user_wrapper.html" %}
 <section class="min-vh-100 p-4">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="/user">Home</a></li>
       <li class="breadcrumb-item">
-        <a href="/user/attempted-quizzes?skip=0&take=25"
-          >Attempted Quizzes List</a
+        <a href="/user/subjects?skip=0&take=25"
+          >{% if sub %}{{ sub.code }}{% else %}{% endif %}</a
         >
       </li>
       <li class="breadcrumb-item">
-        <a>Scores List</a>
+        <a href="/user/subject/view?sub_id={{ sub.id }}"
+          >{% if chap %}{{ chap.code }}{% else %}{% endif %}</a
+        >
+      </li>
+      <li class="breadcrumb-item">
+        <a>Upcoming Quizzes List</a>
       </li>
     </ol>
   </nav>
-
   <div class="d-flex mt-3 flex-wrap justify-content-between">
     <div>
-      <h3>Score List</h3>
+      <h3>Quiz List</h3>
       <div class="d-flex align-items-center">
         <p class="mr-4">Total Rows: <strong>{{ total_rows }}</strong></p>
         <p>
@@ -62,30 +66,38 @@ content %} {% include "user/user_wrapper.html" %}
         <thead>
           <tr>
             <th scope="col">S.No.</th>
-            <th scope="col">Question Attempted</th>
-            <th scope="col">Question Corrected</th>
-            <th scope="col">Question Wrong</th>
-            <th scope="col">Marks Earned</th>
+            <th scope="col">Quiz Title</th>
+            <th scope="col">Date of Quiz</th>
+            <th scope="col">Time Duration</th>
+            <th scope="col">Total Marks</th>
             <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
-          {% for score in rows %}
+          {% for quiz in rows %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
-            <td>{{ score.question_attempted }}</td>
-            <td>{{ score.question_corrected }}</td>
-            <td>{{ score.question_wronged }}</td>
+            <td>{{ quiz.quiz_title }}</td>
+            <td>{{ quiz.date_of_quiz }}</td>
             <td>
-              {{ score.total_scored }}/<strong>{{ score.total_marks }}</strong>
+              {{ quiz.time_duration_hr }} hr. {{ quiz.time_duration_min }} min.
             </td>
+            <td>{{ quiz.total_marks }}</td>
             <td>
               <button type="button" class="btn btn-primary">
                 <a
-                  href="/user/score/view?score_id={{ score.id }}"
+                  href="/user/quiz/view?quiz_id={{ quiz.id }}"
                   class="text-white"
                   >View</a
                 >
+              </button>
+              <button type="button" class="btn btn-info">
+                <a
+                  href="/user/quiz/start?quiz_id={{ quiz.id }}"
+                  class="text-white"
+                >
+                  Start
+                </a>
               </button>
             </td>
           </tr>

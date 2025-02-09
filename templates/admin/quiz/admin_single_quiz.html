@@ -67,14 +67,14 @@ content %}{% include "admin/admin_wrapper.html" %}
                 %}N/a{% endif %}
               </p>
               <p class="col-12 col-sm-6">
-                <strong>Last Updated At:</strong> {% if sub %}{{ sub.updated_at
-                }}{% else %}N/a{% endif %}
+                <strong>Last Updated At:</strong> {% if sub %}{{
+                sub.updated_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
             <div class="row">
               <p class="col-12 col-sm-6">
-                <strong>Created At:</strong> {% if sub %}{{ sub.created_at }}{%
-                else %}N/a{% endif %}
+                <strong>Created At:</strong> {% if sub %}{{
+                sub.created_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
           </div>
@@ -107,13 +107,13 @@ content %}{% include "admin/admin_wrapper.html" %}
               </p>
               <p class="col-12 col-sm-6">
                 <strong>Last Updated At:</strong> {% if chap %}{{
-                chap.updated_at }}{% else %}N/a{% endif %}
+                chap.updated_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
             <div class="row">
               <p class="col-12 col-sm-6">
-                <strong>Created At:</strong> {% if chap %}{{ chap.created_at
-                }}{% else %}N/a{% endif %}
+                <strong>Created At:</strong> {% if chap %}{{
+                chap.created_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
           </div>
@@ -136,7 +136,8 @@ content %}{% include "admin/admin_wrapper.html" %}
               </p>
               <p class="col-12 col-sm-6">
                 <strong>Quiz Duration:</strong> {% if quiz %}{{
-                (quiz.time_duration|int)/3600000 }} Hour{% else %}N/a{% endif %}
+                quiz.time_duration_hr }} hr. {{ quiz.time_duration_min }} min.
+                {% else %}N/a{% endif %}
               </p>
             </div>
             <div class="row">
@@ -144,9 +145,11 @@ content %}{% include "admin/admin_wrapper.html" %}
                 <strong>Remarks:</strong> {% if quiz %}{{ quiz.remarks }}{% else
                 %}N/a{% endif %}
               </p>
-              <p class="col-12 col-sm-6">
-                <strong>Number of Questions:</strong> {% if quiz %}{{
-                quiz.number_of_questions }}{% else %}N/a{% endif %}
+              <p
+                class="col-12 col-sm-6 {{'active' if quiz.is_active else 'notactive'}}"
+              >
+                <strong>Status:</strong> {% if quiz %}{{ "Active"if
+                quiz.is_active else "Not-Active" }}{% else %}N/a{% endif %}
               </p>
             </div>
             <div class="row">
@@ -156,13 +159,13 @@ content %}{% include "admin/admin_wrapper.html" %}
               </p>
               <p class="col-12 col-sm-6">
                 <strong>Last Updated At:</strong> {% if quiz %}{{
-                quiz.updated_at }}{% else %}N/a{% endif %}
+                quiz.updated_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
             <div class="row">
               <p class="col-12 col-sm-6">
-                <strong>Created At:</strong> {% if quiz %}{{ quiz.created_at
-                }}{% else %}N/a{% endif %}
+                <strong>Created At:</strong> {% if quiz %}{{
+                quiz.created_at.strftime('%Y-%m-%d') }}{% else %}N/a{% endif %}
               </p>
             </div>
           </div>
@@ -202,28 +205,35 @@ content %}{% include "admin/admin_wrapper.html" %}
     <div>
       <h3>Question Management</h3>
       <div class="d-flex align-items-center">
-        <p class="mr-4">Total Rows: {{ total_rows }}</p>
+        <p class="mr-4">Total Rows: <strong>{{ total_rows }}</strong></p>
         <p>
-          Current Page: {% if skip and take %} {{ ((skip|int)//take)+1 }} {%
-          else %}1{% endif %}
+          Current Page:
+          <strong
+            >{% if skip and take %} {{ ((skip|int)/take)+1 }} {% else %}1{%
+            endif %}</strong
+          >
         </p>
+      </div>
+      <div class="d-flex align-items-center" style="flex-wrap: wrap">
+        <p class="mr-4">
+          Total marks of Quiz: <strong>{{ quiz.total_marks }}</strong>
+        </p>
+        <p class="mr-4">Marks alloted: <strong>{{ marks_alloted }}</strong></p>
+        <p>Marks remaining: <strong>{{ marks_remaining }}</strong></p>
       </div>
     </div>
     <div class="form-inline my-2 my-lg-0">
       <div class="d-flex">
-        {% if quiz.number_of_questions > total_rows %}<button
-          type="button"
-          class="btn btn-primary mr-3"
-        >
+        {% if marks_remaining>0 %}
+        <button type="button" class="btn btn-primary mr-3">
           <a
             href="/admin/subject/chapter/quiz/question/new?sub_id={{ sub.id }}&quiz_id={{ quiz.id }}&chap_id={{ chap.id }}"
             class="text-white"
             >New Question</a
-          ></button
-        >{% else %}
-        <button type="button" class="btn mr-3">
-          No More question space available
+          >
         </button>
+        {% else %}
+        <p class="mr-3">No more questions possible</p>
         {% endif %}
         <button
           type="button"
@@ -288,8 +298,8 @@ content %}{% include "admin/admin_wrapper.html" %}
             <td>{{ question.option_4 }}</td>
             <td>{{ question.correct_option }}</td>
             <td>{{ question.marks }}</td>
-            <td>{{ question.created_at }}</td>
-            <td>{{ question.updated_at }}</td>
+            <td>{{ question.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>{{ question.updated_at.strftime('%Y-%m-%d') }}</td>
             <td>
               <button
                 onclick="window.location.href='/admin/subject/chapter/quiz/question/update?question_id={{ question.id }}&quiz_id={{ quiz.id }}&chap_id={{ chap.id }}&sub_id={{ sub.id }}'"
@@ -326,7 +336,7 @@ content %}{% include "admin/admin_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/subject/chapter/quiz/view?quiz_id={{ quiz.id }}&chap_id={{ chap.id }}&sub_id={{ sub.id }}&skip={{ ( ((skip//take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              href="/admin/subject/chapter/quiz/view?quiz_id={{ quiz.id }}&chap_id={{ chap.id }}&sub_id={{ sub.id }}&skip={{ ( (((skip|int)/take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
               aria-label="Next"
             >
               <span
@@ -341,6 +351,7 @@ content %}{% include "admin/admin_wrapper.html" %}
     </div>
   </section>
 </section>
+{% endblock %} {% block scripts %}
 <script>
   const url = new URL(window.location.href);
   let showWhere = url.searchParams.get("where");

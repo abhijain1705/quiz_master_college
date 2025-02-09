@@ -19,7 +19,7 @@ content %} {% include "admin/admin_wrapper.html" %}
           {% if chap %}{{ chap.code }}{% else %} {% endif %}</a
         >
       </li>
-      <li class="breadcrumb-item active" aria-current="page">
+      <li class="breadcrumb-item" aria-current="page">
         {% if quiz %}Update Quiz{% else %}New Quiz{% endif %}
       </li>
     </ol>
@@ -58,12 +58,14 @@ content %} {% include "admin/admin_wrapper.html" %}
       <div>
         <div class="form-group">
           <label for="exampleInputName1"
-            >Quiz Title <span class="required">*</span></label
+            >Quiz Title (Max 500 letters) <span class="required">*</span></label
           >
           <input
             type="text"
             class="form-control"
             id="exampleInputName1"
+            required
+            maxlength="500"
             name="quiz_title"
             aria-describedby="nameHelp"
             placeholder="Enter Quiz Title"
@@ -78,6 +80,7 @@ content %} {% include "admin/admin_wrapper.html" %}
             type="date"
             class="form-control"
             id="exampleInputDate1"
+            required
             name="date_of_quiz"
             aria-describedby="nameHelp"
             placeholder="Enter Quiz Date"
@@ -86,34 +89,38 @@ content %} {% include "admin/admin_wrapper.html" %}
         </div>
         <div class="form-group">
           <label for="exampleInputTime1"
-            >Quiz Duration (Write in Hrs, eg. 0.6 hrs)
-            <span class="required">*</span></label
+            >Quiz Duration <span class="required">*</span></label
           >
-          <input
-            type="number"
-            class="form-control"
-            id="exampleInputTime1"
-            name="time_duration"
-            min="0"
-            aria-describedby="nameHelp"
-            placeholder="Enter Quiz Duration (Write in Hrs, eg. 0.6 hrs)"
-            value="{{ quiz.time_duration if quiz else '' }}"
-          />
-        </div>
-        <div class="form-group">
-          <label for="exampleInputCount1"
-            >Number of Questions <span class="required">*</span></label
-          >
-          <input
-            type="number"
-            class="form-control"
-            id="exampleInputCount1"
-            name="number_of_questions"
-            aria-describedby="nameHelp"
-            min="0"
-            placeholder="Enter Number of Questions"
-            value="{{ quiz.number_of_questions if quiz else '' }}"
-          />
+          <div class="d-flex justify-content-between">
+            <div class="w-100">
+              <label for="exampleInputTime2">Hour</label>
+              <input
+                type="number"
+                class="form-control w-100"
+                id="exampleInputTime2"
+                name="time_duration_hr"
+                min="0"
+                required
+                aria-describedby="nameHelp"
+                placeholder="Enter Quiz Duration (Hours)"
+                value="{{ quiz.time_duration_hr if quiz else '' }}"
+              />
+            </div>
+            <div class="ml-3 w-100">
+              <label for="exampleInputTime1">Minute</label>
+              <input
+                type="number"
+                class="form-control w-100"
+                id="exampleInputTime1"
+                name="time_duration_min"
+                min="0"
+                required
+                aria-describedby="nameHelp"
+                placeholder="Enter Quiz Duration (Minutes)"
+                value="{{ quiz.time_duration_min if quiz else '' }}"
+              />
+            </div>
+          </div>
         </div>
         <div class="form-group">
           <label for="exampleInputCount2"
@@ -126,13 +133,14 @@ content %} {% include "admin/admin_wrapper.html" %}
             name="total_marks"
             aria-describedby="nameHelp"
             min="0"
+            required
             placeholder="Enter Total Marks"
             value="{{ quiz.total_marks if quiz else '' }}"
           />
         </div>
         <div class="form-group">
           <label for="exampleInputText"
-            >Remarks <span class="required">*</span>
+            >Remarks (Max 2000 letters) <span class="required">*</span>
           </label>
           <input
             type="text"
@@ -141,6 +149,7 @@ content %} {% include "admin/admin_wrapper.html" %}
             required
             name="remarks"
             aria-describedby="nameHelp"
+            maxlength="2000"
             min="0"
             placeholder="Remarks"
             value="{{ quiz.remarks if quiz else '' }}"

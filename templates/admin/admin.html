@@ -1,6 +1,116 @@
 {% extends "base.html" %} {% block title %}Admin Panel{% endblock %} {% block
 content %} {% include "admin/admin_wrapper.html" %}
+<section class="p-3">
+  <h4>Admin Dashboard</h4>
+  <div class="container-fluid">
+    <div class="row w-100">
+      {% for smr in summary %}
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2 mb-4">
+        <div class="card summary-box">
+          <div class="card-body">
+            <h5 class="card-text">{{ smr.value }}</h5>
+            <p class="card-title">{{ smr.title }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 
-<!-- The rest of your admin page content goes here -->
-<h1>Welcome to the Admin Panel</h1>
+  <div class="chart-groups">
+    <div class="chart-container">
+      <h4>User Growth in {{ current_month }}</h4>
+      <canvas id="userGrowthChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h4>User Distribution</h4>
+      <canvas id="quizParticipationChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h4>Daily Quiz Submission</h4>
+      <canvas id="dailyQuizzesChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <h4>Average Score Distribution</h4>
+      <canvas id="scoreBins"></canvas>
+    </div>
+  </div>
+</section>
+{% endblock %} {% block scripts %}
+<script>
+  var data = JSON.parse(`{{ user_growth_data|tojson }}`);
+  new Chart(document.getElementById("userGrowthChart"), {
+    type: "line",
+    data: {
+      labels: data.labels,
+      datasets: [
+        {
+          label: "User Growth",
+          data: data.values,
+          borderColor: "blue",
+          fill: false,
+        },
+      ],
+    },
+  });
+
+  var quizData = JSON.parse(`{{ user_status|tojson }}`);
+  new Chart(document.getElementById("quizParticipationChart"), {
+    type: "pie",
+    data: {
+      labels: quizData.labels,
+      datasets: [
+        {
+          label: "Subject Performance",
+          data: quizData.values,
+          backgroundColor: ["green", "red"],
+          hoverOffset: 4,
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: "Average Score Percentage Over Time",
+        },
+      },
+    },
+  });
+
+  var dailyQuizData = JSON.parse(`{{ quiz_growth_data|tojson }}`);
+  new Chart(document.getElementById("dailyQuizzesChart"), {
+    type: "bar",
+    data: {
+      labels: dailyQuizData.labels,
+      datasets: [
+        {
+          label: "Quizzes Submitted",
+          data: dailyQuizData.values,
+          backgroundColor: "orange",
+        },
+      ],
+    },
+  });
+
+  var scoreBinsData = JSON.parse(`{{ score_bins|tojson }}`);
+  new Chart(document.getElementById("scoreBins"), {
+    type: "doughnut",
+    data: {
+      labels: Object.keys(scoreBinsData),
+      datasets: [
+        {
+          data: Object.values(scoreBinsData),
+          backgroundColor: [
+            "#FF6384",
+            "#36A2EB",
+            "#FFCE56",
+            "#4BC0C0",
+            "#9966FF",
+          ],
+        },
+      ],
+    },
+  });
+</script>
 {% endblock %}

@@ -20,10 +20,12 @@ block content %}
           {{ message }}
           <button
             type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
+            class="close"
+            data-dismiss="alert"
             aria-label="Close"
-          ></button>
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         {% endfor %}
       </div>
@@ -61,13 +63,14 @@ block content %}
         />
       </div>
     </div>
-    <div class="row">
+    <div class="row mt-4">
       <div class="form-group mx-auto col-12 col-sm-6">
         <button type="submit" class="w-100 button btn btn-primary">
           Submit
         </button>
         <small id="emailHelp" class="form-text text-muted"
-          >Don't have an Account? <a class="anchor" href="/auth/signup">Create now</a></small
+          >Don't have an Account?
+          <a class="anchor" href="/auth/signup">Create now</a></small
         >
       </div>
     </div>

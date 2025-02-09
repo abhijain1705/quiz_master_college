@@ -1,45 +1,26 @@
-# app.py
 import uuid
-from models import db  
-from flasgger import Swagger
+from models import db
 from models.model import User
 from sqlalchemy import inspect
 from flask_session import Session
-from datetime import datetime, date
+from datetime import date, datetime
 from config import admin_credentials
 from flask_login import LoginManager
 from flask import Flask, flash, redirect, url_for
-from controllers.home import home as home_blueprint
 from controllers.auth import auth as auth_blueprint
+from controllers.home import home as home_blueprint
 from werkzeug.security import generate_password_hash
 from controllers.users.user import user as user_blueprint
 from controllers.admin.admin import admin as admin_blueprint
 from controllers.admin.admin_subject import subject as subject_blueprint
 
-from dummy_data import create_dummy_subjects, create_dummy_chapters, create_dummy_quiz, create_dummy_questions, delete_all_quiz
-
-app = Flask(__name__, instance_relative_config=True)
-app.config['DEBUG'] = True
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-app.secret_key = "merisecretkeyhai"
-app.config['SWAGGER'] = {
-    'title': 'My API',
-    'description': 'This is the API documentation for my project.',
-    'version': '1.0.0',
-    'contact': {
-        'name': 'Abhi Jain',
-        'url': 'https://example.com/contact',
-        'email': '23f3003209@ds.study.iitm.ac.in'
-    }
-}
-
+app=Flask(__name__)
+app.config['DEBUG']=True
+app.config['SESSION_PERMANENT']=False
+app.config['SESSION_TYPE']='filesystem'
+app.secret_key='mysecretkey'
 Session(app)
-swagger = Swagger(app)
-
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
-app.config['SQLALCHEMY_ECHO'] = True
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 db.init_app(app)
 
@@ -53,34 +34,9 @@ app.register_blueprint(admin_blueprint)
 
 app.register_blueprint(subject_blueprint)
 
-@app.cli.command("create-dummy-quiz")
-def create_dummy_quiz_command():
-    count = int(input("How many dummy quiz do you want to create? "))
-    with app.app_context():
-        create_dummy_quiz(count)
-
-@app.cli.command("delete-dummy-quiz")
-def delete_dummy_quiz():
-    with app.app_context():
-        delete_all_quiz()
-
-@app.cli.command("create-dummy-question")
-def create_dummy_question_command():
-    count = int(input("How many dummy questions do you want to create? "))
-    with app.app_context():
-        create_dummy_questions(count)
-
-@app.cli.command("create-dummy-chapters")
-def create_dummy_chapters_command():
-    count = int(input("How many dummy chapters do you want to create? "))
-    with app.app_context():
-        create_dummy_chapters(count)
-        
-@app.cli.command("create-dummy-subjects")
-def create_dummy_subjects_command():
-    count = int(input("How many dummy subjects do you want to create? "))
-    with app.app_context():
-        create_dummy_subjects(count)
+@app.route("/")
+def home():
+    return "hello python"
 
 login_manager = LoginManager()
 
@@ -90,9 +46,8 @@ def init_db():
     db.session.add(admin)
     db.session.commit()
 
-
 if __name__ == "__main__":
-    with app.app_context():
+    with app.app_context(): 
         inspector = inspect(db.engine)
         table_names = inspector.get_table_names()
         if len(table_names) == 0:
