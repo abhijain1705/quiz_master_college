@@ -80,24 +80,45 @@ content %} {% include "user/user_wrapper.html" %}
             <td>
               <button type="button" class="btn btn-primary">
                 <a
-                  href="/user/quiz/view?quiz_id={{ quiz.id }}"
+                  href="/user/attempted-quizzes/view?quiz_id={{ quiz.id }}"
                   class="text-white"
                   >View</a
                 >
-              </button>
-              <button type="button" class="btn btn-info">
-                <a
-                  href="/user/quiz/start?quiz_id={{ quiz.id }}"
-                  class="text-white"
-                >
-                  Start
-                </a>
               </button>
             </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="/user/attempted-quizzes?skip={{ (skip - take) if skip > 0 else 0 }}&take={{ take }}"
+              aria-label="Previous"
+            >
+              <span aria-hidden="true">&laquo;</span>
+              <span
+                >{% if skip > 0 %}Previous{% else %}Start Page{% endif %}</span
+              >
+            </a>
+          </li>
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="/user/attempted-quizzes?skip={{ ( (((skip|int) / take)|int+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              aria-label="Next"
+            >
+              <span
+                >{% if ((skip|int + take) < total_rows) %}Next{% else %}Go back
+                to Start Page{% endif %}</span
+              >
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </section>
 </section>

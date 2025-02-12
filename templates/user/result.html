@@ -3,14 +3,19 @@ content %} {% include "user/user_wrapper.html" %}
 <section class="p-3">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/user">Home</a></li>
       <li class="breadcrumb-item">
-        <a href="/user">Home</a>
+        <a href="/user/attempted-quizzes?skip=0&take=25"
+          >Attempted Quizzes List</a
+        >
       </li>
       <li class="breadcrumb-item">
-        <a href="/user/scores?skip=0&take=25">My Scores</a>
+        <a href="/user/attempted-quizzes/view?quiz_id={{ quiz.id }}"
+          >Scores List</a
+        >
       </li>
       <li class="breadcrumb-item">
-        <a>Scores List</a>
+        <a>Quiz Result</a>
       </li>
     </ol>
   </nav>

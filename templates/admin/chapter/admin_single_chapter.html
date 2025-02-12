@@ -219,7 +219,9 @@ content %}{% include "admin/admin_wrapper.html" %}
             </td>
             <td>
               <p>{{ quiz.date_of_quiz }}</p>
-              <p>{{ "Expired" if quiz.date_of_quiz < now else "Not" }}</p>
+              <p>
+                {{ "Expired" if quiz.date_of_quiz < now else "Not-Expired" }}
+              </p>
             </td>
             <td>
               {{ quiz.time_duration_hr }} hr. {{ quiz.time_duration_min }} min.
@@ -280,7 +282,7 @@ content %}{% include "admin/admin_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/subject/chapter/view?chap_id={{ chap.id }}&sub_id={{ sub.id }}&skip={{ ( (((skip|int)/take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              href="/admin/subject/chapter/view?chap_id={{ chap.id }}&sub_id={{ sub.id }}&skip={{ ( (((skip|int)/take)|int+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
               aria-label="Next"
             >
               <span

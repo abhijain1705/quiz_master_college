@@ -57,7 +57,7 @@ def user_home():
             "labels": sorted_dates,
             "scores": [avg_percentages[date] for date in sorted_dates]
         }
-
+    
         score_bins = {"0-20": 0, "21-40": 0, "41-60": 0, "61-80": 0, "81-100": 0}
         for score in quiz_scores:
             s = score.total_scored
@@ -95,7 +95,7 @@ def user_home():
             "labels": sorted_subjects,
             "scores": [avg_percentages[sub] for sub in sorted_subjects]
         }
-        #4th chart is average score percentage of each chapter
+
         chapter_wise_avg_score = {}
         for score in quiz_scores:
             quiz = Quiz.query.get(score.quiz_id)
@@ -128,7 +128,6 @@ def user_home():
             subject_performance_data=subject_performance_data
         )
     except Exception as e:
-        print(e, "error hai home me")
         return flash_and_redirect(str(e), "danger", url_for("auth.logout"))
 
 # call if user refresh while quiz is running
@@ -152,9 +151,13 @@ def view_score():
         total_rows = Questions.query.filter_by(quiz_id=quiz.id).count()
         return render_template("user/result.html",total_rows=total_rows,score=score,quiz=quiz)
     except Exception as e:
-        print(e, "error hai view me")
         return flash_and_redirect(str(e), "danger", url_for("user.user_scores", skip=0, take=25))
 
+@user.route("/quiz/timeover")
+@login_required
+@role_required("user")
+def time_over():
+    return flash_and_redirect("Quiz time over, play again", "danger", url_for("user.user_subject_list", skip=0, take=25))
 
 @user.route("/quiz/refreshed")
 @login_required
@@ -440,7 +443,7 @@ def user_scores():
             single_obj = {**single_obj, **scr.__dict__}
             final_list.append(single_obj)
         total_scores = Score.query.filter(Score.user_id==session.get("id", "")).count()
-        return render_template("user/scores.html",total_rows=total_scores, skip=skip, take=take, rows=final_list)        
+        return render_template("user/scores.html",quiz=quiz,total_rows=total_scores, skip=skip, take=take, rows=final_list)        
     except Exception as e:
         return flash_and_redirect(str(e), "danger", url_for("user.user_home"))
 
@@ -456,12 +459,16 @@ def user_subject_chapter_list():
         where = json.loads(where) if where else {}
         subject = Subject.query.filter_by(id=sub_id).first()
         if not subject:
-            return render_template("user/user_chapter.html", rows=[], total_rows=0,sub=None)
-        chapters = Chapter.query.filter_by(**where, subject_id=sub_id).offset(skip).limit(take).all()
-        total_rows = Chapter.query.filter_by(**where, subject_id=sub_id).count()
+            return render_template("user/user_chapter.html",skip=skip,take=take,rows=[], total_rows=0,sub=None)
+        query = Chapter.query.filter_by(subject_id=sub_id)
+        for key, value in where.items():
+            query = query.filter(getattr(Chapter, key).like(f"%{value}%"))
+
+        chapters = query.offset(skip).limit(take).all()
+        total_rows = query.count()
         return render_template("user/user_chapter.html",rows=chapters,total_rows=total_rows,skip=skip,take=take,sub=subject)
     except Exception as e:
-        return render_template("user/user_chapter.html",total_rows=0, rows=[],sub=None)
+        return render_template("user/user_chapter.html",skip=0,take=25,total_rows=0, rows=[],sub=None)
     
 @user.route("/subjects")
 @login_required
@@ -472,11 +479,14 @@ def user_subject_list():
         take = int(request.args.get("take", 25))
         where = request.args.get("where", "{}")
         where = json.loads(where) if where else {}
-        subjects = Subject.query.filter_by(**where).offset(skip).limit(take).all()
-        total_rows = Subject.query.filter_by(**where).count()
+        query = Subject.query
+        for key, value in where.items():
+            query = query.filter(getattr(Subject, key).like(f"%{value}%"))
+        subjects = query.offset(skip).limit(take).all()
+        total_rows = query.count()
         return render_template("user/user_subject.html",rows=subjects,total_rows=total_rows,skip=skip,take=take)
     except Exception as e:
-        return render_template("user/user_subject.html",total_rows=0, rows=[])    
+        return render_template("user/user_subject.html",skip=0,take=25,total_rows=0, rows=[])    
 
 @user.route("/subject/chapter/view")
 @login_required 
@@ -490,13 +500,12 @@ def user_quizzes():
         sub  = Subject.query.filter_by(id=sub_id).first()
         chap = Chapter.query.filter_by(id=chap_id).first()
         if not chap:
-            return render_template("user/user_quiz.html",rows=[],total_rows=0,sub=sub,chap=None)
+            return render_template("user/user_quiz.html",skip=skip,take=take,rows=[],total_rows=0,sub=sub,chap=None)
         if not sub:
-            return render_template("user/user_quiz.html",rows=[],total_rows=0,sub=None,chap=chap)    
+            return render_template("user/user_quiz.html",skip=skip,take=take,rows=[],total_rows=0,sub=None,chap=chap)    
         quizzes = Quiz.query.filter(Quiz.date_of_quiz >= datetime.now().date(), Quiz.is_active==True).offset(skip).limit(take).all()
         total_quiz = Quiz.query.filter(Quiz.date_of_quiz >= datetime.now().date(), Quiz.is_active==True).count()
         quizzes = [quiz for quiz in quizzes if Questions.query.filter_by(quiz_id=quiz.id).count() > 0]    
         return render_template("user/user_quiz.html",rows=quizzes,total_rows=total_quiz,skip=skip,take=take,sub=sub,chap=chap)
     except Exception as e:
-        print(e, "evmelrqmbmrtmbmrw")
-        return render_template("user/user_quiz.html",total_rows=0, rows=[],sub=None,chap=None)
+        return render_template("user/user_quiz.html",skip=0,take=25,total_rows=0, rows=[],sub=None,chap=None)

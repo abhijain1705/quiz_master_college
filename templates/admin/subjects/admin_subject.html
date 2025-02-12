@@ -142,7 +142,7 @@ block content %} {% include "admin/admin_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/subject?skip={{ ( (((skip|int)/take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              href="/admin/subject?skip={{ ( (((skip|int)/take)|int+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
               aria-label="Next"
             >
               <span

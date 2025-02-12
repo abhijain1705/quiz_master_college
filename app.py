@@ -14,6 +14,8 @@ from controllers.users.user import user as user_blueprint
 from controllers.admin.admin import admin as admin_blueprint
 from controllers.admin.admin_subject import subject as subject_blueprint
 
+from dummy import create_dummy_chapters, create_dummy_questions, create_dummy_quizzes, create_dummy_subjects, create_dummy_users
+
 app=Flask(__name__)
 app.config['DEBUG']=True
 app.config['SESSION_PERMANENT']=False
@@ -40,6 +42,31 @@ def home():
 
 login_manager = LoginManager()
 
+# create flask terminal custom commands
+@app.cli.command('create_dummy_users')
+def create_users():
+    count = input("Enter number of users to create: ")
+    create_dummy_users(int(count))
+
+@app.cli.command("create_dummy_subjects")
+def create_subjects():
+    count = input("Enter number of subjects to create: ")
+    create_dummy_subjects(int(count))
+
+@app.cli.command("create_dummy_chapters")
+def create_chapters():
+    count = input("Enter number of chapters to create: ")
+    create_dummy_chapters(int(count))
+
+@app.cli.command("create_dummy_questions")  
+def create_questions():
+    create_dummy_questions()    
+
+@app.cli.command("create_dummy_quizzes")
+def create_quizzes():
+    count = input("Enter number of quizzes to create: ")
+    create_dummy_quizzes(int(count))
+
 def init_db():    
     random_uuid = str(uuid.uuid4())
     admin = User(id=random_uuid, email=admin_credentials['email'], password=generate_password_hash(admin_credentials['password'], method='scrypt'), full_name='Admin', qualification='Btech', dob=date(2003,4,5), user_type='admin', created_at=datetime.now(), updated_at=datetime.now())
@@ -47,7 +74,7 @@ def init_db():
     db.session.commit()
 
 if __name__ == "__main__":
-    with app.app_context(): 
+    with app.app_context():
         inspector = inspect(db.engine)
         table_names = inspector.get_table_names()
         if len(table_names) == 0:

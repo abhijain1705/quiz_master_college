@@ -6,7 +6,7 @@ from datetime import datetime, date
 from controllers.decorator import role_required
 from flask_login import current_user, login_required
 from models.model import Subject, Chapter, Quiz, Questions
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 
 subject = Blueprint("subject", __name__, url_prefix="/admin/subject")
 
@@ -114,7 +114,7 @@ def view_question():
     except Exception as e:
         return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))
 
-@subject.route("/chapter/quiz/question/delete")
+@subject.route("/chapter/quiz/question/delete", methods=['POST'])
 @login_required
 @role_required("admin")
 def delete_question():
@@ -280,8 +280,12 @@ def view_quiz():
         chap = Chapter.query.get_or_404(chap_id)
         quiz = Quiz.query.get_or_404(quiz_id)
         where = json.loads(where) if where else {}
-        filterd_questions = Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id, **where).order_by(desc(Questions.created_at)).limit(take).offset(skip).all()
-        total_rows  = Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id).order_by(desc(Questions.created_at)).count()
+        query = Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id,)
+        for key, value in where.items():
+            query = query.filter(getattr(Questions, key).like(f"%{value}%"))
+
+        filterd_questions = query.offset(skip).limit(take).all()
+        total_rows = query.count()
         total_marks = quiz.total_marks
         quiz_list=Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id, **where).order_by(desc(Questions.created_at)).all()
         marks_alloted = sum([quiz.marks for quiz in quiz_list])
@@ -450,8 +454,13 @@ def view_chapter():
         sub = Subject.query.get_or_404(sub_id)
         chap = Chapter.query.get_or_404(chap_id)
         where = json.loads(where) if where else {}
-        quizzes = Quiz.query.filter_by(chapter_id=chap_id, **where).order_by(desc(Quiz.created_at)).limit(take).offset(skip).all()
-        total_rows = Quiz.query.filter_by(chapter_id=chap_id).count()
+        query = Quiz.query.filter_by(chapter_id=chap_id,)
+        for key, value in where.items():
+            query = query.filter(getattr(Quiz, key).like(f"%{value}%"))
+
+        quizzes = query.offset(skip).limit(take).all()
+        print([{"id": quz.id, "chapid": chap.id, "chapcode":chap.code} for quz in quizzes],"klfmaerlm")
+        total_rows = query.count()
         return render_template("admin/chapter/admin_single_chapter.html",now=datetime.now().date(), sub=sub, chap=chap, rows=quizzes, skip=skip, take=take, total_rows=total_rows)
     except Exception as e:
         return flash_and_redirect(f"An error occurred: {e}", "danger", url_for("subject.view_subject", sub_id=sub_id))
@@ -462,7 +471,7 @@ def view_chapter():
 @role_required("admin")
 def delete_chapter():
     sub_id = request.args.get("sub_id", "")
-    chapter_id = request.args.get("chapter_id", "")
+    chapter_id = request.args.get("chap_id", "")
 
     if not chapter_id:
         raise ValueError("chapter id is required")
@@ -578,7 +587,7 @@ def delete_subject():
         return flash_and_redirect(
             "Code doesn't exist, please use a different subject code", 
             "danger", 
-            url_for('subject.admin_subject')
+            url_for('subject.subject_home')
         )        
     try:
         all_chaps = Chapter.query.filter_by(subject_id=sub_id).all()
@@ -592,10 +601,10 @@ def delete_subject():
             db.session.delete(chap)
         db.session.delete(sub)
         db.session.commit()
-        return flash_and_redirect("Subject and related data deleted successfully", "success", url_for('subject.admin_subject'))
+        return flash_and_redirect("Subject and related data deleted successfully", "success", url_for('subject.subject_home'))
     except Exception as e:
         db.session.rollback()
-        return flash_and_redirect(f"An error occurred {e}", 'danger', url_for('subject.admin_subject'))
+        return flash_and_redirect(f"An error occurred {e}", 'danger', url_for('subject.subject_home'))
 
 @subject.route("/view")
 @login_required
@@ -612,8 +621,13 @@ def view_subject():
         return flash_and_redirect("Subject not found", "danger", url_for("subject.subject_home")) 
     try:
         where = json.loads(where) if where else {}
-        chapters = Chapter.query.filter_by(subject_id=sub_id, **where).offset(skip).limit(take).all()
-        total_rows = Chapter.query.filter_by(subject_id=sub_id).count()
+        query = Chapter.query.filter_by(subject_id=sub_id)
+        for key, value in where.items():
+            query = query.filter(getattr(Chapter, key).like(f"%{value}%"))
+
+        # print([ {"id": chp.id, "code": chp.code} for chp in Chapter.query.all() ],"bsbsfnbsrtnbfnbsrtnb")
+        chapters = query.offset(skip).limit(take).all()
+        total_rows = query.count()
         return render_template("admin/subjects/admin_single_subject.html",sub=sub, skip=skip, take=take, rows=chapters, total_rows=total_rows)
     except Exception as e:
         return flash_and_redirect(str(e), "danger", url_for("subject.subject_home"))
@@ -694,8 +708,13 @@ def subject_home():
     where = request.args.get("where", "{}")
     try:
         where = json.loads(where) if where else {}
-        subjects = Subject.query.filter_by(**where).offset(skip).limit(take).all()
-        total_rows = Subject.query.count()
+        query = Subject.query
+        for key, value in where.items():
+            query = query.filter(getattr(Subject, key).like(f"%{value}%"))
+
+        # print( [sb.id for sb in query.all()],"fewfwfegerg")
+        subjects = query.offset(skip).limit(take).all()
+        total_rows = query.count()
         return render_template("admin/subjects/admin_subject.html",rows=subjects, total_rows=total_rows, skip=skip, take=take, )
     except Exception as e:
         return flash_and_redirect(str(e), "danger", url_for("subject.subject_home"))

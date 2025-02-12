@@ -30,6 +30,10 @@ def login_post():
     
     user = User.query.filter_by(email=email).first()
 
+    if user.user_type =='user' and user.isActive==False:
+        flash('Your account is not active. Please contact admin.', "danger")
+        return redirect(url_for('auth.login'))
+
     if not user or not check_password_hash(user.password, password):
         flash('Please check your login details and try again.', "danger")
         return redirect(url_for('auth.login'))

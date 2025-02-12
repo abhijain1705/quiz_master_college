@@ -198,7 +198,7 @@ content %} {% include "user/user_wrapper.html" %}
 
   if (remainingTime <= 0) {
     localStorage.clear();
-    window.location.href = "/user/quiz/refreshed?quiz_id={{ quiz.id }}";
+    window.location.href = "/user/quiz/timeover";
   }
 
   const spanDocument = document.getElementById("timer");
@@ -210,7 +210,7 @@ content %} {% include "user/user_wrapper.html" %}
     if (remainingTime <= 0) {
       clearInterval(time);
       spanDocument.innerHTML = "00:00:00";
-      window.location.href = "/user/quiz/refreshed?quiz_id={{ quiz.id }}";
+      window.location.href = "/user/quiz/timeover";
       return;
     }
 

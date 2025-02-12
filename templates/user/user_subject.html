@@ -112,7 +112,7 @@ content %} {% include "user/user_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/user/subjects?skip={{ ( (((skip|int)/take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              href="/user/subjects?skip={{ ( (((skip|int)/take)|int+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
               aria-label="Next"
             >
               <span

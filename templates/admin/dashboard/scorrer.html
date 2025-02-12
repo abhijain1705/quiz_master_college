@@ -28,12 +28,12 @@ content %} {% include "admin/admin_wrapper.html" %}
       <input
         class="form-control mt-2 mt-sm-0 mr-sm-2"
         type="search"
-        id="subjectInput"
-        placeholder="Search by Subject Name"
+        id="userInput"
+        placeholder="Search by User Name"
         aria-label="Search"
       />
       <button
-        onclick="searchBySubject('{{skip}}', '{{take}}')"
+        onclick="searchByUser('{{skip}}', '{{take}}')"
         class="btn btn-dark my-2 my-sm-0"
       >
         <a>Search</a>
@@ -80,6 +80,7 @@ content %} {% include "admin/admin_wrapper.html" %}
             <th scope="col">Status</th>
             <th scope="col">DOB</th>
             <th scope="col">Created At</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -98,6 +99,18 @@ content %} {% include "admin/admin_wrapper.html" %}
             <td>{{ usr.dob }}</td>
             <td>{{ usr.created_at.strftime('%Y-%m-%d') }}</td>
             <td>{{ usr.updated_at.strftime('%Y-%m-%d') }}</td>
+            <td>
+              <form
+                action="/admin/users/manage?user_id={{ usr.id }}"
+                method="POST"
+              >
+                <button
+                  class="btn {{ 'btn-danger' if not usr.isActive else 'btn-success' }}"
+                >
+                  {% if usr.isActive %}Deactivate{% else %}Activate{% endif %}
+                </button>
+              </form>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -119,7 +132,7 @@ content %} {% include "admin/admin_wrapper.html" %}
           <li class="page-item">
             <a
               class="page-link"
-              href="/admin/subject?skip={{ ( (((skip|int)/take)+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              href="/admin/subject?skip={{ ( (((skip|int) / take)|int+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
               aria-label="Next"
             >
               <span
@@ -135,5 +148,26 @@ content %} {% include "admin/admin_wrapper.html" %}
   </section>
 </section>
 {% endblock %} {% block scripts %}
-<script></script>
+<script>
+  const url = new URL(window.location.href);
+  let showWhere = url.searchParams.get("where");
+  if (showWhere) {
+    showWhere = JSON.parse(decodeURIComponent(showWhere));
+    if ("full_name" in showWhere) {
+      document.getElementById("userInput").value = showWhere["full_name"];
+    }
+  }
+  function searchByUser(skip, take) {
+    var searchTerm = document.getElementById("userInput").value;
+    var queryParams = "?skip=" + skip + "&take=" + take;
+    if (searchTerm) {
+      queryParams +=
+        "&where=" +
+        encodeURIComponent(JSON.stringify({ full_name: searchTerm }));
+      window.location.href = "/admin/users" + queryParams;
+    } else {
+      window.location.href = "/admin/users" + queryParams;
+    }
+  }
+</script>
 {% endblock %}

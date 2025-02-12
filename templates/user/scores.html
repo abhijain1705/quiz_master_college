@@ -62,6 +62,7 @@ content %} {% include "user/user_wrapper.html" %}
         <thead>
           <tr>
             <th scope="col">S.No.</th>
+            <th scope="col">Date of Attempt</th>
             <th scope="col">Question Attempted</th>
             <th scope="col">Question Corrected</th>
             <th scope="col">Question Wrong</th>
@@ -73,6 +74,7 @@ content %} {% include "user/user_wrapper.html" %}
           {% for score in rows %}
           <tr class="pointer">
             <th scope="row">{{ loop.index+skip }}</th>
+            <td>{{ score.created_at.strftime('%Y-%m-%d') }}</td>
             <td>{{ score.question_attempted }}</td>
             <td>{{ score.question_corrected }}</td>
             <td>{{ score.question_wronged }}</td>
@@ -92,6 +94,35 @@ content %} {% include "user/user_wrapper.html" %}
           {% endfor %}
         </tbody>
       </table>
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="/user/attempted-quizzes/view?quiz_id={{ quiz.id }}&skip={{ (skip - take) if skip > 0 else 0 }}&take={{ take }}"
+              aria-label="Previous"
+            >
+              <span aria-hidden="true">&laquo;</span>
+              <span
+                >{% if skip > 0 %}Previous{% else %}Start Page{% endif %}</span
+              >
+            </a>
+          </li>
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="/user/attempted-quizzes/view?quiz_id={{ quiz.id }}&skip={{ ( (((skip|int) / take)|int+1)*take if ((skip|int+take) < total_rows) else None  ) if ((skip|int+take) < total_rows) else 0 }}&take={{ take }}"
+              aria-label="Next"
+            >
+              <span
+                >{% if ((skip|int + take) < total_rows) %}Next{% else %}Go back
+                to Start Page{% endif %}</span
+              >
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </section>
 </section>
