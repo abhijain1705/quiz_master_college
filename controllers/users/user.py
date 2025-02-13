@@ -28,8 +28,8 @@ def user_home():
 
         quiz_scores = Score.query.filter(
             Score.user_id == user_id,
-            extract('month', Score.created_at) == current_month,
-            extract('year', Score.created_at) == current_year
+            # extract('month', Score.created_at) == current_month,
+            # extract('year', Score.created_at) == current_year
         ).order_by(Score.created_at).all()
 
         grouped_percentages = {}
@@ -120,7 +120,6 @@ def user_home():
         }
         return render_template(
             "user/user.html",
-            current_month=month_list[current_month-1],
             quiz_scores=quiz_scores,
             performance_data=performance_data,
             score_bins=score_bins,

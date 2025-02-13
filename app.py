@@ -14,7 +14,7 @@ from controllers.users.user import user as user_blueprint
 from controllers.admin.admin import admin as admin_blueprint
 from controllers.admin.admin_subject import subject as subject_blueprint
 
-from dummy import create_dummy_chapters, create_dummy_questions, create_dummy_quizzes, create_dummy_subjects, create_dummy_users
+from dummy import create_dummy_chapters, create_dummy_questions, create_dummy_quizzes, create_dummy_subjects, create_dummy_users, create_dummy_score
 
 app=Flask(__name__)
 app.config['DEBUG']=True
@@ -58,14 +58,21 @@ def create_chapters():
     count = input("Enter number of chapters to create: ")
     create_dummy_chapters(int(count))
 
-@app.cli.command("create_dummy_questions")  
-def create_questions():
-    create_dummy_questions()    
-
 @app.cli.command("create_dummy_quizzes")
 def create_quizzes():
     count = input("Enter number of quizzes to create: ")
     create_dummy_quizzes(int(count))
+
+@app.cli.command("create_dummy_questions")  
+def create_questions():
+    create_dummy_questions()    
+
+
+@app.cli.command("create_dummy_score")
+def create_score():
+    count = input("Enter number of scores to create: ")
+    create_dummy_score(int(count))
+
 
 def init_db():    
     random_uuid = str(uuid.uuid4())

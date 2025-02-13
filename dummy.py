@@ -3,31 +3,91 @@ import random
 import datetime
 from models import db
 from werkzeug.security import generate_password_hash
-from models.model import Quiz, Questions, Subject, User, Chapter
+from models.model import Quiz, Questions, Subject, User, Chapter, UserResponses, Score
+
+# Set the start date once
+start_date = datetime.date(2024, 1, 1)
+end_date = datetime.date.today()
+
+# Function to get a random date between start_date and end_date
+def get_random_date():
+    return start_date + datetime.timedelta(days=random.randint(0, (end_date - start_date).days))
+
+# Create dummy attempts
+def create_dummy_score(cnt):
+    try:
+        quizzes = Quiz.query.all()
+        users = User.query.all()
+        questions = Questions.query.all()
+        for _ in range(cnt):
+            quiz = random.choice(quizzes)
+            user = random.choice(users)
+            if user.isActive == False:
+                continue
+            score_id = str(uuid.uuid4())
+            attempt_number = random.randint(1, 5)
+            total_scored = 0
+            question_attempted = 0
+            question_corrected = 0
+            question_wronged = 0
+            random_score_date = get_random_date()
+
+            for question in questions:
+                if question.quiz_id == quiz.id:
+                    attempted_answer = random.randint(1, 4)
+                    actual_answer = question.correct_option
+                    if attempted_answer == actual_answer:
+                        total_scored += question.marks
+                        question_corrected += 1
+                    else:
+                        question_wronged += 1
+                    question_attempted += 1        
+                    user_response = UserResponses(
+                        id=str(uuid.uuid4()),
+                        quiz_id=quiz.id,
+                        user_id=user.id,
+                        score_id=score_id,
+                        question_id=question.id,
+                        actual_answer=actual_answer,
+                        attempted_answer=attempted_answer,
+                        attempt_number=attempt_number,
+                        created_at=random_score_date,
+                        updated_at=random_score_date,
+                    )
+                    db.session.add(user_response)
+            score = Score(
+                id=score_id,
+                quiz_id=quiz.id,
+                user_id=user.id,
+                attempt_number=attempt_number,
+                question_attempted=question_attempted,
+                question_corrected=question_corrected,
+                question_wronged=question_wronged,
+                total_scored=total_scored,
+                created_at=random_score_date,
+                updated_at=random_score_date
+            )      
+            db.session.add(score)
+            print(f"Score and responses for user {user.id} and quiz {quiz.id} created successfully") 
+    except Exception as e:        
+        print(e)
+    db.session.commit()    
+    print("Dummy scores and user responses created successfully")
 
 # Create dummy users
 def create_dummy_users(cnt):
-    start_date = datetime.datetime(2025, 1, 1)
-    end_date = datetime.datetime(2025, 2, 12)
-    delta = end_date - start_date
     for x in range(cnt):
         try:
-            # generate random date of birth
-            random_dob = datetime.datetime.now() - datetime.timedelta(days=x)
-            # generate random creation date from 1st Jan 2025 to 12 Feb 2025
-            random_days = random.randint(0, delta.days)
-            random_creation_date = start_date + datetime.timedelta(days=random_days)
-            
             user = User(
                 id=str(uuid.uuid4()),
                 email=f"user{x}@mail.com",
                 password=generate_password_hash("password"),
                 full_name=f"User {x}",
                 qualification=f"Qualification {x}",
-                dob=random_dob,
+                dob=get_random_date(),
                 isActive=x % 2 == 0,
                 user_type='user',
-                created_at=random_creation_date,
+                created_at=get_random_date(),
                 updated_at=datetime.datetime.now()
             )
             db.session.add(user)
@@ -40,26 +100,22 @@ def create_dummy_users(cnt):
 # Create dummy questions
 def create_dummy_questions():
     quizzes = Quiz.query.all()
-    for index,x in enumerate(quizzes):
+    for index, quiz in enumerate(quizzes):
         for i in range(1, 6):
-            # generate random number from 1 to 4
-            random_number = random.randint(1, 4)
             try:
                 question = Questions(
                     id=str(uuid.uuid4()),
-                    quiz_id=x.id,
-                    chapter_id=x.chapter_id,
-                    chapter_code=x.chapter_code,
+                    quiz_id=quiz.id,
                     question_statement=f"Question {index} statement",
                     question_title=f"Question {index}",
                     option_1=f"Option 1 {index}",
                     option_2=f"Option 2 {index}",
                     option_3=f"Option 3 {index}",
                     option_4=f"Option 4 {index}",
-                    correct_option=random_number,
+                    correct_option=random.randint(1, 4),
                     marks=2,
-                    created_at=datetime.datetime.now(),
-                    updated_at=datetime.datetime.now()
+                    created_at=get_random_date(),
+                    updated_at=get_random_date()
                 )
                 db.session.add(question)
                 print(f"Question {index} created successfully")
@@ -70,18 +126,18 @@ def create_dummy_questions():
 
 # Create dummy chapters
 def create_dummy_chapters(cnt):
-    subs = Subject.query.all()
+    subjects = Subject.query.all()
     for x in range(cnt):
         try:
             chapter = Chapter(
                 id=str(uuid.uuid4()),
                 name=f"Chapter {x}",
-                subject_id=random.choice(subs).id,
+                subject_id=random.choice(subjects).id,
                 chapter_number=random.randint(1, 10),
                 pages=25,
                 description=f"Description {x}",
-                created_at=datetime.datetime.now(),
-                updated_at=datetime.datetime.now(),
+                created_at=get_random_date(),
+                updated_at=get_random_date(),
                 code=f"CDE{x}"
             )
             db.session.add(chapter)
@@ -93,24 +149,21 @@ def create_dummy_chapters(cnt):
 
 # Create dummy quizzes
 def create_dummy_quizzes(cnt):
-    chaps = Chapter.query.all()
+    chapters = Chapter.query.all()
     for x in range(cnt):
-        # generate random future dates
-        random_fdate = datetime.datetime.now() + datetime.timedelta(days=x)
         try:
             quiz = Quiz(
                 id=str(uuid.uuid4()),
                 quiz_title=f"Quiz {x}",
-                chapter_id=random.choice(chaps).id,
-                chapter_code=random.choice(chaps).code,
-                date_of_quiz=random_fdate,
+                chapter_id=random.choice(chapters).id,
+                date_of_quiz=get_random_date(),
                 time_duration_hr=0,
                 time_duration_min=4,
                 remarks=f"Remarks {x}",
                 is_active=True,
                 total_marks=10,
-                created_at=datetime.datetime.now(),
-                updated_at=datetime.datetime.now(),
+                created_at=get_random_date(),
+                updated_at=get_random_date(),
             )
             db.session.add(quiz)
             print(f"Quiz {x} created successfully")
@@ -127,8 +180,8 @@ def create_dummy_subjects(cnt):
                 id=str(uuid.uuid4()),
                 name=f"Subject {x}",
                 description=f"Description {x}",
-                created_at=datetime.datetime.now(),
-                updated_at=datetime.datetime.now(),
+                created_at=get_random_date(),
+                updated_at=get_random_date(),
                 code=f"CDE{x}"
             )
             db.session.add(subject)

@@ -229,7 +229,7 @@ def new_question():
             if not validate_question_fields(fields):
                 return render_template('admin/question/admin_question_manage.html', sub=sub, chap=chap, quiz=quiz)
             total_marks=quiz.total_marks    
-            quiz_list=Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id).all()
+            quiz_list=Questions.query.filter_by(quiz_id=quiz_id).all()
             marks_alloted = sum([quiz.marks for quiz in quiz_list])
             marks_remaining=total_marks-marks_alloted
             if marks_remaining<int(fields['marks']):
@@ -245,8 +245,6 @@ def new_question():
                 option_4=fields['option_4'],
                 correct_option=int(fields['correct_option']),
                 marks=int(fields['marks']),
-                chapter_id=chap.id,
-                chapter_code=chap.code,
                 created_at=datetime.now(),
                 updated_at=datetime.now(),
                 )
@@ -280,14 +278,14 @@ def view_quiz():
         chap = Chapter.query.get_or_404(chap_id)
         quiz = Quiz.query.get_or_404(quiz_id)
         where = json.loads(where) if where else {}
-        query = Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id,)
+        query = Questions.query.filter_by(quiz_id=quiz_id)
         for key, value in where.items():
             query = query.filter(getattr(Questions, key).like(f"%{value}%"))
 
         filterd_questions = query.offset(skip).limit(take).all()
         total_rows = query.count()
         total_marks = quiz.total_marks
-        quiz_list=Questions.query.filter_by(quiz_id=quiz_id,chapter_id=chap_id, **where).order_by(desc(Questions.created_at)).all()
+        quiz_list=Questions.query.filter_by(quiz_id=quiz_id, **where).order_by(desc(Questions.created_at)).all()
         marks_alloted = sum([quiz.marks for quiz in quiz_list])
         marks_remaining=total_marks-marks_alloted
         return render_template("admin/quiz/admin_single_quiz.html",marks_alloted=marks_alloted, marks_remaining=marks_remaining, rows=filterd_questions, total_rows=total_rows,skip=skip,take=take, sub=sub, chap=chap, quiz=quiz)
@@ -416,7 +414,6 @@ def new_quiz():
                 id=str(uuid.uuid4()),
                 quiz_title=fields['quiz_title'],
                 chapter_id=chap.id,
-                chapter_code=chap.code,
                 date_of_quiz=date_extractor(fields['date_of_quiz']),
                 is_active=False,
                 time_duration_hr= fields['time_duration_hr'],

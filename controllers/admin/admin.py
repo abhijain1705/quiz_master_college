@@ -53,15 +53,15 @@ def admin_home():
     ]
 
     users = User.query.filter(
-    extract('month', User.created_at) == current_month,
-    extract('year', User.created_at) == current_year,
+    # extract('month', User.created_at) == current_month,
+    # extract('year', User.created_at) == current_year,
     User.user_type == "user"
     ).order_by(User.created_at).all()
 
     user_growth = {}
 
     for user in users:
-        date = user.created_at.strftime("%d %b")
+        date = user.created_at.strftime("%d %b %Y")
         user_growth[date] = user_growth.get(date, 0) + 1
 
     labels = list(user_growth.keys())
@@ -77,8 +77,8 @@ def admin_home():
     user_status = {"labels": ["Active Users", "Inactive Users"], "values": [active_users, inactive_users]}
 
     scores = Score.query.filter(
-        extract('month', Score.created_at) == current_month,
-        extract('year', Score.created_at) == current_year
+        # extract('month', Score.created_at) == current_month,
+        # extract('year', Score.created_at) == current_year
     ).order_by(Score.created_at).all()
 
     score_growth = {}
@@ -117,8 +117,6 @@ def admin_home():
                 score_bins["81-100"] += 1
     return render_template("admin/admin.html",
     summary=summary,
-    current_month=month_list[current_month-1],
-    current_year=current_year,
     user_growth_data=user_growth_data,
     score_growth_data=score_growth_data,
     score_bins=score_bins,
@@ -135,8 +133,8 @@ def view_user():
 
         quiz_scores = Score.query.filter(
             Score.user_id == user_id,
-            extract('month', Score.created_at) == current_month,
-            extract('year', Score.created_at) == current_year
+            # extract('month', Score.created_at) == current_month,
+            # extract('year', Score.created_at) == current_year
         ).order_by(Score.created_at).all()
 
         grouped_percentages = {}
@@ -227,7 +225,6 @@ def view_user():
         }        
         return render_template("admin/dashboard/user.html",
             quiz_scores=quiz_scores,
-            current_month=month_list[current_month-1],
             performance_data=performance_data,
             score_bins=score_bins,
             chapter_performance_data=chapter_performance_data,

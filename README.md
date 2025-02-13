@@ -75,7 +75,6 @@ Quiz Master is a multi-user application designed as an exam preparation site for
 - `id`: VARCHAR(100), Primary key
 - `quiz_title`: VARCHAR(100), Not null
 - `chapter_id`: VARCHAR(100), Foreign key to Chapter, Not null
-- `chapter_code`: VARCHAR(100), Foreign key to Chapter, Not null
 - `date_of_quiz`: DATE, Not null
 - `time_duration_hr`: Integer, Not null
 - `time_duration_min`: Integer, Not null
@@ -92,8 +91,6 @@ Quiz Master is a multi-user application designed as an exam preparation site for
 - `quiz_id`: VARCHAR(100), Foreign key to Quiz, Not null
 - `question_title`: VARCHAR(100), Not null
 - `question_statement`: VARCHAR(100), Not null
-- `chapter_id`: VARCHAR(100), Foreign key to Chapter, Not null
-- `chapter_code`: VARCHAR(100), Foreign key to Chapter, Not null
 - `option_1`: VARCHAR(100), Not null
 - `option_2`: VARCHAR(100), Not null
 - `option_3`: VARCHAR(100), Not null
