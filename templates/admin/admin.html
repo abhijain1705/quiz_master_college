@@ -80,7 +80,7 @@ content %} {% include "admin/admin_wrapper.html" %}
 
   var dailyQuizData = JSON.parse(`{{ score_growth_data|tojson }}`);
   new Chart(document.getElementById("dailyQuizzesChart"), {
-    type: "bar",
+    type: "line",
     data: {
       labels: dailyQuizData.labels,
       datasets: [
