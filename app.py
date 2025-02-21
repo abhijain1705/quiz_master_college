@@ -1,48 +1,63 @@
+import os
 import uuid
+from datetime import date, datetime
+from flask import Flask, flash, redirect, url_for
+from flask_session import Session
+from flask_login import LoginManager
+from werkzeug.security import generate_password_hash
+from sqlalchemy import inspect
+
+from config import admin_credentials
 from models import db
 from models.model import User
-from sqlalchemy import inspect
-from flask_session import Session
-from datetime import date, datetime
-from config import admin_credentials
-from flask_login import LoginManager
-from flask import Flask, flash, redirect, url_for
+
+# Importing Blueprints
 from controllers.auth import auth as auth_blueprint
 from controllers.home import home as home_blueprint
-from werkzeug.security import generate_password_hash
 from controllers.users.user import user as user_blueprint
 from controllers.admin.admin import admin as admin_blueprint
 from controllers.admin.admin_subject import subject as subject_blueprint
 
-from dummy import create_dummy_chapters, create_dummy_questions, create_dummy_quizzes, create_dummy_subjects, create_dummy_users, create_dummy_score
+# Importing CLI Commands
+from dummy import (
+    create_dummy_chapters,
+    create_dummy_questions,
+    create_dummy_quizzes,
+    create_dummy_subjects,
+    create_dummy_users,
+    create_dummy_score
+)
 
-app=Flask(__name__)
-app.config['DEBUG']=True
-app.config['SESSION_PERMANENT']=False
-app.config['SESSION_TYPE']='filesystem'
-app.secret_key='mysecretkey'
-Session(app)
+# Initialize Flask App
+app = Flask(__name__)
+
+# Configurations
+app.config['DEBUG'] = True
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_TYPE'] = 'filesystem'
+app.secret_key = 'mysecretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
+# Initialize Extensions
+Session(app)
 db.init_app(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login'
 
+# Register Blueprints
 app.register_blueprint(auth_blueprint)
-
 app.register_blueprint(user_blueprint)
-
 app.register_blueprint(home_blueprint)
-
 app.register_blueprint(admin_blueprint)
-
 app.register_blueprint(subject_blueprint)
 
+# Home Route
 @app.route("/")
 def home():
-    return "hello python"
+    return "Hello, Flask is running on Vercel!"
 
-login_manager = LoginManager()
-
-# create flask terminal custom commands
+# Flask CLI Commands
 @app.cli.command('create_dummy_users')
 def create_users():
     count = input("Enter number of users to create: ")
@@ -65,41 +80,50 @@ def create_quizzes():
 
 @app.cli.command("create_dummy_questions")  
 def create_questions():
-    create_dummy_questions()    
-
+    create_dummy_questions()
 
 @app.cli.command("create_dummy_score")
 def create_score():
     count = input("Enter number of scores to create: ")
     create_dummy_score(int(count))
 
+# Flask-Login User Loader
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
-def init_db():    
-    random_uuid = str(uuid.uuid4())
-    admin = User(id=random_uuid, email=admin_credentials['email'], password=generate_password_hash(admin_credentials['password'], method='scrypt'), full_name='Admin', qualification='Btech', dob=date(2003,4,5), user_type='admin', created_at=datetime.now(), updated_at=datetime.now())
-    db.session.add(admin)
-    db.session.commit()
+@login_manager.unauthorized_handler
+def unauthorized():
+    flash('You must be logged in to access this page!', 'warning')
+    return redirect(url_for('auth.login'))
 
-if __name__ == "__main__":
+# Initialize Database
+def init_db():
     with app.app_context():
         inspector = inspect(db.engine)
         table_names = inspector.get_table_names()
-        if len(table_names) == 0:
+
+        if not table_names:
             db.drop_all()
             db.create_all()
-            init_db()
+            
+            admin = User(
+                id=str(uuid.uuid4()),
+                email=admin_credentials['email'],
+                password=generate_password_hash(admin_credentials['password'], method='scrypt'),
+                full_name='Admin',
+                qualification='BTech',
+                dob=date(2003, 4, 5),
+                user_type='admin',
+                created_at=datetime.now(),
+                updated_at=datetime.now()
+            )
 
-    login_manager.init_app(app)
+            db.session.add(admin)
+            db.session.commit()
 
-    login_manager.login_view = 'auth.login'
-
-    @login_manager.unauthorized_handler
-    def unauthorized():
-        flash('You must be logged in to access this page!', 'warning')
-        return redirect(url_for('auth.login'))
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(user_id)
-
-    app.run(debug=True)
+# Run the App
+if __name__ == "__main__":
+    init_db()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)

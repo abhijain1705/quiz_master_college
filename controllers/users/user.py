@@ -95,6 +95,7 @@ def user_home():
             "labels": sorted_subjects,
             "scores": [avg_percentages[sub] for sub in sorted_subjects]
         }
+
         chapter_wise_avg_score = {}
         for score in quiz_scores:
             quiz = Quiz.query.get(score.quiz_id)
