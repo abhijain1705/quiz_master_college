@@ -2,6 +2,7 @@ import uuid
 import json
 from models import db
 from sqlalchemy import extract
+from flasgger import swag_from
 from datetime import datetime,date
 from config import admin_credentials
 from flask_login import login_required
@@ -20,6 +21,76 @@ current_year = datetime.now().year
 @user.route("/")
 @login_required
 @role_required("user")
+@swag_from({
+    'tags': ['User'],
+    'summary': 'User Home Page',
+    'description': 'User Home Page',
+    'parameters': [
+        {
+         "in": "query",
+         "name": "user_id",
+         "required": True,
+         "type": "string",
+         "description": "The id of the user",         
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'User Home Page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "quiz_scores": [
+                            {
+                                "id": "1",
+                                "quiz_id": "1",
+                                "user_id": "1",
+                                "attempt_number": 1,
+                                "total_scored": 10,
+                                "question_attempted": 10,
+                                "question_corrected": 8,
+                                "question_wronged": 2,
+                                "created_at": "2021-08-01 10:00:00",
+                                "updated_at": "2021-08-01 10:00:00"
+                            }
+                        ],
+                        "performance_data": {
+                            "labels": ["01 Aug 2021", "02 Aug 2021", "03 Aug 2021"],
+                            "scores": [70, 80, 90]
+                        },
+                        "score_bins": {
+                            "0-20": 0,
+                            "21-40": 0,
+                            "41-60": 1,
+                            "61-80": 2,
+                            "81-100": 0
+                        },
+                        "chapter_performance_data": {
+                            "labels": ["Chapter 1", "Chapter 2", "Chapter 3"],
+                            "scores": [70, 80, 90]
+                        },
+                        "subject_performance_data": {
+                            "labels": ["Subject 1", "Subject 2", "Subject 3"],
+                            "scores": [70, 80, 90]
+                        }
+                    }
+                }
+            }
+        },
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "User not found",
+                        "type": "danger",
+                        "url": "/auth/logout"
+                    }
+                }
+            }
+        }
+    }  
+})
 def user_home():
     try:
         user_id = session.get('id', "")
@@ -132,6 +203,65 @@ def user_home():
 # call if user refresh while quiz is running
 @user.route("/score/view")
 @login_required
+@swag_from({
+    'tags': ['User'],
+    'summary': 'View Quiz Score',
+    'description': 'View Quiz Score',
+    'parameters': [
+        {
+            "in": "query",
+            "name": "score_id",
+            "required": True,
+            "type": "string",
+            "description": "The id of the score",
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'View Quiz Score',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "score": {
+                            "id": "1",
+                            "quiz_id": "1",
+                            "user_id": "1",
+                            "attempt_number": 1,
+                            "total_scored": 10,
+                            "question_attempted": 10,
+                            "question_corrected": 8,
+                            "question_wronged": 2,
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        },
+                        "quiz": {
+                            "id": "1",
+                            "name": "Quiz 1",
+                            "chapter_id": "1",
+                            "total_marks": 10,
+                            "date_of_quiz": "2021-08-01",
+                            "is_active": True,
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        }
+                    }
+                }
+            }
+        },  
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "User not found",
+                        "type": "danger",
+                        "url": "/auth/logout"
+                    }
+                }
+            }
+        }
+    }
+})
 @role_required('user')
 def view_score():
     try:
@@ -154,12 +284,51 @@ def view_score():
 
 @user.route("/quiz/timeover")
 @login_required
+@swag_from({
+    'tags': ['User'],
+    'summary': 'Quiz Time Over',
+    'description': 'Quiz Time Over',
+    'responses': {
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "Quiz time over, play again",
+                        "type": "danger",
+                        "url": "/user/subject/list"
+                    }
+                }
+            }
+        }
+    }
+})
 @role_required("user")
 def time_over():
     return flash_and_redirect("Quiz time over, play again", "danger", url_for("user.user_subject_list", skip=0, take=25))
 
 @user.route("/quiz/refreshed")
 @login_required
+@swag_from({
+    'tags': ['User'],
+    'summary': 'Refresh Quiz',
+    'description': 'Refresh Quiz',
+    'responses': {
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "No active quiz session",
+                        "type": "danger",
+                        "url": "/user/user_quizzes?skip=0&take=25"
+                    }
+                }
+            }
+        }
+    }
+
+})
 @role_required("user")
 def refresh_quiz():
     try:
@@ -188,6 +357,73 @@ def refresh_quiz():
 
 @user.route("/quiz/evaluate", methods=['POST'])
 @login_required
+@swag_from({
+    'tags': ['User'],
+    'summary': 'Evaluate Quiz',
+    'description': 'Evaluate Quiz',
+    'parameters': [
+        {
+            "in": "query",
+            "name": "quiz_id",
+            "required": True,
+            "type": "string",
+            "description": "The id of the quiz",
+        },
+        {
+            "in": "query",
+            "name": "question_id",
+            "required": True,
+            "type": "string",
+            "description": "The id of the question",
+        }
+    ],  
+    'responses': {
+        200: {
+            'description': 'Evaluate Quiz',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "total_rows": 10,
+                        "score": {
+                            "id": "1",
+                            "quiz_id": "1",
+                            "user_id": "1",
+                            "attempt_number": 1,
+                            "total_scored": 10,
+                            "question_attempted": 10,
+                            "question_corrected": 8,
+                            "question_wronged": 2,
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        },
+                        "quiz": {
+                            "id": "1",
+                            "name": "Quiz 1",
+                            "chapter_id": "1",
+                            "total_marks": 10,
+                            "date_of_quiz": "2021-08-01",
+                            "is_active": True,
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        }
+                    }
+                }
+            }
+        },
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "User not found",
+                        "type": "danger",
+                        "url": "/auth/logout"
+                    }
+                }
+            }
+        }
+    }
+})
 @role_required("user")
 def evaluate_quiz():
     try:
@@ -283,6 +519,69 @@ def evaluate_quiz():
 
 @user.route("/quiz/start")
 @login_required
+@swag_from({
+    'tags': ['User'],
+    'summary': 'Start Quiz',
+    'description': 'Start Quiz',
+    'parameters': [
+        {
+            "in": "query",
+            "name": "quiz_id",
+            "required": True,
+            "type": "string",
+            "description": "The id of the quiz",
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Start Quiz',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "total_rows": 10,
+                        "quiz": {
+                            "id": "1",
+                            "name": "Quiz 1",
+                            "chapter_id": "1",
+                            "total_marks": 10,
+                            "date_of_quiz": "2021-08-01",
+                            "is_active": True,
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        },
+                        "rows": [
+                            {
+                                "id": "1",
+                                "quiz_id": "1",
+                                "question": "Question 1",
+                                "option1": "Option 1",
+                                "option2": "Option 2",
+                                "option3": "Option 3",
+                                "option4": "Option 4",
+                                "correct_option": 1,
+                                "marks": 1,
+                                "created_at": "2021-08-01 10:00:00",
+                                "updated_at": "2021-08-01 10:00:00"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "Quiz not found",
+                        "type": "danger",
+                        "url": "/user/user_quizzes?skip=0&take=25"
+                    }
+                }
+            }
+        }
+    }
+})
 @role_required("user")
 def start_quiz():
     try:
@@ -313,6 +612,76 @@ def start_quiz():
 
 @user.route("/quiz/answer", methods=["POST"])
 @login_required
+@swag_from({
+    'tags': ['User'],
+    'summary': 'Answer Quiz',
+    'description': 'Answer Quiz',
+    'parameters': [
+        {
+            "in": "query",
+            "name": "quiz_id",
+            "required": True,
+            "type": "string",
+            "description": "The id of the quiz",
+        },
+        {
+            "in": "query",
+            "name": "question_id",
+            "required": True,
+            "type": "string",
+            "description": "The id of the question",
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'Answer Quiz',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "total_rows": 10,
+                        "quiz": {
+                            "id": "1",
+                            "name": "Quiz 1",
+                            "chapter_id": "1",
+                            "total_marks": 10,
+                            "date_of_quiz": "2021-08-01",
+                            "is_active": True,
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        },
+                        "rows": [
+                            {
+                                "id": "1",
+                                "quiz_id": "1",
+                                "question": "Question 1",
+                                "option1": "Option 1",
+                                "option2": "Option 2",
+                                "option3": "Option 3",
+                                "option4": "Option 4",
+                                "correct_option": 1,
+                                "marks": 1,
+                                "created_at": "2021-08-01 10:00:00",
+                                "updated_at": "2021-08-01 10:00:00"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "Invalid data",
+                        "type": "danger",
+                        "url": "/user/user_quizzes?skip=0&take=25"
+                    }
+                }
+            }
+        }
+    }
+})
 @role_required("user")
 def answer_question():
     try:
@@ -352,6 +721,60 @@ def answer_question():
 
 @user.route("/quiz/go-back", methods=["POST"])
 @login_required
+@swag_from({
+    'tags': ['User'],
+    'summary': 'Go Back',
+    'description': 'Go Back',
+    'responses': {
+        200: {
+            'description': 'Go Back',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "total_rows": 10,
+                        "quiz": {
+                            "id": "1",
+                            "name": "Quiz 1",
+                            "chapter_id": "1",
+                            "total_marks": 10,
+                            "date_of_quiz": "2021-08-01",
+                            "is_active": True,
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        },
+                        "rows": [
+                            {
+                                "id": "1",
+                                "quiz_id": "1",
+                                "question": "Question 1",
+                                "option1": "Option 1",
+                                "option2": "Option 2",
+                                "option3": "Option 3",
+                                "option4": "Option 4",
+                                "correct_option": 1,
+                                "marks": 1,
+                                "created_at": "2021-08-01 10:00:00",
+                                "updated_at": "2021-08-01 10:00:00"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "Quiz not found",
+                        "type": "danger",
+                        "url": "/user/user_quizzes?skip=0&take=25"
+                    }
+                }
+            }
+        }
+    }
+})
 @role_required("user")
 def go_back():
     try:
@@ -383,6 +806,66 @@ def go_back():
 
 @user.route("/quiz/view")
 @login_required
+@swag_from({
+    'tags': ['User'],
+    'summary': 'View Quiz',
+    'description': 'View Quiz',
+    'parameters': [
+        {
+            "in": "query",
+            "name": "quiz_id",
+            "required": True,
+            "type": "string",
+            "description": "The id of the quiz",
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'View Quiz',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "quiz": {
+                            "id": "1",
+                            "name": "Quiz 1",
+                            "chapter_id": "1",
+                            "total_marks": 10,
+                            "date_of_quiz": "2021-08-01",
+                            "is_active": True,
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        },
+                        "chap": {
+                            "id": "1",
+                            "name": "Chapter 1",
+                            "subject_id": "1",
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        },
+                        "sub": {
+                            "id": "1",
+                            "name": "Subject 1",
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        }
+                    }
+                }
+            }
+        },
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "Quiz not found",
+                        "type": "danger",
+                        "url": "/user/user_quizzes?skip=0&take=25"
+                    }
+                }
+            }
+        }
+    }
+})
 @role_required("user")
 def view_quiz():
     try:
@@ -422,6 +905,65 @@ def user_attempted_quizzes():
 
 @user.route("/attempted-quizzes/view")
 @login_required 
+@swag_from({
+    'tags': ['User'],
+    'summary': 'View Attempted Quiz',
+    'description': 'View Attempted Quiz',
+    'parameters': [
+        {
+            "in": "query",
+            "name": "quiz_id",
+            "required": True,
+            "type": "string",
+            "description": "The id of the quiz",
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'View Attempted Quiz',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "quiz": {
+                            "id": "1",
+                            "name": "Quiz 1",
+                            "chapter_id": "1",
+                            "total_marks": 10,
+                            "date_of_quiz": "2021-08-01",
+                            "is_active": True,
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        },
+                        "score": {
+                            "id": "1",
+                            "quiz_id": "1",
+                            "user_id": "1",
+                            "attempt_number": 1,
+                            "total_scored": 10,
+                            "question_attempted": 10,
+                            "question_corrected": 8,
+                            "question_wronged": 2,
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        }
+                    }
+                }
+            }
+        },
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "Quiz not found",
+                        "type": "danger",
+                        "url": "/user/user_quizzes?skip=0&take=25"
+                    }
+                }
+            }
+        }
+    }
+})
 @role_required("user")
 def user_scores():
     try:
@@ -448,6 +990,58 @@ def user_scores():
 
 @user.route("/subject/view")
 @login_required
+@swag_from({
+    'tags': ['User'],
+    'summary': 'View Subject',
+    'description': 'View Subject',
+    'parameters': [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "The id of the subject",
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'View Subject',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "subject": {
+                            "id": "1",
+                            "name": "Subject 1",
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        },
+                        "chapters": [
+                            {
+                                "id": "1",
+                                "subject_id": "1",
+                                "name": "Chapter 1",
+                                "created_at": "2021-08-01 10:00:00",
+                                "updated_at": "2021-08-01 10:00:00"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "Subject not found",
+                        "type": "danger",
+                        "url": "/user/subjects"
+                    }
+                }
+            }
+        }
+    }
+})
 @role_required("user")
 def user_subject_chapter_list():
     try:
@@ -471,6 +1065,40 @@ def user_subject_chapter_list():
     
 @user.route("/subjects")
 @login_required
+@swag_from({
+    'tags': ['User'],
+    'summary': 'View Subjects',
+    'description': 'View Subjects',
+    'responses': {
+        200: {
+            'description': 'View Subjects',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "subject": {
+                            "id": "1",
+                            "name": "Subject 1",
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        }
+                    }
+                }
+            }
+        },
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "User not found",
+                        "type": "danger",
+                        "url": "/auth/logout"
+                    }
+                }
+            }
+        }
+    }
+})
 @role_required("user")
 def user_subject_list():
     try:
@@ -489,6 +1117,56 @@ def user_subject_list():
 
 @user.route("/subject/chapter/view")
 @login_required 
+@swag_from({
+    'tags': ['User'],
+    'summary': 'View Chapter',
+    'description': 'View Chapter',
+    'parameters': [
+        {
+            "in": "query",
+            "name": "chap_id",
+            "required": True,
+            "type": "string",
+            "description": "The id of the chapter",
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'View Chapter',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "chapter": {
+                            "id": "1",
+                            "subject_id": "1",
+                            "name": "Chapter 1",
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        },
+                        "subject": {
+                            "id": "1",
+                            "name": "Subject 1",
+                            "created_at": "2021-08-01 10:00:00",
+                            "updated_at": "2021-08-01 10:00:00"
+                        }
+                    }
+                }
+            }
+        },
+        302: {
+            'description': 'Redirect to login page',
+            'content': {
+                'application/json': {
+                    'example': {
+                        "message": "Chapter not found",
+                        "type": "danger",
+                        "url": "/user/subjects"
+                    }
+                }
+            }
+        }
+    }
+})
 @role_required("user")
 def user_quizzes():
     try:

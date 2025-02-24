@@ -1,5 +1,6 @@
 import uuid
 from models import db
+from flasgger import Swagger
 from models.model import User
 from sqlalchemy import inspect
 from flask_session import Session
@@ -17,6 +18,7 @@ from controllers.admin.admin_subject import subject as subject_blueprint
 from dummy import create_dummy_chapters, create_dummy_questions, create_dummy_quizzes, create_dummy_subjects, create_dummy_users, create_dummy_score
 
 app=Flask(__name__)
+swagger = Swagger(app)
 app.config['DEBUG']=True
 app.config['SESSION_PERMANENT']=False
 app.config['SESSION_TYPE']='filesystem'

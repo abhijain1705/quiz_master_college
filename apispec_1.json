@@ -1,0 +1,2199 @@
+{
+  "definitions": {},
+  "info": {
+    "description": "powered by Flasgger",
+    "termsOfService": "/tos",
+    "title": "A swagger API",
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Redirecting to the home page of the user",
+                  "success": true
+                }
+              }
+            },
+            "description": "Redirect to the home page of the user"
+          }
+        },
+        "tags": [
+          "Home"
+        ]
+      }
+    },
+    "/admin/": {
+      "get": {
+        "description": "Admin Home Page",
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "example": "Admin Home Page"
+              }
+            },
+            "description": "Admin Home Page"
+          }
+        },
+        "summary": "Admin Home Page",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/": {
+      "get": {
+        "description": "View all subjects",
+        "parameters": [
+          {
+            "description": "Skip",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Take",
+            "in": "query",
+            "name": "take",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Where",
+            "in": "query",
+            "name": "where",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "subjects": {
+                      "items": {
+                        "properties": {
+                          "code": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "updated_at": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Subjects fetched successfully"
+          },
+          "404": {
+            "description": "No subjects found"
+          }
+        },
+        "summary": "View all subjects",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/delete": {
+      "post": {
+        "description": "Delete a chapter",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chapter deleted successfully"
+          },
+          "404": {
+            "description": "Chapter not found"
+          }
+        },
+        "summary": "Delete a chapter",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/new": {
+      "get": {
+        "description": "Create a new chapter",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chapter created successfully"
+          },
+          "404": {
+            "description": "Chapter not found"
+          }
+        },
+        "summary": "Create a new chapter",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "post": {
+        "description": "Create a new chapter",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chapter created successfully"
+          },
+          "404": {
+            "description": "Chapter not found"
+          }
+        },
+        "summary": "Create a new chapter",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/quiz/delete": {
+      "post": {
+        "description": "Delete a quiz",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Quiz id",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz deleted successfully"
+          },
+          "404": {
+            "description": "Quiz not found"
+          }
+        },
+        "summary": "Delete a quiz",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/quiz/new": {
+      "get": {
+        "description": "Create a new quiz",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz created successfully"
+          },
+          "404": {
+            "description": "Quiz not found"
+          }
+        },
+        "summary": "Create a new quiz",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "post": {
+        "description": "Create a new quiz",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz created successfully"
+          },
+          "404": {
+            "description": "Quiz not found"
+          }
+        },
+        "summary": "Create a new quiz",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/quiz/question/delete": {
+      "post": {
+        "description": "Delete a question",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Quiz id",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Question id",
+            "in": "query",
+            "name": "question_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Question deleted successfully"
+          },
+          "404": {
+            "description": "Question not found"
+          }
+        },
+        "summary": "Delete a question",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/quiz/question/new": {
+      "get": {
+        "description": "Create a new question",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Quiz id",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Question created successfully"
+          },
+          "404": {
+            "description": "Question not found"
+          }
+        },
+        "summary": "Create a new question",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "post": {
+        "description": "Create a new question",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Quiz id",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Question created successfully"
+          },
+          "404": {
+            "description": "Question not found"
+          }
+        },
+        "summary": "Create a new question",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/quiz/question/update": {
+      "get": {
+        "description": "Update a question",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Quiz id",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Question id",
+            "in": "query",
+            "name": "question_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Question updated successfully"
+          },
+          "404": {
+            "description": "Question not found"
+          }
+        },
+        "summary": "Update a question",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "post": {
+        "description": "Update a question",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Quiz id",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Question id",
+            "in": "query",
+            "name": "question_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Question updated successfully"
+          },
+          "404": {
+            "description": "Question not found"
+          }
+        },
+        "summary": "Update a question",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/quiz/question/view": {
+      "get": {
+        "description": "View all questions",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Quiz id",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "questions": {
+                      "items": {
+                        "properties": {
+                          "correct_option": {
+                            "type": "integer"
+                          },
+                          "created_at": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "string"
+                          },
+                          "marks": {
+                            "type": "integer"
+                          },
+                          "option_1": {
+                            "type": "string"
+                          },
+                          "option_2": {
+                            "type": "string"
+                          },
+                          "option_3": {
+                            "type": "string"
+                          },
+                          "option_4": {
+                            "type": "string"
+                          },
+                          "question_statement": {
+                            "type": "string"
+                          },
+                          "question_title": {
+                            "type": "string"
+                          },
+                          "updated_at": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Questions fetched successfully"
+          },
+          "404": {
+            "description": "No questions found"
+          }
+        },
+        "summary": "View all questions",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/quiz/update": {
+      "get": {
+        "description": "Update a quiz",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Quiz id",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz updated successfully"
+          },
+          "404": {
+            "description": "Quiz not found"
+          }
+        },
+        "summary": "Update a quiz",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "post": {
+        "description": "Update a quiz",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Quiz id",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz updated successfully"
+          },
+          "404": {
+            "description": "Quiz not found"
+          }
+        },
+        "summary": "Update a quiz",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/quiz/update/status": {
+      "get": {
+        "description": "Update quiz status",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Quiz id",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz status updated successfully"
+          },
+          "404": {
+            "description": "Quiz not found"
+          }
+        },
+        "summary": "Update quiz status",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/quiz/view": {
+      "get": {
+        "description": "View all quizzes",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "quizzes": {
+                      "items": {
+                        "properties": {
+                          "created_at": {
+                            "type": "string"
+                          },
+                          "date_of_quiz": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "string"
+                          },
+                          "quiz_title": {
+                            "type": "string"
+                          },
+                          "remarks": {
+                            "type": "string"
+                          },
+                          "time_duration_hr": {
+                            "type": "integer"
+                          },
+                          "time_duration_min": {
+                            "type": "integer"
+                          },
+                          "total_marks": {
+                            "type": "integer"
+                          },
+                          "updated_at": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Quizzes fetched successfully"
+          },
+          "404": {
+            "description": "No quizzes found"
+          }
+        },
+        "summary": "View all quizzes",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/update": {
+      "get": {
+        "description": "Update a chapter",
+        "parameters": [
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chapter updated successfully"
+          },
+          "404": {
+            "description": "Chapter not found"
+          }
+        },
+        "summary": "Update a chapter",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "post": {
+        "description": "Update a chapter",
+        "parameters": [
+          {
+            "description": "Chapter id",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chapter updated successfully"
+          },
+          "404": {
+            "description": "Chapter not found"
+          }
+        },
+        "summary": "Update a chapter",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/chapter/view": {
+      "get": {
+        "description": "View all chapters",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Skip",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Take",
+            "in": "query",
+            "name": "take",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Where",
+            "in": "query",
+            "name": "where",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "chapters": {
+                      "items": {
+                        "properties": {
+                          "chapter_number": {
+                            "type": "integer"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "pages": {
+                            "type": "integer"
+                          },
+                          "updated_at": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Chapters fetched successfully"
+          },
+          "404": {
+            "description": "No chapters found"
+          }
+        },
+        "summary": "View all chapters",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/delete": {
+      "post": {
+        "description": "Delete a subject",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subject deleted successfully"
+          },
+          "404": {
+            "description": "Subject not found"
+          }
+        },
+        "summary": "Delete a subject",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/new": {
+      "get": {
+        "description": "Create a new subject",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject code",
+            "in": "formData",
+            "name": "code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject name",
+            "in": "formData",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject description",
+            "in": "formData",
+            "name": "description",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subject created successfully"
+          },
+          "404": {
+            "description": "Subject not found"
+          }
+        },
+        "summary": "Create a new subject",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "post": {
+        "description": "Create a new subject",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject code",
+            "in": "formData",
+            "name": "code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject name",
+            "in": "formData",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject description",
+            "in": "formData",
+            "name": "description",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subject created successfully"
+          },
+          "404": {
+            "description": "Subject not found"
+          }
+        },
+        "summary": "Create a new subject",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/update": {
+      "get": {
+        "description": "Update a subject",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject code",
+            "in": "formData",
+            "name": "code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject name",
+            "in": "formData",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject description",
+            "in": "formData",
+            "name": "description",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subject updated successfully"
+          },
+          "404": {
+            "description": "Subject not found"
+          }
+        },
+        "summary": "Update a subject",
+        "tags": [
+          "Admin"
+        ]
+      },
+      "post": {
+        "description": "Update a subject",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject code",
+            "in": "formData",
+            "name": "code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject name",
+            "in": "formData",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Subject description",
+            "in": "formData",
+            "name": "description",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subject updated successfully"
+          },
+          "404": {
+            "description": "Subject not found"
+          }
+        },
+        "summary": "Update a subject",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/subject/view": {
+      "get": {
+        "description": "View all subjects",
+        "parameters": [
+          {
+            "description": "Subject id",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Skip",
+            "in": "query",
+            "name": "skip",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Take",
+            "in": "query",
+            "name": "take",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "description": "Where",
+            "in": "query",
+            "name": "where",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "subjects": {
+                      "items": {
+                        "properties": {
+                          "code": {
+                            "type": "string"
+                          },
+                          "created_at": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "updated_at": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Subjects fetched successfully"
+          },
+          "404": {
+            "description": "No subjects found"
+          }
+        },
+        "summary": "View all subjects",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/users/manage": {
+      "post": {
+        "description": "Manage User",
+        "parameters": [
+          {
+            "description": "User ID",
+            "in": "query",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "example": "User managed successfully"
+              }
+            },
+            "description": "User managed successfully"
+          },
+          "400": {
+            "content": {
+              "text/html": {
+                "example": "User not found"
+              }
+            },
+            "description": "User not found"
+          }
+        },
+        "summary": "Manage User",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/users/view": {
+      "get": {
+        "description": "View User",
+        "parameters": [
+          {
+            "description": "User ID",
+            "in": "query",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "example": "View User"
+              }
+            },
+            "description": "View User"
+          },
+          "400": {
+            "content": {
+              "text/html": {
+                "example": "User not found"
+              }
+            },
+            "description": "User not found"
+          }
+        },
+        "summary": "View User",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/auth/login": {
+      "get": {
+        "parameters": [
+          {
+            "description": "The email of the user",
+            "in": "formData",
+            "name": "email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The password of the user",
+            "in": "formData",
+            "name": "password",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Login successful",
+                  "success": true
+                }
+              }
+            },
+            "description": "Login successful"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Invalid email or password",
+                  "success": false
+                }
+              }
+            },
+            "description": "Invalid email or password"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "description": "The email of the user",
+            "in": "formData",
+            "name": "email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The password of the user",
+            "in": "formData",
+            "name": "password",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Login successful",
+                  "success": true
+                }
+              }
+            },
+            "description": "Login successful"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Invalid email or password",
+                  "success": false
+                }
+              }
+            },
+            "description": "Invalid email or password"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Logout successful",
+                  "success": true
+                }
+              }
+            },
+            "description": "Logout successful"
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/user/": {
+      "get": {
+        "description": "User Home Page",
+        "parameters": [
+          {
+            "description": "The id of the user",
+            "in": "query",
+            "name": "user_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "chapter_performance_data": {
+                    "labels": [
+                      "Chapter 1",
+                      "Chapter 2",
+                      "Chapter 3"
+                    ],
+                    "scores": [
+                      70,
+                      80,
+                      90
+                    ]
+                  },
+                  "performance_data": {
+                    "labels": [
+                      "01 Aug 2021",
+                      "02 Aug 2021",
+                      "03 Aug 2021"
+                    ],
+                    "scores": [
+                      70,
+                      80,
+                      90
+                    ]
+                  },
+                  "quiz_scores": [
+                    {
+                      "attempt_number": 1,
+                      "created_at": "2021-08-01 10:00:00",
+                      "id": "1",
+                      "question_attempted": 10,
+                      "question_corrected": 8,
+                      "question_wronged": 2,
+                      "quiz_id": "1",
+                      "total_scored": 10,
+                      "updated_at": "2021-08-01 10:00:00",
+                      "user_id": "1"
+                    }
+                  ],
+                  "score_bins": {
+                    "0-20": 0,
+                    "21-40": 0,
+                    "41-60": 1,
+                    "61-80": 2,
+                    "81-100": 0
+                  },
+                  "subject_performance_data": {
+                    "labels": [
+                      "Subject 1",
+                      "Subject 2",
+                      "Subject 3"
+                    ],
+                    "scores": [
+                      70,
+                      80,
+                      90
+                    ]
+                  }
+                }
+              }
+            },
+            "description": "User Home Page"
+          },
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "User not found",
+                  "type": "danger",
+                  "url": "/auth/logout"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "User Home Page",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/attempted-quizzes/view": {
+      "get": {
+        "description": "View Attempted Quiz",
+        "parameters": [
+          {
+            "description": "The id of the quiz",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "quiz": {
+                    "chapter_id": "1",
+                    "created_at": "2021-08-01 10:00:00",
+                    "date_of_quiz": "2021-08-01",
+                    "id": "1",
+                    "is_active": true,
+                    "name": "Quiz 1",
+                    "total_marks": 10,
+                    "updated_at": "2021-08-01 10:00:00"
+                  },
+                  "score": {
+                    "attempt_number": 1,
+                    "created_at": "2021-08-01 10:00:00",
+                    "id": "1",
+                    "question_attempted": 10,
+                    "question_corrected": 8,
+                    "question_wronged": 2,
+                    "quiz_id": "1",
+                    "total_scored": 10,
+                    "updated_at": "2021-08-01 10:00:00",
+                    "user_id": "1"
+                  }
+                }
+              }
+            },
+            "description": "View Attempted Quiz"
+          },
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Quiz not found",
+                  "type": "danger",
+                  "url": "/user/user_quizzes?skip=0&take=25"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "View Attempted Quiz",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/quiz/answer": {
+      "post": {
+        "description": "Answer Quiz",
+        "parameters": [
+          {
+            "description": "The id of the quiz",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The id of the question",
+            "in": "query",
+            "name": "question_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "quiz": {
+                    "chapter_id": "1",
+                    "created_at": "2021-08-01 10:00:00",
+                    "date_of_quiz": "2021-08-01",
+                    "id": "1",
+                    "is_active": true,
+                    "name": "Quiz 1",
+                    "total_marks": 10,
+                    "updated_at": "2021-08-01 10:00:00"
+                  },
+                  "rows": [
+                    {
+                      "correct_option": 1,
+                      "created_at": "2021-08-01 10:00:00",
+                      "id": "1",
+                      "marks": 1,
+                      "option1": "Option 1",
+                      "option2": "Option 2",
+                      "option3": "Option 3",
+                      "option4": "Option 4",
+                      "question": "Question 1",
+                      "quiz_id": "1",
+                      "updated_at": "2021-08-01 10:00:00"
+                    }
+                  ],
+                  "total_rows": 10
+                }
+              }
+            },
+            "description": "Answer Quiz"
+          },
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Invalid data",
+                  "type": "danger",
+                  "url": "/user/user_quizzes?skip=0&take=25"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "Answer Quiz",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/quiz/evaluate": {
+      "post": {
+        "description": "Evaluate Quiz",
+        "parameters": [
+          {
+            "description": "The id of the quiz",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "The id of the question",
+            "in": "query",
+            "name": "question_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "quiz": {
+                    "chapter_id": "1",
+                    "created_at": "2021-08-01 10:00:00",
+                    "date_of_quiz": "2021-08-01",
+                    "id": "1",
+                    "is_active": true,
+                    "name": "Quiz 1",
+                    "total_marks": 10,
+                    "updated_at": "2021-08-01 10:00:00"
+                  },
+                  "score": {
+                    "attempt_number": 1,
+                    "created_at": "2021-08-01 10:00:00",
+                    "id": "1",
+                    "question_attempted": 10,
+                    "question_corrected": 8,
+                    "question_wronged": 2,
+                    "quiz_id": "1",
+                    "total_scored": 10,
+                    "updated_at": "2021-08-01 10:00:00",
+                    "user_id": "1"
+                  },
+                  "total_rows": 10
+                }
+              }
+            },
+            "description": "Evaluate Quiz"
+          },
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "User not found",
+                  "type": "danger",
+                  "url": "/auth/logout"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "Evaluate Quiz",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/quiz/go-back": {
+      "post": {
+        "description": "Go Back",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "quiz": {
+                    "chapter_id": "1",
+                    "created_at": "2021-08-01 10:00:00",
+                    "date_of_quiz": "2021-08-01",
+                    "id": "1",
+                    "is_active": true,
+                    "name": "Quiz 1",
+                    "total_marks": 10,
+                    "updated_at": "2021-08-01 10:00:00"
+                  },
+                  "rows": [
+                    {
+                      "correct_option": 1,
+                      "created_at": "2021-08-01 10:00:00",
+                      "id": "1",
+                      "marks": 1,
+                      "option1": "Option 1",
+                      "option2": "Option 2",
+                      "option3": "Option 3",
+                      "option4": "Option 4",
+                      "question": "Question 1",
+                      "quiz_id": "1",
+                      "updated_at": "2021-08-01 10:00:00"
+                    }
+                  ],
+                  "total_rows": 10
+                }
+              }
+            },
+            "description": "Go Back"
+          },
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Quiz not found",
+                  "type": "danger",
+                  "url": "/user/user_quizzes?skip=0&take=25"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "Go Back",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/quiz/refreshed": {
+      "get": {
+        "description": "Refresh Quiz",
+        "responses": {
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "No active quiz session",
+                  "type": "danger",
+                  "url": "/user/user_quizzes?skip=0&take=25"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "Refresh Quiz",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/quiz/start": {
+      "get": {
+        "description": "Start Quiz",
+        "parameters": [
+          {
+            "description": "The id of the quiz",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "quiz": {
+                    "chapter_id": "1",
+                    "created_at": "2021-08-01 10:00:00",
+                    "date_of_quiz": "2021-08-01",
+                    "id": "1",
+                    "is_active": true,
+                    "name": "Quiz 1",
+                    "total_marks": 10,
+                    "updated_at": "2021-08-01 10:00:00"
+                  },
+                  "rows": [
+                    {
+                      "correct_option": 1,
+                      "created_at": "2021-08-01 10:00:00",
+                      "id": "1",
+                      "marks": 1,
+                      "option1": "Option 1",
+                      "option2": "Option 2",
+                      "option3": "Option 3",
+                      "option4": "Option 4",
+                      "question": "Question 1",
+                      "quiz_id": "1",
+                      "updated_at": "2021-08-01 10:00:00"
+                    }
+                  ],
+                  "total_rows": 10
+                }
+              }
+            },
+            "description": "Start Quiz"
+          },
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Quiz not found",
+                  "type": "danger",
+                  "url": "/user/user_quizzes?skip=0&take=25"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "Start Quiz",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/quiz/timeover": {
+      "get": {
+        "description": "Quiz Time Over",
+        "responses": {
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Quiz time over, play again",
+                  "type": "danger",
+                  "url": "/user/subject/list"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "Quiz Time Over",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/quiz/view": {
+      "get": {
+        "description": "View Quiz",
+        "parameters": [
+          {
+            "description": "The id of the quiz",
+            "in": "query",
+            "name": "quiz_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "chap": {
+                    "created_at": "2021-08-01 10:00:00",
+                    "id": "1",
+                    "name": "Chapter 1",
+                    "subject_id": "1",
+                    "updated_at": "2021-08-01 10:00:00"
+                  },
+                  "quiz": {
+                    "chapter_id": "1",
+                    "created_at": "2021-08-01 10:00:00",
+                    "date_of_quiz": "2021-08-01",
+                    "id": "1",
+                    "is_active": true,
+                    "name": "Quiz 1",
+                    "total_marks": 10,
+                    "updated_at": "2021-08-01 10:00:00"
+                  },
+                  "sub": {
+                    "created_at": "2021-08-01 10:00:00",
+                    "id": "1",
+                    "name": "Subject 1",
+                    "updated_at": "2021-08-01 10:00:00"
+                  }
+                }
+              }
+            },
+            "description": "View Quiz"
+          },
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Quiz not found",
+                  "type": "danger",
+                  "url": "/user/user_quizzes?skip=0&take=25"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "View Quiz",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/score/view": {
+      "get": {
+        "description": "View Quiz Score",
+        "parameters": [
+          {
+            "description": "The id of the score",
+            "in": "query",
+            "name": "score_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "quiz": {
+                    "chapter_id": "1",
+                    "created_at": "2021-08-01 10:00:00",
+                    "date_of_quiz": "2021-08-01",
+                    "id": "1",
+                    "is_active": true,
+                    "name": "Quiz 1",
+                    "total_marks": 10,
+                    "updated_at": "2021-08-01 10:00:00"
+                  },
+                  "score": {
+                    "attempt_number": 1,
+                    "created_at": "2021-08-01 10:00:00",
+                    "id": "1",
+                    "question_attempted": 10,
+                    "question_corrected": 8,
+                    "question_wronged": 2,
+                    "quiz_id": "1",
+                    "total_scored": 10,
+                    "updated_at": "2021-08-01 10:00:00",
+                    "user_id": "1"
+                  }
+                }
+              }
+            },
+            "description": "View Quiz Score"
+          },
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "User not found",
+                  "type": "danger",
+                  "url": "/auth/logout"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "View Quiz Score",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/subject/chapter/view": {
+      "get": {
+        "description": "View Chapter",
+        "parameters": [
+          {
+            "description": "The id of the chapter",
+            "in": "query",
+            "name": "chap_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "chapter": {
+                    "created_at": "2021-08-01 10:00:00",
+                    "id": "1",
+                    "name": "Chapter 1",
+                    "subject_id": "1",
+                    "updated_at": "2021-08-01 10:00:00"
+                  },
+                  "subject": {
+                    "created_at": "2021-08-01 10:00:00",
+                    "id": "1",
+                    "name": "Subject 1",
+                    "updated_at": "2021-08-01 10:00:00"
+                  }
+                }
+              }
+            },
+            "description": "View Chapter"
+          },
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Chapter not found",
+                  "type": "danger",
+                  "url": "/user/subjects"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "View Chapter",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/subject/view": {
+      "get": {
+        "description": "View Subject",
+        "parameters": [
+          {
+            "description": "The id of the subject",
+            "in": "query",
+            "name": "sub_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "chapters": [
+                    {
+                      "created_at": "2021-08-01 10:00:00",
+                      "id": "1",
+                      "name": "Chapter 1",
+                      "subject_id": "1",
+                      "updated_at": "2021-08-01 10:00:00"
+                    }
+                  ],
+                  "subject": {
+                    "created_at": "2021-08-01 10:00:00",
+                    "id": "1",
+                    "name": "Subject 1",
+                    "updated_at": "2021-08-01 10:00:00"
+                  }
+                }
+              }
+            },
+            "description": "View Subject"
+          },
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Subject not found",
+                  "type": "danger",
+                  "url": "/user/subjects"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "View Subject",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/user/subjects": {
+      "get": {
+        "description": "View Subjects",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "subject": {
+                    "created_at": "2021-08-01 10:00:00",
+                    "id": "1",
+                    "name": "Subject 1",
+                    "updated_at": "2021-08-01 10:00:00"
+                  }
+                }
+              }
+            },
+            "description": "View Subjects"
+          },
+          "302": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "User not found",
+                  "type": "danger",
+                  "url": "/auth/logout"
+                }
+              }
+            },
+            "description": "Redirect to login page"
+          }
+        },
+        "summary": "View Subjects",
+        "tags": [
+          "User"
+        ]
+      }
+    }
+  },
+  "swagger": "2.0"
+}

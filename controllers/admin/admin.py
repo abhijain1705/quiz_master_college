@@ -2,6 +2,7 @@
 import json
 from models import db
 from datetime import datetime
+from flasgger import swag_from
 from sqlalchemy import desc, extract
 from controllers.decorator import role_required
 from flask_login import current_user, login_required
@@ -17,6 +18,21 @@ month_list = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov',
 
 @admin.route("/")
 @login_required
+@swag_from({
+    'tags': ['Admin'],
+    "description": "Admin Home Page",
+    "summary": "Admin Home Page",
+    'responses': {
+        200: {
+            'description': 'Admin Home Page',
+            'content': {
+                'text/html': {
+                    'example': 'Admin Home Page'
+                }
+            }
+        }
+    }
+})
 @role_required("admin")
 def admin_home():
     total_quizzes = Quiz.query.count()
@@ -124,6 +140,40 @@ def admin_home():
 
 @admin.route("/users/view")
 @login_required
+@swag_from({
+    'tags': ['Admin'],
+    "description": "View User",
+    "summary": "View User",
+    'parameters': [
+        {
+            'in': 'query',
+            'name': 'user_id',
+            'schema': {
+                'type': 'string'
+            },
+            'required': True,
+            'description': 'User ID'
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'View User',
+            'content': {
+                'text/html': {
+                    'example': 'View User'
+                }
+            }
+        },
+        400: {
+            'description': 'User not found',
+            'content': {
+                'text/html': {
+                    'example': 'User not found'
+                }
+            }
+        }
+    }
+})
 @role_required("admin")
 def view_user():
     try:
@@ -235,6 +285,40 @@ def view_user():
 
 @admin.route("/users/manage", methods=["POST"])
 @login_required
+@swag_from({
+    'tags': ['Admin'],
+    "description": "Manage User",
+    "summary": "Manage User",
+    'parameters': [
+        {
+            'in': 'query',
+            'name': 'user_id',
+            'schema': {
+                'type': 'string'
+            },
+            'required': True,
+            'description': 'User ID'
+        }
+    ],
+    'responses': {
+        200: {
+            'description': 'User managed successfully',
+            'content': {
+                'text/html': {
+                    'example': 'User managed successfully'
+                }
+            }
+        },
+        400: {
+            'description': 'User not found',
+            'content': {
+                'text/html': {
+                    'example': 'User not found'
+                }
+            }
+        }
+    }
+})
 @role_required("admin")
 def manage_status():
     try:
