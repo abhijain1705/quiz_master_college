@@ -2,6 +2,7 @@ import json
 import  uuid
 from models import db
 from sqlalchemy import desc
+from flasgger import swag_from
 from datetime import datetime, date
 from controllers.decorator import role_required
 from flask_login import current_user, login_required
@@ -89,6 +90,70 @@ def validate_question_fields(fields):
 @subject.route("/chapter/quiz/question/view")    
 @login_required
 @role_required("admin")
+@swag_from({
+    "tags": ["Admin"],
+    "description": "View all questions",
+    "summary": "View all questions",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+        {
+            "in": "query",
+            "name": "chap_id",
+            "required": True,
+            "type": "string",
+            "description": "Chapter id"
+        },
+        {
+            "in": "query",
+            "name": "quiz_id",
+            "required": True,
+            "type": "string",
+            "description": "Quiz id"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Questions fetched successfully",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "questions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {"type": "string"},
+                                        "question_title": {"type": "string"},
+                                        "question_statement": {"type": "string"},
+                                        "option_1": {"type": "string"},
+                                        "option_2": {"type": "string"},
+                                        "option_3": {"type": "string"},
+                                        "option_4": {"type": "string"},
+                                        "correct_option": {"type": "integer"},
+                                        "marks": {"type": "integer"},
+                                        "created_at": {"type": "string"},
+                                        "updated_at": {"type": "string"},
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        404: {
+            "description": "No questions found"
+        }
+    }
+})
 def view_question():
     quiz_id = request.args.get("quiz_id", "")
     sub_id = request.args.get("sub_id", "")
@@ -116,6 +181,49 @@ def view_question():
 
 @subject.route("/chapter/quiz/question/delete", methods=['POST'])
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Delete a question",
+    "summary": "Delete a question",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+        {
+            "in": "query",
+            "name": "chap_id",
+            "required": True,
+            "type": "string",
+            "description": "Chapter id"
+        },
+        {
+            "in": "query",
+            "name": "quiz_id",
+            "required": True,
+            "type": "string",
+            "description": "Quiz id"
+        },
+        {
+            "in": "query",
+            "name": "question_id",
+            "required": True,
+            "type": "string",
+            "description": "Question id"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Question deleted successfully"
+        },
+        404: {
+            "description": "Question not found"
+        }
+    }
+})
 @role_required("admin")
 def delete_question():
     quiz_id = request.args.get("quiz_id", "")
@@ -143,6 +251,49 @@ def delete_question():
 
 @subject.route("/chapter/quiz/question/update", methods=['GET', 'POST'])
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Update a question",
+    "summary": "Update a question",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+        {
+            "in": "query",
+            "name": "chap_id",
+            "required": True,
+            "type": "string",
+            "description": "Chapter id"
+        },
+        {
+            "in": "query",
+            "name": "quiz_id",
+            "required": True,
+            "type": "string",
+            "description": "Quiz id"
+        },
+        {
+            "in": "query",
+            "name": "question_id",
+            "required": True,
+            "type": "string",
+            "description": "Question id"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Question updated successfully"
+        },
+        404: {
+            "description": "Question not found"
+        }
+    }
+})
 @role_required("admin")
 def update_question():
     quiz_id = request.args.get("quiz_id", "")
@@ -198,6 +349,42 @@ def update_question():
 
 @subject.route("/chapter/quiz/question/new", methods=['GET', 'POST'])
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Create a new question",
+    "summary": "Create a new question",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+        {
+            "in": "query",
+            "name": "chap_id",
+            "required": True,
+            "type": "string",
+            "description": "Chapter id"
+        },
+        {
+            "in": "query",
+            "name": "quiz_id",
+            "required": True,
+            "type": "string",
+            "description": "Quiz id"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Question created successfully"
+        },
+        404: {
+            "description": "Question not found"
+        }
+    }
+})
 @role_required("admin")
 def new_question():
     quiz_id = request.args.get("quiz_id", "")
@@ -258,6 +445,61 @@ def new_question():
 
 @subject.route("/chapter/quiz/view")
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "View all quizzes",
+    "summary": "View all quizzes",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+        {
+            "in": "query",
+            "name": "chap_id",
+            "required": True,
+            "type": "string",
+            "description": "Chapter id"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Quizzes fetched successfully",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "quizzes": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {"type": "string"},
+                                        "quiz_title": {"type": "string"},
+                                        "date_of_quiz": {"type": "string"},
+                                        "time_duration_hr": {"type": "integer"},
+                                        "time_duration_min": {"type": "integer"},
+                                        "total_marks": {"type": "integer"},
+                                        "remarks": {"type": "string"},
+                                        "created_at": {"type": "string"},
+                                        "updated_at": {"type": "string"},
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        404: {
+            "description": "No quizzes found"
+        }
+    }
+})
 @role_required("admin")
 def view_quiz():
     quiz_id = request.args.get("quiz_id", "")
@@ -294,6 +536,42 @@ def view_quiz():
 
 @subject.route("/chapter/quiz/delete", methods=['POST'])
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Delete a quiz",
+    "summary": "Delete a quiz",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+        {
+            "in": "query",
+            "name": "chap_id",
+            "required": True,
+            "type": "string",
+            "description": "Chapter id"
+        },
+        {
+            "in": "query",
+            "name": "quiz_id",
+            "required": True,
+            "type": "string",
+            "description": "Quiz id"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Quiz deleted successfully"
+        },
+        404: {
+            "description": "Quiz not found"
+        }
+    }
+})
 @role_required("admin")
 def delete_quiz():
     sub_id = request.args.get("sub_id", "")
@@ -320,6 +598,42 @@ def delete_quiz():
 
 @subject.route("/chapter/quiz/update/status")
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Update quiz status",
+    "summary": "Update quiz status",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+        {
+            "in": "query",
+            "name": "chap_id",
+            "required": True,
+            "type": "string",
+            "description": "Chapter id"
+        },
+        {
+            "in": "query",
+            "name": "quiz_id",
+            "required": True,
+            "type": "string",
+            "description": "Quiz id"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Quiz status updated successfully"
+        },
+        404: {
+            "description": "Quiz not found"
+        }
+    }
+})
 @role_required("admin")
 def update_quiz_status():
     sub_id = request.args.get("sub_id", "")
@@ -338,6 +652,42 @@ def update_quiz_status():
 
 @subject.route("/chapter/quiz/update", methods=['GET', 'POST'])
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Update a quiz",
+    "summary": "Update a quiz",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+        {
+            "in": "query",
+            "name": "chap_id",
+            "required": True,
+            "type": "string",
+            "description": "Chapter id"
+        },
+        {
+            "in": "query",
+            "name": "quiz_id",
+            "required": True,
+            "type": "string",
+            "description": "Quiz id"
+        },  
+    ],
+    "responses": {
+        200: {
+            "description": "Quiz updated successfully"
+        },
+        404: {
+            "description": "Quiz not found"
+        }
+    }
+})
 @role_required("admin")
 def update_quiz():
     sub_id = request.args.get("sub_id", "")
@@ -386,6 +736,35 @@ def update_quiz():
 
 @subject.route("/chapter/quiz/new", methods=['GET', 'POST'])
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Create a new quiz",
+    "summary": "Create a new quiz",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+        {
+            "in": "query",
+            "name": "chap_id",
+            "required": True,
+            "type": "string",
+            "description": "Chapter id"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Quiz created successfully"
+        },
+        404: {
+            "description": "Quiz not found"
+        }
+    }
+})
 @role_required("admin")
 def new_quiz():
     sub_id = request.args.get("sub_id", "")
@@ -421,7 +800,7 @@ def new_quiz():
                 remarks=fields['remarks'],
                 created_at=datetime.now(),
                 updated_at=datetime.now(),
-                user_id=None,  # Nullable user_id
+                # user_id=None,  # Nullable user_id
                 total_marks=int(fields['total_marks'])
             )
             db.session.add(new_quiz)
@@ -434,6 +813,74 @@ def new_quiz():
 
 @subject.route("/chapter/view")
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "View all chapters",
+    "summary": "View all chapters",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+        {
+            "in": "query",
+            "name": "skip",
+            "required": False,
+            "type": "integer",
+            "description": "Skip"
+        },
+        {
+            "in": "query",
+            "name": "take",
+            "required": False,
+            "type": "integer",
+            "description": "Take"
+        },
+        {
+            "in": "query",
+            "name": "where",
+            "required": False,
+            "type": "string",
+            "description": "Where"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Chapters fetched successfully",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "chapters": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {"type": "string"},
+                                        "name": {"type": "string"},
+                                        "description": {"type": "string"},
+                                        "code": {"type": "string"},
+                                        "pages": {"type": "integer"},
+                                        "chapter_number": {"type": "integer"},
+                                        "created_at": {"type": "string"},
+                                        "updated_at": {"type": "string"},
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        404: {
+            "description": "No chapters found"
+        }
+    }
+})
 @role_required("admin")
 def view_chapter():
     skip = int(request.args.get('skip', 0))
@@ -465,6 +912,35 @@ def view_chapter():
 
 @subject.route("/chapter/delete", methods=['POST'])
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Delete a chapter",
+    "summary": "Delete a chapter",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+        {
+            "in": "query",
+            "name": "chap_id",
+            "required": True,
+            "type": "string",
+            "description": "Chapter id"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Chapter deleted successfully"
+        },
+        404: {
+            "description": "Chapter not found"
+        }
+    }
+})
 @role_required("admin")
 def delete_chapter():
     sub_id = request.args.get("sub_id", "")
@@ -493,6 +969,35 @@ def delete_chapter():
 
 @subject.route("/chapter/update", methods=['GET', 'POST'])
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Update a chapter",
+    "summary": "Update a chapter",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "chap_id",
+            "required": True,
+            "type": "string",
+            "description": "Chapter id"
+        },
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Chapter updated successfully"
+        },
+        404: {
+            "description": "Chapter not found"
+        }
+    }   
+})
 @role_required("admin")
 def update_chapter():
     chap_id = request.args.get("chap_id", "")
@@ -532,6 +1037,28 @@ def update_chapter():
 
 @subject.route("/chapter/new", methods=['GET', 'POST'])
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Create a new chapter",
+    "summary": "Create a new chapter",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Chapter created successfully"
+        },
+        404: {
+            "description": "Chapter not found"
+        }
+    }
+})
 @role_required("admin")
 def new_chapter():
     sub_id = request.args.get('sub_id')
@@ -574,6 +1101,28 @@ def new_chapter():
 
 @subject.route("/delete", methods=['POST'])
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Delete a subject",
+    "summary": "Delete a subject",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Subject deleted successfully"
+        },
+        404: {
+            "description": "Subject not found"
+        }
+    }
+})
 @role_required("admin")
 def delete_subject():
     sub_id = request.args.get("sub_id", "")
@@ -605,6 +1154,73 @@ def delete_subject():
 
 @subject.route("/view")
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "View all subjects",
+    "summary": "View all subjects",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+
+        },
+        {
+            "in": "query",
+            "name": "skip",
+            "required": False,
+            "type": "integer",
+            "description": "Skip"
+        },
+        {
+            "in": "query",
+            "name": "take",
+            "required": False,
+            "type": "integer",
+            "description": "Take"
+        },
+        {
+            "in": "query",
+            "name": "where",
+            "required": False,
+            "type": "string",
+            "description": "Where"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Subjects fetched successfully",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "subjects": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {"type": "string"},
+                                        "name": {"type": "string"},
+                                        "code": {"type": "string"},
+                                        "description": {"type": "string"},
+                                        "created_at": {"type": "string"},
+                                        "updated_at": {"type": "string"},
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        404: {
+            "description": "No subjects found"
+        }
+    }
+})
 @role_required("admin")
 def view_subject():
     sub_id = request.args.get("sub_id", "")
@@ -631,6 +1247,49 @@ def view_subject():
 
 @subject.route("/update", methods=['GET', 'POST'])
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Update a subject",
+    "summary": "Update a subject",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id"
+        },
+        {
+            "in": "formData",
+            "name": "code",
+            "required": True,
+            "type": "string",
+            "description": "Subject code"
+        },
+        {
+            "in": "formData",
+            "name": "name",
+            "required": True,
+            "type": "string",
+            "description": "Subject name"
+        },
+        {
+            "in": "formData",
+            "name": "description",
+            "required": True,
+            "type": "string",
+            "description": "Subject description"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Subject updated successfully"
+        },
+        404: {
+            "description": "Subject not found"
+        }
+    }
+})
 @role_required("admin")
 def update_subject():
     sub_id = request.args.get("sub_id", "")
@@ -667,6 +1326,49 @@ def update_subject():
 
 @subject.route("/new", methods=['GET', 'POST'])
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "Create a new subject",
+    "summary": "Create a new subject",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "sub_id",
+            "required": True,
+            "type": "string",
+            "description": "Subject id",
+        },
+        {
+            "in": "formData",
+            "name": "code",
+            "required": True,
+            "type": "string",
+            "description": "Subject code",
+        },
+        {
+            "in": "formData",
+            "name": "name",
+            "required": True,
+            "type": "string",
+            "description": "Subject name",
+        },
+        {
+            "in": "formData",
+            "name": "description",
+            "required": True,
+            "type": "string",
+            "description": "Subject description",
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Subject created successfully"
+        },
+        404: {
+            "description": "Subject not found",
+        }
+    }
+})
 @role_required("admin")
 def new_subject():
     if request.method=='POST':
@@ -698,6 +1400,65 @@ def new_subject():
 
 @subject.route("/")
 @login_required
+@swag_from({
+    "tags": ["Admin"],
+    "description": "View all subjects",
+    "summary": "View all subjects",
+    "parameters": [
+        {
+            "in": "query",
+            "name": "skip",
+            "required": False,
+            "type": "integer",
+            "description": "Skip"
+        },
+        {
+            "in": "query",
+            "name": "take",
+            "required": False,
+            "type": "integer",
+            "description": "Take"
+        },
+        {
+            "in": "query",
+            "name": "where",
+            "required": False,
+            "type": "string",
+            "description": "Where"
+        },
+    ],
+    "responses": {
+        200: {
+            "description": "Subjects fetched successfully",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "subjects": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {"type": "string"},
+                                        "name": {"type": "string"},
+                                        "code": {"type": "string"},
+                                        "description": {"type": "string"},
+                                        "created_at": {"type": "string"},
+                                        "updated_at": {"type": "string"},
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        404: {
+            "description": "No subjects found"
+        }
+    }
+})
 @role_required("admin")
 def subject_home():
     skip = int(request.args.get("skip", 0))

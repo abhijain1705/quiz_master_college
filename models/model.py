@@ -34,7 +34,7 @@ class UserResponses(db.Model):
     question_id = db.Column(db.VARCHAR(100), db.ForeignKey('questions.id'), nullable=False)
     actual_answer = db.Column(db.Integer, nullable=False)
     attempted_answer = db.Column(db.Integer, nullable=False)
-    attempt_number = db.Column(db.Integer, nullable=False) 
+    attempt_number = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.TIMESTAMP, nullable=False)
     updated_at = db.Column(db.TIMESTAMP, nullable=False)
 

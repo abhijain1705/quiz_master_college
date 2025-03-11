@@ -9,7 +9,7 @@ def role_required(role):
         def wrapper(*args, **kwargs):
             # Check if the user is authenticated and their role matches
             if not current_user.is_authenticated:
-                return redirect(url_for("auth.login"))
+                return redirect(url_for("auth.login_post"))
             if current_user.user_type != role and session.get("user_type") != role:
                 # Redirect unauthorized users to their respective home
                 if current_user.user_type == "admin":
