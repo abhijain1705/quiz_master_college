@@ -68,18 +68,18 @@ def login_post():
 
         if not email or not password:
             flash("All fields are required!", "danger")       
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.login_post'))
 
         
         user = User.query.filter_by(email=email).first()
 
         if user.user_type =='user' and user.isActive==False:
             flash('Your account is not active. Please contact admin.', "danger")
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.login_post'))
 
         if not user or not check_password_hash(user.password, password):
             flash('Please check your login details and try again.', "danger")
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.login_post'))
 
         session['id'] = user.id
         login_user(user, remember=True)
@@ -99,20 +99,20 @@ def signup_post():
 
         if not full_name or not email or not password or not dob:
             flash("All fields are required!", "danger")
-            return redirect(url_for("auth.signup"))
+            return redirect(url_for("auth.signup_post"))
 
         user = User.query.filter_by(email=email).first()
 
         if user:
             flash("Email already exists. Please use a different email.", "danger")
-            return redirect(url_for('auth.signup'))
+            return redirect(url_for('auth.signup_post'))
         
 
         try:
             dob_date = datetime.strptime(dob, "%Y-%m-%d").date()
         except ValueError:
             flash("Invalid date format. Please use YYYY-MM-DD.", "danger")
-            return redirect(url_for("auth.signup"))
+            return redirect(url_for("auth.signup_post"))
 
         hashed_password = generate_password_hash(password, method="scrypt")
 
@@ -124,11 +124,11 @@ def signup_post():
             db.session.add(new_user)
             db.session.commit()
             flash("Registration successful!", "success")
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("auth.login_post"))
         except Exception as e:
             db.session.rollback()
             flash("An error occurred during registration. Please try again.", "danger")
-            return redirect(url_for("auth.signup"))
+            return redirect(url_for("auth.signup_post"))
 
 @auth.route('/logout')
 @swag_from({
@@ -149,5 +149,5 @@ def signup_post():
 })
 def logout():
     logout_user()
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("auth.login_post"))
         

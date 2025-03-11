@@ -24,7 +24,7 @@ home = Blueprint("home", __name__, url_prefix="/")
 @login_required
 def home_home():
     if not current_user.is_authenticated:
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("auth.login_post"))
 
     if current_user.user_type == "admin":
         return redirect(url_for("admin.admin_home"))

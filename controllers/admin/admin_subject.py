@@ -800,7 +800,7 @@ def new_quiz():
                 remarks=fields['remarks'],
                 created_at=datetime.now(),
                 updated_at=datetime.now(),
-                user_id=None,  # Nullable user_id
+                # user_id=None,  # Nullable user_id
                 total_marks=int(fields['total_marks'])
             )
             db.session.add(new_quiz)

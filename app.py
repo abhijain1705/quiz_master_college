@@ -93,12 +93,12 @@ if __name__ == "__main__":
 
     login_manager.init_app(app)
 
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'auth.login_post'
 
     @login_manager.unauthorized_handler
     def unauthorized():
         flash('You must be logged in to access this page!', 'warning')
-        return redirect(url_for('auth.login'))
+        return redirect(url_for('auth.login_post'))
 
     @login_manager.user_loader
     def load_user(user_id):
