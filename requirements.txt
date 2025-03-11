@@ -1,8 +1,9 @@
-Flask==2.3.2
-flask-sqlalchemy==3.1.1
-virtualenv==20.29.1
-uuid==1.30
-sqlalchemy==2.0.37
-Flask-Session==0.8.0
-werkzeug==3.0.6
-Flask-Login==0.6.3
+Flask
+flask-sqlalchemy
+virtualenv
+uuid
+sqlalchemy
+Flask-Session
+werkzeug
+Flask-Login
+flasgger
