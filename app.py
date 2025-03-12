@@ -41,8 +41,6 @@ app.register_blueprint(subject_blueprint)
 def home():
     return "hello python"
 
-login_manager = LoginManager()
-
 # create flask terminal custom commands
 @app.cli.command('create_dummy_users')
 def create_users():
@@ -89,6 +87,8 @@ if __name__ == "__main__":
             db.drop_all()
             db.create_all()
             init_db()
+
+    login_manager = LoginManager()
 
     login_manager.init_app(app)
 
