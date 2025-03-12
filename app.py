@@ -14,7 +14,6 @@ from werkzeug.security import generate_password_hash
 from controllers.users.user import user as user_blueprint
 from controllers.admin.admin import admin as admin_blueprint
 from controllers.admin.admin_subject import subject as subject_blueprint
-
 from dummy import create_dummy_chapters, create_dummy_questions, create_dummy_quizzes, create_dummy_subjects, create_dummy_users, create_dummy_score
 
 app=Flask(__name__)
