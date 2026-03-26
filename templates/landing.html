@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizMaster — The Smart Quiz Platform</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Outfit:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            --white: #ffffff;
+            --off-white: #f9f8f6;
+            --light: #f0eeea;
+            --mid: #d6d3cd;
+            --border: #1a1a1a18;
+            --border-strong: #1a1a1a30;
+            --ink: #111111;
+            --ink-mid: #444444;
+            --ink-soft: #888888;
+            --ink-faint: #bbbbbb;
+            --accent: #111111;
+            --radius: 4px;
+            --radius-lg: 12px;
+            --radius-xl: 20px;
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--white);
+            color: var(--ink);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ── GRID TEXTURE ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(17, 17, 17, .03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(17, 17, 17, .03) 1px, transparent 1px);
+            background-size: 64px 64px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            transition: all .3s;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 900;
+            color: var(--ink);
+            letter-spacing: -.02em;
+        }
+
+        .logo span {
+            font-style: italic;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-links a {
+            padding: 7px 16px;
+            border-radius: 100px;
+            font-size: .85rem;
+            font-weight: 500;
+            color: var(--ink-mid);
+            text-decoration: none;
+            transition: all .2s;
+            letter-spacing: .01em;
+        }
+
+        .nav-links a:hover {
+            color: var(--ink);
+            background: var(--light);
+        }
+
+        .nav-cta {
+            background: var(--ink) !important;
+            color: var(--white) !important;
+            padding: 8px 20px !important;
+            border-radius: 100px !important;
+            font-weight: 600 !important;
+        }
+
+        .nav-cta:hover {
+            background: #333 !important;
+            transform: translateY(-1px);
+        }
+
+        section {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            padding: 0 60px;
+            gap: 80px;
+            border-bottom: 1px solid var(--border);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero-content {
+            padding-top: 80px;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .75rem;
+            font-weight: 600;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            margin-bottom: 28px;
+            animation: fadeUp .7s ease both;
+        }
+
+        .eyebrow-line {
+            width: 32px;
+            height: 1px;
+            background: var(--ink-faint);
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.0;
+            letter-spacing: -.03em;
+            animation: fadeUp .7s .1s ease both;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--ink-mid);
+        }
+
+        .hero-sub {
+            font-size: 1.05rem;
+            font-weight: 300;
+            color: var(--ink-mid);
+            margin-top: 24px;
+            max-width: 440px;
+            line-height: 1.75;
+            animation: fadeUp .7s .2s ease both;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 36px;
+            flex-wrap: wrap;
+            animation: fadeUp .7s .3s ease both;
+        }
+
+        .btn-primary {
+            padding: 13px 28px;
+            border-radius: 100px;
+            background: var(--ink);
+            color: var(--white);
+            font-weight: 600;
+            font-size: .9rem;
+            letter-spacing: .01em;
+            text-decoration: none;
+            transition: all .25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .15);
+        }
+
+        .btn-primary:hover {
+            background: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
+        }
+
+        .btn-outline {
+            padding: 13px 28px;
+            border-radius: 100px;
+            border: 1.5px solid var(--border-strong);
+            color: var(--ink);
+            font-weight: 500;
+            font-size: .9rem;
+            text-decoration: none;
+            transition: all .25s;
+        }
+
+        .btn-outline:hover {
+            background: var(--light);
+            border-color: var(--ink);
+        }
+
+        .hero-trust {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 40px;
+            animation: fadeUp .7s .4s ease both;
+        }
+
+        .trust-avatars {
+            display: flex;
+        }
+
+        .trust-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid var(--white);
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .65rem;
+            font-weight: 700;
+            color: var(--ink-mid);
+            margin-left: -8px;
+        }
+
+        .trust-avatar:first-child {
+            margin-left: 0;
+        }
+
+        .trust-text {
+            font-size: .8rem;
+            color: var(--ink-soft);
+            font-weight: 400;
+        }
+
+        .trust-text strong {
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        /* Hero visual side */
+        .hero-visual {
+            padding-top: 80px;
+            animation: fadeUp .7s .2s ease both;
+            position: relative;
+        }
+
+        .hero-card-stack {
+            position: relative;
+            height: 520px;
+        }
+
+        .hcard {
+            position: absolute;
+            background: var(--white);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .07);
+        }
+
+        .hcard.main {
+            width: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 3;
+        }
+
+        .hcard.back1 {
+            width: 94%;
+            top: 16px;
+            left: 3%;
+            z-index: 2;
+            opacity: .7;
+            transform: rotate(.8deg);
+        }
+
+        .hcard.back2 {
+            width: 88%;
+            top: 32px;
+            left: 6%;
+            z-index: 1;
+            opacity: .4;
+            transform: rotate(1.8deg);
+        }
+
+        .hcard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .hcard-tag {
+            font-size: .7rem;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            padding: 4px 10px;
+            border-radius: 100px;
+            background: var(--light);
+        }
+
+        .hcard-timer {
+            font-size: .8rem;
+            color: var(--ink-soft);
+            font-weight: 500;
+        }
+
+        .hcard-q {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 24px;
+        }
+
+        .hcard-opts {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .hopt {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            font-size: .85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all .2s;
+            background: var(--white);
+        }
+
+        .hopt:hover {
+            border-color: var(--ink);
+            background: var(--off-white);
+        }
+
+        .hopt.correct {
+            border-color: var(--ink);
+            background: var(--ink);
+            color: var(--white);
+        }
+
+        .hopt.correct .opt-key {
+            background: rgba(255, 255, 255, .2);
+            color: var(--white);
+        }
+
+        .opt-key {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .7rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .hcard-progress {
+            margin-top: 20px;
+        }
+
+        .prog-track {
+            height: 3px;
+            background: var(--light);
+            border-radius: 100px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .prog-fill {
+            height: 100%;
+            width: 40%;
+            background: var(--ink);
+            border-radius: 100px;
+        }
+
+        .prog-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: .72rem;
+            color: var(--ink-soft);
+        }
+
+        /* floating badges */
+        .float-badge {
+            position: absolute;
+            background: var(--ink);
+            color: var(--white);
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: .78rem;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        .fb1 {
+            top: 80px;
+            right: -20px;
+            animation: floatY 3s ease-in-out infinite;
+        }
+
+        .fb2 {
+            bottom: 160px;
+            left: -20px;
+            animation: floatY 3s 1.5s ease-in-out infinite;
+        }
+
+        @keyframes floatY {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-8px)
+            }
+        }
+
+        /* ── STATS BAR ── */
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 48px 60px;
+            border-bottom: 1px solid var(--border);
+            background: var(--off-white);
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+            gap: 32px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: var(--ink);
+            line-height: 1;
+        }
+
+        .stat-lbl {
+            font-size: .78rem;
+            color: var(--ink-soft);
+            margin-top: 4px;
+            font-weight: 400;
+            letter-spacing: .03em;
+        }
+
+        .stat-divider {
+            width: 1px;
+            height: 48px;
+            background: var(--border-strong);
+        }
+
+        /* ── MARQUEE ── */
+        .marquee-wrap {
+            overflow: hidden;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border);
+            background: var(--white);
+            position: relative;
+            z-index: 1;
+        }
+
+        .marquee-track {
+            display: flex;
+            gap: 0;
+            white-space: nowrap;
+            animation: marquee 24s linear infinite;
+            width: max-content;
+        }
+
+        .marquee-item {
+            font-size: .75rem;
+            font-weight: 600;
+            color: var(--ink-soft);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: 0 40px;
+            border-right: 1px solid var(--border);
+        }
+
+        .marquee-item:last-child {
+            border-right: none;
+        }
+
+        @keyframes marquee {
+            from {
+                transform: translateX(0)
+            }
+
+            to {
+                transform: translateX(-50%)
+            }
+        }
+
+        /* ── FEATURES ── */
+        .features-section {
+            padding: 120px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-eyebrow {
+            font-size: .72rem;
+            font-weight: 600;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-eyebrow::before {
+            content: '';
+            width: 24px;
+            height: 1px;
+            background: var(--ink-faint);
+        }
+
+        .section-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 3.5vw, 2.8rem);
+            font-weight: 900;
+            letter-spacing: -.03em;
+            line-height: 1.1;
+            max-width: 560px;
+        }
+
+        .features-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 64px;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .features-header p {
+            max-width: 360px;
+            font-weight: 300;
+            color: var(--ink-mid);
+            font-size: .95rem;
+            line-height: 1.7;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+        }
+
+        .feat-card {
+            padding: 40px 36px;
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            transition: background .25s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feat-card:nth-child(3n) {
+            border-right: none;
+        }
+
+        .feat-card:nth-child(4),
+        .feat-card:nth-child(5),
+        .feat-card:nth-child(6) {
+            border-bottom: none;
+        }
+
+        .feat-card:hover {
+            background: var(--off-white);
+        }
+
+        .feat-icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            border: 1px solid var(--border-strong);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            margin-bottom: 24px;
+            background: var(--white);
+        }
+
+        .feat-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -.01em;
+        }
+
+        .feat-card p {
+            font-size: .875rem;
+            color: var(--ink-mid);
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .feat-num {
+            position: absolute;
+            bottom: 24px;
+            right: 28px;
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--border);
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        /* ── STEPS ── */
+        .how-section {
+            padding: 120px 60px;
+            background: var(--ink);
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .how-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, .04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, .04) 1px, transparent 1px);
+            background-size: 64px 64px;
+            pointer-events: none;
+        }
+
+        .how-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .how-header {
+            margin-bottom: 80px;
+        }
+
+        .how-section .section-eyebrow {
+            color: rgba(255, 255, 255, .4);
+        }
+
+        .how-section .section-eyebrow::before {
+            background: rgba(255, 255, 255, .2);
+        }
+
+        .how-section .section-heading {
+            color: var(--white);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+        }
+
+        .step-cell {
+            padding: 40px 32px;
+            border-right: 1px solid rgba(255, 255, 255, .08);
+            position: relative;
+        }
+
+        .step-cell:last-child {
+            border-right: none;
+        }
+
+        .step-n {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, .1);
+            line-height: 1;
+            margin-bottom: 32px;
+        }
+
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, .05);
+        }
+
+        .step-cell h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--white);
+        }
+
+        .step-cell p {
+            font-size: .85rem;
+            color: rgba(255, 255, 255, .5);
+            font-weight: 300;
+            line-height: 1.7;
+        }
+
+        .step-arrow {
+            position: absolute;
+            top: 56px;
+            right: -12px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, .2);
+            font-size: .9rem;
+            z-index: 2;
+        }
+
+        .step-cell:last-child .step-arrow {
+            display: none;
+        }
+
+        /* ── PREVIEW ── */
+        .preview-section {
+            padding: 120px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .preview-header .section-eyebrow {
+            justify-content: center;
+        }
+
+        .preview-header .section-eyebrow::before {
+            display: none;
+        }
+
+        .preview-header .section-heading {
+            margin: 0 auto;
+        }
+
+        .browser-mock {
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, .1);
+        }
+
+        .browser-bar {
+            padding: 14px 20px;
+            background: var(--off-white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .b-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .b-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .b-dot.r {
+            background: #ff5f57;
+        }
+
+        .b-dot.y {
+            background: #ffbd2e;
+        }
+
+        .b-dot.g {
+            background: #28c840;
+        }
+
+        .b-url {
+            flex: 1;
+            padding: 5px 14px;
+            border-radius: 6px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            font-size: .75rem;
+            color: var(--ink-soft);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .b-url-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #28c840;
+            flex-shrink: 0;
+        }
+
+        .browser-body {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            min-height: 460px;
+        }
+
+        .sidebar {
+            border-right: 1px solid var(--border);
+            padding: 24px 16px;
+            background: var(--off-white);
+        }
+
+        .sidebar-label {
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            padding: 0 8px;
+            margin-bottom: 8px;
+        }
+
+        .sb-item {
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: .8rem;
+            font-weight: 500;
+            color: var(--ink-mid);
+            cursor: pointer;
+            transition: all .15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sb-item:hover {
+            background: var(--white);
+        }
+
+        .sb-item.active {
+            background: var(--ink);
+            color: var(--white);
+        }
+
+        .sb-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: .5;
+            flex-shrink: 0;
+        }
+
+        .main-body {
+            padding: 40px;
+        }
+
+        .quiz-live-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 36px;
+            max-width: 560px;
+        }
+
+        .quiz-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .q-badge {
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 100px;
+            background: var(--ink);
+            color: var(--white);
+        }
+
+        .q-timer {
+            font-size: .82rem;
+            color: var(--ink-soft);
+            font-weight: 500;
+        }
+
+        .q-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.45;
+            margin-bottom: 24px;
+        }
+
+        .q-opts {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .q-opt {
+            padding: 13px 16px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            font-size: .85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all .2s;
+            background: var(--white);
+        }
+
+        .q-opt:hover {
+            border-color: var(--ink-mid);
+            background: var(--off-white);
+        }
+
+        .q-opt.sel {
+            border-color: var(--ink);
+            background: var(--ink);
+            color: var(--white);
+        }
+
+        .q-opt.sel .q-key {
+            background: rgba(255, 255, 255, .15);
+            color: var(--white);
+        }
+
+        .q-key {
+            width: 26px;
+            height: 26px;
+            border-radius: 7px;
+            background: var(--light);
+            font-size: .7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .q-prog {
+            margin-top: 24px;
+        }
+
+        .q-prog-bar {
+            height: 3px;
+            background: var(--light);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .q-prog-fill {
+            height: 100%;
+            width: 40%;
+            background: var(--ink);
+            border-radius: 100px;
+        }
+
+        .q-prog-lbl {
+            display: flex;
+            justify-content: space-between;
+            font-size: .72rem;
+            color: var(--ink-soft);
+            margin-top: 8px;
+        }
+
+        /* ── TESTIMONIALS ── */
+        .testi-section {
+            padding: 120px 60px;
+            background: var(--off-white);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .testi-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .testi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 64px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .testi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .testi-card {
+            padding: 32px;
+            border-radius: var(--radius-xl);
+            background: var(--white);
+            border: 1px solid var(--border);
+            transition: all .3s;
+        }
+
+        .testi-card:hover {
+            border-color: var(--border-strong);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, .07);
+        }
+
+        .testi-stars {
+            color: var(--ink);
+            font-size: .85rem;
+            letter-spacing: 2px;
+            margin-bottom: 14px;
+        }
+
+        .testi-quote {
+            font-family: 'Playfair Display', serif;
+            font-size: .98rem;
+            font-style: italic;
+            font-weight: 700;
+            line-height: 1.6;
+            color: var(--ink);
+            margin-bottom: 24px;
+        }
+
+        .testi-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .t-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--ink);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .7rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .t-name {
+            font-size: .85rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .t-role {
+            font-size: .75rem;
+            color: var(--ink-soft);
+            margin-top: 2px;
+        }
+
+        /* ── PRICING ── */
+        .pricing-section {
+            padding: 120px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .pricing-header .section-eyebrow {
+            justify-content: center;
+        }
+
+        .pricing-header .section-eyebrow::before {
+            display: none;
+        }
+
+        .pricing-header .section-heading {
+            margin: 0 auto;
+        }
+
+        .pricing-header p {
+            font-size: .9rem;
+            color: var(--ink-soft);
+            margin-top: 12px;
+            font-weight: 300;
+        }
+
+        .pricing-grid {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .price-card {
+            flex: 1;
+            min-width: 260px;
+            max-width: 340px;
+            padding: 36px;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-strong);
+            background: var(--white);
+            position: relative;
+            transition: all .3s;
+        }
+
+        .price-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, .08);
+        }
+
+        .price-card.featured {
+            background: var(--ink);
+            color: var(--white);
+            border-color: var(--ink);
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: -13px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 16px;
+            border-radius: 100px;
+            background: var(--white);
+            border: 1px solid var(--border-strong);
+            font-size: .68rem;
+            font-weight: 700;
+            color: var(--ink);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .price-tier {
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            margin-bottom: 20px;
+        }
+
+        .price-card.featured .price-tier {
+            color: rgba(255, 255, 255, .5);
+        }
+
+        .price-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1;
+            display: flex;
+            align-items: flex-start;
+            gap: 2px;
+        }
+
+        .p-cur {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 400;
+        }
+
+        .p-per {
+            font-size: .85rem;
+            font-weight: 300;
+            align-self: flex-end;
+            margin-bottom: 4px;
+            font-family: 'Outfit', sans-serif;
+            color: var(--ink-soft);
+        }
+
+        .price-card.featured .p-per {
+            color: rgba(255, 255, 255, .5);
+        }
+
+        .price-desc {
+            font-size: .85rem;
+            color: var(--ink-mid);
+            margin: 16px 0 28px;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+
+        .price-card.featured .price-desc {
+            color: rgba(255, 255, 255, .6);
+        }
+
+        .price-divider {
+            height: 1px;
+            background: var(--border);
+            margin-bottom: 24px;
+        }
+
+        .price-card.featured .price-divider {
+            background: rgba(255, 255, 255, .12);
+        }
+
+        .price-feats {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+
+        .price-feats li {
+            font-size: .83rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink-mid);
+        }
+
+        .price-card.featured .price-feats li {
+            color: rgba(255, 255, 255, .75);
+        }
+
+        .price-feats li::before {
+            content: '';
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--ink);
+            flex-shrink: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' fill='none'%3E%3Ccircle cx='7' cy='7' r='7' fill='%23111'/%3E%3Cpath d='M4 7l2 2 4-4' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        }
+
+        .price-card.featured .price-feats li::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' fill='none'%3E%3Ccircle cx='7' cy='7' r='7' fill='white'/%3E%3Cpath d='M4 7l2 2 4-4' stroke='%23111' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        }
+
+        .price-btn {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            border-radius: 100px;
+            text-align: center;
+            font-size: .875rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all .25s;
+            border: 1.5px solid var(--border-strong);
+            background: var(--white);
+            color: var(--ink);
+            letter-spacing: .01em;
+        }
+
+        .price-card.featured .price-btn {
+            background: var(--white);
+            color: var(--ink);
+            border-color: var(--white);
+        }
+
+        .price-btn:hover {
+            background: var(--ink);
+            color: var(--white);
+            border-color: var(--ink);
+        }
+
+        .price-card.featured .price-btn:hover {
+            background: var(--off-white);
+            color: var(--ink);
+        }
+
+        /* ── FAQ ── */
+        .faq-section {
+            padding: 100px 60px;
+            background: var(--off-white);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .faq-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .faq-left .section-heading {
+            max-width: 280px;
+        }
+
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .faq-q {
+            padding: 20px 0;
+            font-size: .95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--ink);
+            transition: color .2s;
+            user-select: none;
+        }
+
+        .faq-q:hover {
+            color: var(--ink-mid);
+        }
+
+        .faq-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1.5px solid var(--border-strong);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .7rem;
+            flex-shrink: 0;
+            transition: all .3s;
+        }
+
+        .faq-item.open .faq-icon {
+            background: var(--ink);
+            color: var(--white);
+            border-color: var(--ink);
+            transform: rotate(45deg);
+        }
+
+        .faq-a {
+            font-size: .88rem;
+            color: var(--ink-mid);
+            line-height: 1.7;
+            font-weight: 300;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .3s ease, padding .3s;
+        }
+
+        .faq-item.open .faq-a {
+            max-height: 200px;
+            padding-bottom: 20px;
+        }
+
+        /* ── CTA ── */
+        .cta-section {
+            padding: 120px 60px;
+            background: var(--ink);
+            color: var(--white);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, .04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, .04) 1px, transparent 1px);
+            background-size: 64px 64px;
+            pointer-events: none;
+        }
+
+        .cta-inner {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cta-inner .section-eyebrow {
+            color: rgba(255, 255, 255, .4);
+            justify-content: center;
+        }
+
+        .cta-inner .section-eyebrow::before {
+            background: rgba(255, 255, 255, .2);
+        }
+
+        .cta-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            letter-spacing: -.04em;
+            line-height: 1.05;
+            margin-bottom: 16px;
+        }
+
+        .cta-section h2 em {
+            font-style: italic;
+            color: rgba(255, 255, 255, .6);
+        }
+
+        .cta-section p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, .55);
+            font-weight: 300;
+            margin-bottom: 40px;
+        }
+
+        .cta-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-white {
+            padding: 14px 32px;
+            border-radius: 100px;
+            background: var(--white);
+            color: var(--ink);
+            font-weight: 600;
+            font-size: .9rem;
+            text-decoration: none;
+            transition: all .25s;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .2);
+        }
+
+        .btn-white:hover {
+            background: var(--off-white);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-white {
+            padding: 14px 32px;
+            border-radius: 100px;
+            border: 1.5px solid rgba(255, 255, 255, .25);
+            color: rgba(255, 255, 255, .8);
+            font-weight: 400;
+            font-size: .9rem;
+            text-decoration: none;
+            transition: all .25s;
+        }
+
+        .btn-outline-white:hover {
+            border-color: rgba(255, 255, 255, .6);
+            color: var(--white);
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            padding: 60px;
+            border-top: 1px solid var(--border);
+            background: var(--off-white);
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .footer-brand .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--ink);
+            margin-bottom: 10px;
+        }
+
+        .footer-brand .footer-logo span {
+            font-style: italic;
+        }
+
+        .footer-brand p {
+            font-size: .82rem;
+            color: var(--ink-soft);
+            font-weight: 300;
+            max-width: 240px;
+            line-height: 1.6;
+        }
+
+        .footer-cols {
+            display: flex;
+            gap: 60px;
+            flex-wrap: wrap;
+        }
+
+        .footer-col-title {
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            margin-bottom: 16px;
+        }
+
+        .footer-col a {
+            display: block;
+            font-size: .83rem;
+            color: var(--ink-mid);
+            text-decoration: none;
+            margin-bottom: 10px;
+            transition: color .2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--ink);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .footer-copy {
+            font-size: .78rem;
+            color: var(--ink-faint);
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-bottom-links a {
+            font-size: .78rem;
+            color: var(--ink-faint);
+            text-decoration: none;
+        }
+
+        .footer-bottom-links a:hover {
+            color: var(--ink-soft);
+        }
+
+        /* ── ANIMATIONS ── */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity .7s, transform .7s;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-d1 {
+            transition-delay: .1s;
+        }
+
+        .reveal-d2 {
+            transition-delay: .2s;
+        }
+
+        .reveal-d3 {
+            transition-delay: .3s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav id="nav">
+        <div class="logo">Quiz<span>Master</span></div>
+        <div class="nav-links">
+            <a href="#">Features</a>
+            <a href="#">Pricing</a>
+            <a href="#">Docs</a>
+            <a href="/auth/login" style="color:var(--ink)">Login</a>
+            <a href="#" class="nav-cta">Get Started →</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <div style="border-bottom:1px solid var(--border);">
+        <div class="hero">
+            <div class="hero-content">
+                <div class="hero-eyebrow"><span class="eyebrow-line"></span>Now with AI Question Generation</div>
+                <h1>The Quiz Platform<br>Built to <em>Impress.</em></h1>
+                <p class="hero-sub">Create, schedule, and analyse quizzes with a platform that's as serious about design
+                    as it is about results.</p>
+                <div class="hero-actions">
+                    <a href="#" class="btn-primary">Start for Free →</a>
+                    <a href="#" class="btn-outline">Watch Demo ▶</a>
+                </div>
+                <div class="hero-trust">
+                    <div class="trust-avatars">
+                        <div class="trust-avatar">SK</div>
+                        <div class="trust-avatar">MR</div>
+                        <div class="trust-avatar">AP</div>
+                        <div class="trust-avatar">JL</div>
+                        <div class="trust-avatar">+</div>
+                    </div>
+                    <p class="trust-text">Trusted by <strong>50,000+</strong> educators worldwide</p>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-card-stack">
+                    <div class="hcard back2"></div>
+                    <div class="hcard back1"></div>
+                    <div class="hcard main">
+                        <div class="hcard-header">
+                            <span class="hcard-tag">Design Fundamentals</span>
+                            <span class="hcard-timer">⏱ 2:47</span>
+                        </div>
+                        <div class="hcard-q">Which principle states that design elements should be repeated to create
+                            unity?</div>
+                        <div class="hcard-opts">
+                            <div class="hopt"><span class="opt-key">A</span>Contrast</div>
+                            <div class="hopt correct"><span class="opt-key">B</span>Repetition ✓</div>
+                            <div class="hopt"><span class="opt-key">C</span>Proximity</div>
+                            <div class="hopt"><span class="opt-key">D</span>Alignment</div>
+                        </div>
+                        <div class="hcard-progress">
+                            <div class="prog-track">
+                                <div class="prog-fill"></div>
+                            </div>
+                            <div class="prog-meta"><span>Question 2 of 5</span><span>40%</span></div>
+                        </div>
+                    </div>
+                    <div class="float-badge fb1">⚡ 2,847 live quizzes</div>
+                    <div class="float-badge fb2">📈 98% satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-num">50K+</div>
+            <div class="stat-lbl">Active quizzes</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-num">2M+</div>
+            <div class="stat-lbl">Responses collected</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-num">98%</div>
+            <div class="stat-lbl">Satisfaction rate</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-num">&lt;2s</div>
+            <div class="stat-lbl">Average load time</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-num">150+</div>
+            <div class="stat-lbl">Countries served</div>
+        </div>
+    </div>
+
+    <!-- MARQUEE -->
+    <div class="marquee-wrap">
+        <div class="marquee-track">
+            <span class="marquee-item">Real-time Analytics</span>
+            <span class="marquee-item">AI Question Generator</span>
+            <span class="marquee-item">Unlimited Responses</span>
+            <span class="marquee-item">Custom Branding</span>
+            <span class="marquee-item">GDPR Compliant</span>
+            <span class="marquee-item">Team Collaboration</span>
+            <span class="marquee-item">Mobile-First Design</span>
+            <span class="marquee-item">Embeddable Anywhere</span>
+            <span class="marquee-item">CSV Export</span>
+            <span class="marquee-item">Real-time Analytics</span>
+            <span class="marquee-item">AI Question Generator</span>
+            <span class="marquee-item">Unlimited Responses</span>
+            <span class="marquee-item">Custom Branding</span>
+            <span class="marquee-item">GDPR Compliant</span>
+            <span class="marquee-item">Team Collaboration</span>
+            <span class="marquee-item">Mobile-First Design</span>
+            <span class="marquee-item">Embeddable Anywhere</span>
+            <span class="marquee-item">CSV Export</span>
+        </div>
+    </div>
+
+    <!-- FEATURES -->
+    <section class="features-section reveal">
+        <div class="features-header">
+            <div>
+                <div class="section-eyebrow">Why QuizMaster</div>
+                <div class="section-heading">Everything you need.<br>Nothing you don't.</div>
+            </div>
+            <p>Built for educators, trainers, and teams who refuse to compromise on quality, speed, or aesthetics.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feat-card">
+                <div class="feat-icon-wrap">⚡</div>
+                <h3>Instant Creation</h3>
+                <p>Build professional quizzes in minutes using our intuitive drag-and-drop builder. No design skills
+                    required.</p>
+                <div class="feat-num">01</div>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-wrap">🤖</div>
+                <h3>AI Question Generator</h3>
+                <p>Paste any content and our AI instantly generates diverse question types — MCQs, T/F,
+                    fill-in-the-blank, and more.</p>
+                <div class="feat-num">02</div>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-wrap">📊</div>
+                <h3>Deep Analytics</h3>
+                <p>Track completion rates, identify weak spots, and export rich CSV reports. Understand your audience in
+                    depth.</p>
+                <div class="feat-num">03</div>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-wrap">🔐</div>
+                <h3>Enterprise Security</h3>
+                <p>SOC 2 compliant, end-to-end encrypted, GDPR & CCPA ready. Your data stays yours — always.</p>
+                <div class="feat-num">04</div>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-wrap">🎯</div>
+                <h3>Real-time Results</h3>
+                <p>Watch scores appear live as respondents submit. Perfect for classrooms, live events, and
+                    competitions.</p>
+                <div class="feat-num">05</div>
+            </div>
+            <div class="feat-card">
+                <div class="feat-icon-wrap">📱</div>
+                <h3>Mobile-First</h3>
+                <p>Pixel-perfect on every device. Respondents get a beautiful, fast experience on any screen size.</p>
+                <div class="feat-num">06</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-section">
+        <div class="how-inner">
+            <div class="how-header reveal">
+                <div class="section-eyebrow">The Process</div>
+                <div class="section-heading">Four steps to brilliant quizzes</div>
+            </div>
+            <div class="steps-grid">
+                <div class="step-cell reveal">
+                    <div class="step-n">01</div>
+                    <div class="step-icon">📝</div>
+                    <h3>Create Your Quiz</h3>
+                    <p>Use the builder or let AI generate questions from your content automatically.</p>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="step-cell reveal reveal-d1">
+                    <div class="step-n">02</div>
+                    <div class="step-icon">🔗</div>
+                    <h3>Share the Link</h3>
+                    <p>Get a unique link or embed directly into your website, LMS, or app.</p>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="step-cell reveal reveal-d2">
+                    <div class="step-n">03</div>
+                    <div class="step-icon">👥</div>
+                    <h3>Users Attempt</h3>
+                    <p>Respondents take the quiz on any device, no account needed.</p>
+                    <div class="step-arrow">→</div>
+                </div>
+                <div class="step-cell reveal reveal-d3">
+                    <div class="step-n">04</div>
+                    <div class="step-icon">📈</div>
+                    <h3>Get Rich Results</h3>
+                    <p>Real-time dashboard with scores, completion rates, and exportable data.</p>
+                    <div class="step-arrow">→</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PREVIEW -->
+    <section class="preview-section reveal">
+        <div class="preview-header">
+            <div class="section-eyebrow">Live Preview</div>
+            <div class="section-heading">See it in action</div>
+        </div>
+        <div class="browser-mock">
+            <div class="browser-bar">
+                <div class="b-dots"><span class="b-dot r"></span><span class="b-dot y"></span><span
+                        class="b-dot g"></span></div>
+                <div class="b-url"><span class="b-url-dot"></span>quizmaster.io/quiz/design-fundamentals</div>
+            </div>
+            <div class="browser-body">
+                <div class="sidebar">
+                    <div class="sidebar-label">My Quizzes</div>
+                    <div class="sb-item active"><span class="sb-dot"></span>Design Fundamentals</div>
+                    <div class="sb-item"><span class="sb-dot"></span>JS Basics</div>
+                    <div class="sb-item"><span class="sb-dot"></span>History 101</div>
+                    <div class="sb-item"><span class="sb-dot"></span>Team Onboarding</div>
+                    <div style="margin-top:24px;"></div>
+                    <div class="sidebar-label">Analytics</div>
+                    <div class="sb-item"><span class="sb-dot"></span>Overview</div>
+                    <div class="sb-item"><span class="sb-dot"></span>Responses</div>
+                    <div class="sb-item"><span class="sb-dot"></span>Leaderboard</div>
+                </div>
+                <div class="main-body">
+                    <div class="quiz-live-card">
+                        <div class="quiz-meta-row">
+                            <span class="q-badge">Design Fundamentals</span>
+                            <span class="q-timer">⏱ 2:47 remaining</span>
+                        </div>
+                        <div class="q-text">Which principle states that design elements should be repeated to create
+                            unity and consistency?</div>
+                        <div class="q-opts" id="live-opts">
+                            <div class="q-opt" onclick="pickOpt(this)"><span class="q-key">A</span>Contrast</div>
+                            <div class="q-opt sel" onclick="pickOpt(this)"><span class="q-key">B</span>Repetition</div>
+                            <div class="q-opt" onclick="pickOpt(this)"><span class="q-key">C</span>Proximity</div>
+                            <div class="q-opt" onclick="pickOpt(this)"><span class="q-key">D</span>Alignment</div>
+                        </div>
+                        <div class="q-prog">
+                            <div class="q-prog-bar">
+                                <div class="q-prog-fill"></div>
+                            </div>
+                            <div class="q-prog-lbl"><span>Question 2 of 5</span><span>40% complete</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testi-section">
+        <div class="testi-inner">
+            <div class="testi-header reveal">
+                <div>
+                    <div class="section-eyebrow">Social Proof</div>
+                    <div class="section-heading">Loved by educators<br><em
+                            style="font-style:italic;color:var(--ink-mid)">& teams</em></div>
+                </div>
+                <a href="#" class="btn-outline" style="white-space:nowrap">Read all reviews →</a>
+            </div>
+            <div class="testi-grid">
+                <div class="testi-card reveal">
+                    <div class="testi-stars">★★★★★</div>
+                    <p class="testi-quote">"The AI question generator cut my quiz creation time by 80%. I paste my notes
+                        and it handles the rest. Genuinely remarkable."</p>
+                    <div class="testi-author">
+                        <div class="t-avatar">SK</div>
+                        <div>
+                            <div class="t-name">Sarah Kim</div>
+                            <div class="t-role">University Lecturer, Seoul</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testi-card reveal reveal-d1">
+                    <div class="testi-stars">★★★★★</div>
+                    <p class="testi-quote">"We onboard 200+ employees per quarter. QuizMaster replaced our old system
+                        and the analytics alone saved us thousands."</p>
+                    <div class="testi-author">
+                        <div class="t-avatar">MR</div>
+                        <div>
+                            <div class="t-name">Marcus Reid</div>
+                            <div class="t-role">L&D Manager, TechCorp</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testi-card reveal reveal-d2">
+                    <div class="testi-stars">★★★★★</div>
+                    <p class="testi-quote">"The real-time leaderboard during our live event had the audience completely
+                        hooked. We got standing ovations. Seriously."</p>
+                    <div class="testi-author">
+                        <div class="t-avatar">AP</div>
+                        <div>
+                            <div class="t-name">Aisha Patel</div>
+                            <div class="t-role">Event Host & Educator</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- FAQ -->
+    <section class="faq-section">
+        <div class="faq-inner">
+
+            <div class="faq-left reveal">
+                <div class="section-eyebrow">FAQ</div>
+                <div class="section-heading">Got questions?</div>
+                <p
+                    style="margin-top:16px;font-size:.88rem;color:var(--ink-mid);font-weight:300;line-height:1.7;max-width:260px;">
+                    Here are some common questions about QuizMaster. Still confused? Try it out — it's pretty simple.
+                </p>
+            </div>
+
+            <div class="faq-list reveal reveal-d1">
+
+                <div class="faq-item open">
+                    <div class="faq-q" onclick="toggleFaq(this)">
+                        What is QuizMaster used for?
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-a">
+                        QuizMaster is a platform to create and take quizzes online. It can be used for learning, testing
+                        knowledge, or just having fun with friends.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">
+                        Do I need to create an account to use it?
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-a">
+                        Yes, you need an account to create or attempt quizzes. This helps in saving your progress and
+                        viewing results later.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">
+                        Can I create my own quizzes?
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-a">
+                        Yes, you can create your own quizzes with multiple questions and share them with others. It’s
+                        simple and designed to be beginner-friendly.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">
+                        How are quiz results calculated?
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-a">
+                        Results are calculated based on correct answers. Once you complete a quiz, your score is shown
+                        instantly.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">
+                        Can I access this on mobile?
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-a">
+                        Yes, QuizMaster works on both desktop and mobile devices. You can take quizzes anytime,
+                        anywhere.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-q" onclick="toggleFaq(this)">
+                        Is this project free to use?
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-a">
+                        Yes, this is a free project built for learning and demonstration purposes.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section reveal">
+        <div class="cta-inner">
+            <div class="section-eyebrow">Get Started</div>
+            <h2>Ready to build<br>quizzes that <em>wow?</em></h2>
+            <p>Join 50,000+ educators and teams already using QuizMaster.<br>Free forever — no credit card required.</p>
+            <div class="cta-btns">
+                <a href="#" class="btn-white">Get Started — It's Free →</a>
+                <a href="#" class="btn-outline-white">Book a Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="footer-logo">Quiz<span>Master</span></div>
+                <p>The smart quiz platform built for educators, trainers, and modern teams.</p>
+            </div>
+            <div class="footer-cols">
+                <div class="footer-col">
+                    <div class="footer-col-title">Product</div>
+                    <a href="#">Features</a>
+                    <a href="#">Changelog</a>
+                    <a href="#">Roadmap</a>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-col-title">Legal</div>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                    <a href="#">Security</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-copy">© 2026 QuizMaster. All rights reserved.</div>
+            <div class="footer-bottom-links">
+                <a href="#">Twitter</a>
+                <a href="#">LinkedIn</a>
+                <a href="#">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function pickOpt(el) {
+            document.querySelectorAll('.q-opt').forEach(o => o.classList.remove('sel'));
+            el.classList.add('sel');
+        }
+        function toggleFaq(el) {
+            const item = el.parentElement;
+            document.querySelectorAll('.faq-item').forEach(i => { if (i !== item) i.classList.remove('open'); });
+            item.classList.toggle('open');
+        }
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+        }, { threshold: .1 });
+        document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            nav.style.borderBottomColor = window.scrollY > 40 ? 'rgba(17,17,17,.18)' : 'rgba(17,17,17,.09)';
+        });
+    </script>
+</body>
+
+</html>

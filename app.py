@@ -32,12 +32,12 @@ db.init_app(app)
 # Initialize Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'auth.login_post'
+login_manager.login_view = 'auth.landing'
 
 @login_manager.unauthorized_handler
 def unauthorized():
     flash('You must be logged in to access this page!', 'warning')
-    return redirect(url_for('auth.login_post'))
+    return redirect(url_for('auth.landing'))
 
 @login_manager.user_loader
 def load_user(user_id):

@@ -10,6 +10,10 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
+@auth.route("/", methods=['GET'])
+def landing():
+    return render_template('landing.html')
+
 @auth.route('/login', methods=['POST', 'GET'])
 @swag_from({
     "tags": ["Auth"],
